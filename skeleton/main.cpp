@@ -30,6 +30,8 @@ PxDefaultCpuDispatcher*	gDispatcher = NULL;
 PxScene*				gScene      = NULL;
 ContactReportCallback gContactReportCallback;
 
+RenderItem* gItem = nullptr;
+
 
 // Initialize physics engine
 void initPhysics(bool interactive)
@@ -54,6 +56,22 @@ void initPhysics(bool interactive)
 	sceneDesc.filterShader = contactReportFilterShader;
 	sceneDesc.simulationEventCallback = &gContactReportCallback;
 	gScene = gPhysics->createScene(sceneDesc);
+
+	//
+	PxSphereGeometry _sphere(10);
+	//_sphere.radius = 0.5f;
+	//PxMaterial* _sphereMaterial = gPhysics->createMaterial(1.0f, 1.0f, 1.0f);
+
+	
+	PxShape* shape = CreateShape(_sphere);
+	PxVec3 pos = PxVec3(0.0f, 0.0f, 0.0f);
+	//PxQuat rot = PxQuat(0.0f, 0.0f, 0.0f, 0.0f);
+	PxTransform* transform = new PxTransform(pos);
+	//transform->p = pos;
+	//transform->q = rot;
+	Vector4 color = { 0.5f,0.2f,1.0f,1.0f };
+	gItem = new RenderItem(shape, transform, color);
+	RegisterRenderItem(gItem);
 	}
 
 
@@ -82,7 +100,7 @@ void cleanupPhysics(bool interactive)
 	PxPvdTransport* transport = gPvd->getTransport();
 	gPvd->release();
 	transport->release();
-	
+	DeregisterRenderItem(gItem);
 	gFoundation->release();
 	}
 
