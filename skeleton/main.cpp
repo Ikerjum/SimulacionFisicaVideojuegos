@@ -9,6 +9,8 @@
 #include "callbacks.hpp"
 
 #include <iostream>
+#include "Vector3D.h"
+#include "Particula.h"
 
 std::string display_text = "This is a test";
 
@@ -30,7 +32,13 @@ PxDefaultCpuDispatcher*	gDispatcher = NULL;
 PxScene*				gScene      = NULL;
 ContactReportCallback gContactReportCallback;
 
-RenderItem* gItem = nullptr;
+RenderItem* AxeCenter = nullptr;
+RenderItem* AxeX = nullptr;
+RenderItem* AxeY = nullptr;
+RenderItem* AxeZ = nullptr;
+Particula* particle = nullptr;
+double dumping = 0.99;
+std::vector<Particula*> particulas(10);
 
 
 // Initialize physics engine
@@ -57,21 +65,57 @@ void initPhysics(bool interactive)
 	sceneDesc.simulationEventCallback = &gContactReportCallback;
 	gScene = gPhysics->createScene(sceneDesc);
 
-	//
-	PxSphereGeometry _sphere(10);
+	//AXES
+	Vector4 colorAxe = { 0.0f,0.0f,0.0f,1.0f };
+
+	// ESFERA CENTRAL
+	PxSphereGeometry _sphereCenter(2);
 	//_sphere.radius = 0.5f;
 	//PxMaterial* _sphereMaterial = gPhysics->createMaterial(1.0f, 1.0f, 1.0f);
-
-	
-	PxShape* shape = CreateShape(_sphere);
-	PxVec3 pos = PxVec3(0.0f, 0.0f, 0.0f);
+	PxShape* shapeCenter = CreateShape(_sphereCenter);
+	//PxVec3 pos = PxVec3(0.0f, 0.0f, 0.0f);
+	Vector3 posCenter = Vector3(0.0f, 0.0f, 0.0f);
 	//PxQuat rot = PxQuat(0.0f, 0.0f, 0.0f, 0.0f);
-	PxTransform* transform = new PxTransform(pos);
+	PxTransform* transformCenter = new PxTransform(posCenter);
 	//transform->p = pos;
 	//transform->q = rot;
-	Vector4 color = { 0.5f,0.2f,1.0f,1.0f };
-	gItem = new RenderItem(shape, transform, color);
-	RegisterRenderItem(gItem);
+	AxeCenter = new RenderItem(shapeCenter, transformCenter, colorAxe);
+	RegisterRenderItem(AxeCenter);
+	
+	//ESFERA DERECHA
+	PxSphereGeometry _sphereDch(2);
+	PxShape* shapeDch = CreateShape(_sphereDch);
+	Vector3 posDch = Vector3(10.0f, 0.0f, 0.0f);
+	PxTransform* transformDch = new PxTransform(posDch);
+	//Vector4 colorDch = { 0.3f,0.1f,0.5f,1.0f };
+	AxeX = new RenderItem(shapeDch, transformDch, colorAxe);
+	RegisterRenderItem(AxeX);
+	
+	//ESFERA IZQUIERDA
+	PxSphereGeometry _sphereIzq(2);
+	PxShape* shapeIzq = CreateShape(_sphereIzq);
+	Vector3 posIzq = Vector3(0.0f, 0.0f, 10.0f);
+	PxTransform* transformIzq = new PxTransform(posIzq);
+	//Vector4 colorIzq = { 0.3f,0.1f,0.5f,1.0f };
+	AxeY = new RenderItem(shapeIzq, transformIzq, colorAxe);
+	RegisterRenderItem(AxeY);
+	
+	//ESFERA DERECHA
+	PxSphereGeometry _sphereUp(2);
+	PxShape* shapeUp = CreateShape(_sphereUp);
+	Vector3 posUp = Vector3(0.0f, 10.0f, 0.0f);
+	PxTransform* transformUp = new PxTransform(posUp);
+	//Vector4 colorUp = { 0.3f,0.1f,0.5f,1.0f };
+	AxeZ = new RenderItem(shapeUp, transformUp, colorAxe);
+	RegisterRenderItem(AxeZ);
+
+	//PARTICULA
+	Vector3 posParticle = Vector3(0.0f, 0.0f, 0.0f);
+	Vector3 velParticle = Vector3(10.0f, 20.0f, 0.0f);
+	float massParticle = 1.0f;
+	float timeOfLifeParticle = 10.0f;
+	particle = new Particula(velParticle,posParticle,massParticle,timeOfLifeParticle);
+
 	}
 
 
@@ -84,6 +128,9 @@ void stepPhysics(bool interactive, double t)
 
 	gScene->simulate(t);
 	gScene->fetchResults(true);
+	particle->integrate(t,dumping,0.0f,-9.8f,0.0f);
+	particle->setTimeOfLife(particle->getTimeOfLife() - t);
+	if (particle->getTimeOfLife() < 0) particle->~Particula();
 }
 
 // Function to clean data
@@ -100,7 +147,11 @@ void cleanupPhysics(bool interactive)
 	PxPvdTransport* transport = gPvd->getTransport();
 	gPvd->release();
 	transport->release();
-	DeregisterRenderItem(gItem);
+	DeregisterRenderItem(AxeCenter);
+	DeregisterRenderItem(AxeX);
+	DeregisterRenderItem(AxeY);
+	DeregisterRenderItem(AxeZ);
+	particle->~Particula();
 	gFoundation->release();
 	}
 
@@ -115,6 +166,14 @@ void keyPress(unsigned char key, const PxTransform& camera)
 	//case ' ':	break;
 	case ' ':
 	{
+		break;
+	}
+	case 'p': {
+		Camera* cam = GetCamera();
+		Vector3 pos = cam->getEye();
+		pos = cam->getDir();
+		//particle->setPos(pos);
+		//myScene.CreateScene(PARTICLES);
 		break;
 	}
 	default:
