@@ -19,6 +19,14 @@ public:
 	void setPos(Vector3 pos) { _pos->p = pos; }
 	void setVel(Vector3 vel) { _vel = vel; }
 	void setAcc(Vector3 acc) { _acc = acc; }
+	void setColor(Vector4 color) { 
+		_color = color; 
+		if (_renderItem) _renderItem->color = color;
+	}
+
+	RenderItem* getRenderItem() { return _renderItem; }
+	PxTransform* getPos() { return _pos; }
+	Vector4 getColor() { return _color; }
 private:
 	Vector3 _vel;
 	Vector3 _acc;
@@ -26,7 +34,8 @@ private:
 	Vector4 _color;
 	float _mass;
 	PxTransform* _pos;
-	RenderItem* _renderItem;
 	float _timeOfLife;
+protected:
+	RenderItem* _renderItem;
 };
 

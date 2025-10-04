@@ -21,6 +21,7 @@ Particula::Particula(Vector3 vel, Vector3 pos, Vector3 acc, float mass, Vector4 
 	_renderItem = new RenderItem(shapeParticle,_pos,_color);
 	//REGISTER
 	RegisterRenderItem(_renderItem);
+	//_renderItem = nullptr;
 }
 
 Particula::~Particula()
