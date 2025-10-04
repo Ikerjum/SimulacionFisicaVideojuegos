@@ -36,10 +36,84 @@ RenderItem* AxeCenter = nullptr;
 RenderItem* AxeX = nullptr;
 RenderItem* AxeY = nullptr;
 RenderItem* AxeZ = nullptr;
-Particula* particle = nullptr;
 double dumping = 0.99;
 std::vector<Particula*> particulas(10);
 
+void CreateAxes()
+{
+	//AXES
+	Vector4 colorAxe = { 0.0f,0.0f,0.0f,1.0f };
+
+	// ESFERA CENTRAL
+	PxSphereGeometry _sphereCenter(2);
+	//_sphere.radius = 0.5f;
+	//PxMaterial* _sphereMaterial = gPhysics->createMaterial(1.0f, 1.0f, 1.0f);
+	PxShape* shapeCenter = CreateShape(_sphereCenter);
+	//PxVec3 pos = PxVec3(0.0f, 0.0f, 0.0f);
+	Vector3 posCenter = Vector3(0.0f, 0.0f, 0.0f);
+	//PxQuat rot = PxQuat(0.0f, 0.0f, 0.0f, 0.0f);
+	PxTransform* transformCenter = new PxTransform(posCenter);
+	//transform->p = pos;
+	//transform->q = rot;
+	AxeCenter = new RenderItem(shapeCenter, transformCenter, colorAxe);
+	RegisterRenderItem(AxeCenter);
+
+	//ESFERA DERECHA
+	PxSphereGeometry _sphereDch(2);
+	PxShape* shapeDch = CreateShape(_sphereDch);
+	Vector3 posDch = Vector3(10.0f, 0.0f, 0.0f);
+	PxTransform* transformDch = new PxTransform(posDch);
+	//Vector4 colorDch = { 0.3f,0.1f,0.5f,1.0f };
+	AxeX = new RenderItem(shapeDch, transformDch, colorAxe);
+	RegisterRenderItem(AxeX);
+
+	//ESFERA IZQUIERDA
+	PxSphereGeometry _sphereIzq(2);
+	PxShape* shapeIzq = CreateShape(_sphereIzq);
+	Vector3 posIzq = Vector3(0.0f, 0.0f, 10.0f);
+	PxTransform* transformIzq = new PxTransform(posIzq);
+	//Vector4 colorIzq = { 0.3f,0.1f,0.5f,1.0f };
+	AxeY = new RenderItem(shapeIzq, transformIzq, colorAxe);
+	RegisterRenderItem(AxeY);
+
+	//ESFERA DERECHA
+	PxSphereGeometry _sphereUp(2);
+	PxShape* shapeUp = CreateShape(_sphereUp);
+	Vector3 posUp = Vector3(0.0f, 10.0f, 0.0f);
+	PxTransform* transformUp = new PxTransform(posUp);
+	//Vector4 colorUp = { 0.3f,0.1f,0.5f,1.0f };
+	AxeZ = new RenderItem(shapeUp, transformUp, colorAxe);
+	RegisterRenderItem(AxeZ);
+}
+
+void CreateParticle()
+{
+	//PARTICULA
+	Vector3 posParticle = Vector3(0.0f, 0.0f, 0.0f);
+	Vector3 velParticle = Vector3(10.0f, 90.0f, 0.0f);
+	Vector3 accParticle = Vector3(0.0f, -9.8f, 0.0f);
+	Vector4 color = Vector4(0.0f, 0.0f, 0.0f, 0.0f);
+	float massParticle = 1.0f;
+	float timeOfLifeParticle = 10.0f;
+	particulas[0] = new Particula(velParticle,posParticle,accParticle,massParticle,color,timeOfLifeParticle);
+}
+
+void CreateParticles() {
+	for (int i = 0; i < 3; ++i) {
+		//PARTICULA
+		Vector3 posParticle = Vector3(0.0f, 0.0f, 0.0f);
+		Vector3 velParticle = Vector3(-165.0f, 0.0f, 0.0f);
+		Vector3 accParticle = Vector3(0.0f, -9.8f, 0.0f);
+		Vector4 color1 = Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+		Vector4 color2 = Vector4(0.0f, 1.0f, 0.0f, 1.0f);
+		Vector4 color3 = Vector4(0.0f, 0.0f, 1.0f, 1.0f);
+		float massParticle = 1.0f;
+		float timeOfLifeParticle = 10.0f;
+		particulas[0] = new Particula(velParticle, posParticle, accParticle, massParticle ,color1 ,timeOfLifeParticle);
+		particulas[1] = new Particula(velParticle, posParticle, accParticle, massParticle ,color2 ,timeOfLifeParticle);
+		particulas[2] = new Particula(velParticle, posParticle, accParticle, massParticle ,color3 ,timeOfLifeParticle);
+	}
+}
 
 // Initialize physics engine
 void initPhysics(bool interactive)
@@ -58,66 +132,17 @@ void initPhysics(bool interactive)
 
 	// For Solid Rigids +++++++++++++++++++++++++++++++++++++
 	PxSceneDesc sceneDesc(gPhysics->getTolerancesScale());
-	sceneDesc.gravity = PxVec3(0.0f, -9.8f, 0.0f);
+	sceneDesc.gravity = PxVec3(0.0f, 0.0f, 0.0f);
 	gDispatcher = PxDefaultCpuDispatcherCreate(2);
 	sceneDesc.cpuDispatcher = gDispatcher;
 	sceneDesc.filterShader = contactReportFilterShader;
 	sceneDesc.simulationEventCallback = &gContactReportCallback;
 	gScene = gPhysics->createScene(sceneDesc);
 
-	//AXES
-	Vector4 colorAxe = { 0.0f,0.0f,0.0f,1.0f };
-
-	// ESFERA CENTRAL
-	PxSphereGeometry _sphereCenter(2);
-	//_sphere.radius = 0.5f;
-	//PxMaterial* _sphereMaterial = gPhysics->createMaterial(1.0f, 1.0f, 1.0f);
-	PxShape* shapeCenter = CreateShape(_sphereCenter);
-	//PxVec3 pos = PxVec3(0.0f, 0.0f, 0.0f);
-	Vector3 posCenter = Vector3(0.0f, 0.0f, 0.0f);
-	//PxQuat rot = PxQuat(0.0f, 0.0f, 0.0f, 0.0f);
-	PxTransform* transformCenter = new PxTransform(posCenter);
-	//transform->p = pos;
-	//transform->q = rot;
-	AxeCenter = new RenderItem(shapeCenter, transformCenter, colorAxe);
-	RegisterRenderItem(AxeCenter);
-	
-	//ESFERA DERECHA
-	PxSphereGeometry _sphereDch(2);
-	PxShape* shapeDch = CreateShape(_sphereDch);
-	Vector3 posDch = Vector3(10.0f, 0.0f, 0.0f);
-	PxTransform* transformDch = new PxTransform(posDch);
-	//Vector4 colorDch = { 0.3f,0.1f,0.5f,1.0f };
-	AxeX = new RenderItem(shapeDch, transformDch, colorAxe);
-	RegisterRenderItem(AxeX);
-	
-	//ESFERA IZQUIERDA
-	PxSphereGeometry _sphereIzq(2);
-	PxShape* shapeIzq = CreateShape(_sphereIzq);
-	Vector3 posIzq = Vector3(0.0f, 0.0f, 10.0f);
-	PxTransform* transformIzq = new PxTransform(posIzq);
-	//Vector4 colorIzq = { 0.3f,0.1f,0.5f,1.0f };
-	AxeY = new RenderItem(shapeIzq, transformIzq, colorAxe);
-	RegisterRenderItem(AxeY);
-	
-	//ESFERA DERECHA
-	PxSphereGeometry _sphereUp(2);
-	PxShape* shapeUp = CreateShape(_sphereUp);
-	Vector3 posUp = Vector3(0.0f, 10.0f, 0.0f);
-	PxTransform* transformUp = new PxTransform(posUp);
-	//Vector4 colorUp = { 0.3f,0.1f,0.5f,1.0f };
-	AxeZ = new RenderItem(shapeUp, transformUp, colorAxe);
-	RegisterRenderItem(AxeZ);
-
-	//PARTICULA
-	Vector3 posParticle = Vector3(0.0f, 0.0f, 0.0f);
-	Vector3 velParticle = Vector3(10.0f, 20.0f, 0.0f);
-	float massParticle = 1.0f;
-	float timeOfLifeParticle = 10.0f;
-	particle = new Particula(velParticle,posParticle,massParticle,timeOfLifeParticle);
+	CreateAxes();
+	//CreateParticles();
 
 	}
-
 
 // Function to configure what happens in each step of physics
 // interactive: true if the game is rendering, false if it offline
@@ -128,9 +153,15 @@ void stepPhysics(bool interactive, double t)
 
 	gScene->simulate(t);
 	gScene->fetchResults(true);
-	particle->integrate(t,dumping,0.0f,-9.8f,0.0f);
-	particle->setTimeOfLife(particle->getTimeOfLife() - t);
-	if (particle->getTimeOfLife() < 0) particle->~Particula();
+	//particulas[0]->integrate_EulerExplicit(t, dumping);
+	//particulas[1]->integrate_EulerSemiImplicit(t, dumping);
+	for (int i = 0; i < particulas.size(); ++i) {
+		if (particulas[i] != nullptr) {
+			particulas[i]->integrate_EulerSemiImplicit(t, dumping);
+			particulas[i]->incrementTimeOfLife(t);
+		}
+	}
+	//particle->setTimeOfLife(particle->getTimeOfLife() - t);
 }
 
 // Function to clean data
@@ -151,7 +182,11 @@ void cleanupPhysics(bool interactive)
 	DeregisterRenderItem(AxeX);
 	DeregisterRenderItem(AxeY);
 	DeregisterRenderItem(AxeZ);
-	particle->~Particula();
+	for (int i = 0; i < particulas.size(); ++i) {
+		if (particulas[i] != nullptr) {
+			particulas[i]->~Particula();
+		}
+	}
 	gFoundation->release();
 	}
 
@@ -160,24 +195,49 @@ void keyPress(unsigned char key, const PxTransform& camera)
 {
 	PX_UNUSED(camera);
 
+	Camera* cam = GetCamera();
+	Vector3 posCam = cam->getEye();
+	Vector3 dirCam = cam->getDir();
+
+	Vector3 velParticle = Vector3(dirCam.x * 70.0f, dirCam.y * 70.0f, dirCam.z * 70.0f);
+	Vector3 accParticle = Vector3(0.0f, -9.8f, 0.0f);
+	Vector4 color = Vector4(1.0f, 1.0f, 0.0f, 1.0f);
+	float massParticle = 1.0f;
+	float timeOfLifeParticle = 10.0f;
+
+	bool rePosBullet = true;
+
+	std::cout << "A" << std::endl;
+
 	switch(toupper(key))
 	{
 	//case 'B': break;
 	//case ' ':	break;
-	case ' ':
-	{
-		break;
-	}
-	case 'p': {
-		Camera* cam = GetCamera();
-		Vector3 pos = cam->getEye();
-		pos = cam->getDir();
-		//particle->setPos(pos);
-		//myScene.CreateScene(PARTICLES);
-		break;
-	}
-	default:
-		break;
+		case 'P':
+
+			for (int i = 0; i < particulas.size(); ++i) {
+				if (particulas[i] == nullptr) {
+					particulas[i] = new Particula(velParticle,posCam, accParticle, massParticle, color, timeOfLifeParticle);
+					rePosBullet = false;
+					break;
+				}
+			}
+
+			if (rePosBullet) {
+				int indexMaxTimeAlive = 0;
+				for (int i = 0; i < particulas.size(); ++i) {
+					if (particulas[i]->getTimeOfLife() > indexMaxTimeAlive)	indexMaxTimeAlive = i;
+				}
+				particulas[indexMaxTimeAlive]->setPos(posCam);
+				particulas[indexMaxTimeAlive]->setVel(velParticle);
+				particulas[indexMaxTimeAlive]->setAcc(accParticle);
+				particulas[indexMaxTimeAlive]->setTimeOfLife(0);
+			}
+			
+			break;
+
+		default:
+			break;
 	}
 }
 

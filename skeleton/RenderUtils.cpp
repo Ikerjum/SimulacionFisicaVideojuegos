@@ -9,6 +9,8 @@
 using namespace physx;
 
 extern void initPhysics(bool interactive);
+void CreateParticle();
+void CreateAxes();
 extern void stepPhysics(bool interactive, double t);	
 extern void cleanupPhysics(bool interactive);
 extern void keyPress(unsigned char key, const PxTransform& camera);
