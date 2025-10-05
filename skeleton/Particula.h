@@ -7,7 +7,7 @@ using namespace physx;
 class Particula
 {
 public:
-	Particula(Vector3 vel, Vector3 pos, Vector3 acc,float mass, Vector4 color,float timeOfLife);
+	Particula(Vector3 vel, Vector3 pos, Vector3 acc,float mass, Vector4 color);
 	~Particula();
 	void integrate_EulerExplicit(double t, double damping);
 	void integrate_EulerSemiImplicit(double t, double damping);

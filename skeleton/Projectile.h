@@ -16,7 +16,7 @@ private:
 	double _damping;
 	Vector3 _initialPos;
 public:
-	Projectile(Vector3 initialPos,Vector3 initialDir, ProjectileType projectileType, IntegratorType integratortype, float timeOfLife);
+	Projectile(Vector3 initialPos,Vector3 initialDir, ProjectileType projectileType, IntegratorType integratortype);
 	void update(double t);
 	void resetPhysics(Vector3 initialPos, Vector3 initialVel, ProjectileType projectileType, IntegratorType integratortype);
 };

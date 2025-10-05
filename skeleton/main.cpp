@@ -97,7 +97,7 @@ void CreateParticle()
 	Vector4 color = Vector4(0.0f, 0.0f, 0.0f, 0.0f);
 	float massParticle = 1.0f;
 	float timeOfLifeParticle = 10.0f;
-	particulas[0] = new Particula(velParticle,posParticle,accParticle,massParticle,color,timeOfLifeParticle);
+	particulas[0] = new Particula(velParticle,posParticle,accParticle,massParticle,color);
 }
 
 void CreateParticles() {
@@ -111,9 +111,9 @@ void CreateParticles() {
 		Vector4 color3 = Vector4(0.0f, 0.0f, 1.0f, 1.0f);
 		float massParticle = 1.0f;
 		float timeOfLifeParticle = 10.0f;
-		particulas[0] = new Particula(velParticle, posParticle, accParticle, massParticle ,color1 ,timeOfLifeParticle);
-		particulas[1] = new Particula(velParticle, posParticle, accParticle, massParticle ,color2 ,timeOfLifeParticle);
-		particulas[2] = new Particula(velParticle, posParticle, accParticle, massParticle ,color3 ,timeOfLifeParticle);
+		particulas[0] = new Particula(velParticle, posParticle, accParticle, massParticle ,color1 );
+		particulas[1] = new Particula(velParticle, posParticle, accParticle, massParticle ,color2 );
+		particulas[2] = new Particula(velParticle, posParticle, accParticle, massParticle ,color3 );
 	}
 }
 
@@ -158,18 +158,18 @@ void stepPhysics(bool interactive, double t)
 	//particulas[0]->integrate_EulerExplicit(t, dumping);
 	//particulas[1]->integrate_EulerSemiImplicit(t, dumping);
 	
-	for (int i = 0; i < particulas.size(); ++i) {
-		if (particulas[i] != nullptr) {
-			particulas[i]->integrate_EulerSemiImplicit(t, dumping);
-			particulas[i]->incrementTimeOfLife(t);
-		}
-	}
-
-	//for (int i = 0; i < proyectiles.size(); ++i) {
-	//	if (proyectiles[i] != nullptr) {
-	//		proyectiles[i]->update(t);
+	//for (int i = 0; i < particulas.size(); ++i) {
+	//	if (particulas[i] != nullptr) {
+	//		particulas[i]->integrate_EulerSemiImplicit(t, dumping);
+	//		particulas[i]->incrementTimeOfLife(t);
 	//	}
 	//}
+
+	for (int i = 0; i < proyectiles.size(); ++i) {
+		if (proyectiles[i] != nullptr) {
+			proyectiles[i]->update(t);
+		}
+	}
 }
 
 // Function to clean data
@@ -191,19 +191,19 @@ void cleanupPhysics(bool interactive)
 	DeregisterRenderItem(AxeY);
 	DeregisterRenderItem(AxeZ);
 	
-	for (int i = 0; i < particulas.size(); ++i) {
-		if (particulas[i] != nullptr) {
-			delete proyectiles[i]; //Llamara a la destructora de particula
-			proyectiles[i] = nullptr;
-		}
-	}
-
-	//for (int i = 0; i < proyectiles.size(); ++i) {
-	//	if (proyectiles[i] != nullptr) {
+	//for (int i = 0; i < particulas.size(); ++i) {
+	//	if (particulas[i] != nullptr) {
 	//		delete proyectiles[i]; //Llamara a la destructora de particula
 	//		proyectiles[i] = nullptr;
 	//	}
 	//}
+
+	for (int i = 0; i < proyectiles.size(); ++i) {
+		if (proyectiles[i] != nullptr) {
+			delete proyectiles[i]; //Llamara a la destructora de particula
+			proyectiles[i] = nullptr;
+		}
+	}
 
 	gFoundation->release();
 	}
@@ -225,36 +225,15 @@ void keyPress(unsigned char key, const PxTransform& camera)
 
 	bool rePosBullet = true;
 
-	std::cout << "A" << std::endl;
-
 	switch(toupper(key))
 	{
 	//case 'B': break;
 	//case ' ':	break;
-		case 'P':
-
-			for (int i = 0; i < particulas.size(); ++i) {
-				if (particulas[i] == nullptr) {
-					particulas[i] = new Particula(velParticle,posCam, accParticle, massParticle, color, timeOfLifeParticle);
-					rePosBullet = false;
-					break;
-				}
-			}
-			
-			if (rePosBullet) {
-				int indexMaxTimeAlive = 0;
-				for (int i = 0; i < particulas.size(); ++i) {
-						if (particulas[i]->getTimeOfLife() > particulas[indexMaxTimeAlive]->getTimeOfLife()) indexMaxTimeAlive = i;
-				}
-				particulas[indexMaxTimeAlive]->setPos(posCam);
-				particulas[indexMaxTimeAlive]->setVel(velParticle);
-				particulas[indexMaxTimeAlive]->setAcc(accParticle);
-				particulas[indexMaxTimeAlive]->setTimeOfLife(0);
-			}
-
-			//for (int i = 0; i < proyectiles.size(); ++i) {
-			//	if (proyectiles[i] == nullptr) {
-			//		proyectiles[i] = new Projectile(posCam,dirCam,Projectile::ProjectileType::PISTOL,Projectile::IntegratorType::VERLET, timeOfLifeParticle);
+		//CANNON_BULLET
+		case 'C':
+			//for (int i = 0; i < particulas.size(); ++i) {
+			//	if (particulas[i] == nullptr) {
+			//		particulas[i] = new Particula(velParticle,posCam, accParticle, massParticle, color, timeOfLifeParticle);
 			//		rePosBullet = false;
 			//		break;
 			//	}
@@ -262,18 +241,88 @@ void keyPress(unsigned char key, const PxTransform& camera)
 			//
 			//if (rePosBullet) {
 			//	int indexMaxTimeAlive = 0;
-			//	for (int i = 0; i < proyectiles.size(); ++i) {
-			//		if (proyectiles[i]->getTimeOfLife() > proyectiles[indexMaxTimeAlive]->getTimeOfLife()) indexMaxTimeAlive = i;
+			//	for (int i = 0; i < particulas.size(); ++i) {
+			//			if (particulas[i]->getTimeOfLife() > particulas[indexMaxTimeAlive]->getTimeOfLife()) indexMaxTimeAlive = i;
 			//	}
-			//	proyectiles[indexMaxTimeAlive]->resetPhysics(posCam,dirCam,Projectile::ProjectileType::PISTOL, Projectile::IntegratorType::VERLET);
-			//	//proyectiles[indexMaxTimeAlive]->setPos(posCam);
-			//	//proyectiles[indexMaxTimeAlive]->setVel(velParticle);
-			//	//proyectiles[indexMaxTimeAlive]->setAcc(accParticle);
-			//	//proyectiles[indexMaxTimeAlive]->setTimeOfLife(0);
+			//	particulas[indexMaxTimeAlive]->setPos(posCam);
+			//	particulas[indexMaxTimeAlive]->setVel(velParticle);
+			//	particulas[indexMaxTimeAlive]->setAcc(accParticle);
+			//	particulas[indexMaxTimeAlive]->setTimeOfLife(0);
 			//}
-			
+			for (int i = 0; i < proyectiles.size(); ++i) {
+				if (proyectiles[i] == nullptr) {
+					proyectiles[i] = new Projectile(posCam,dirCam,Projectile::ProjectileType::CANNON_BULLET,Projectile::IntegratorType::EULER_SEMIEXPLICIT);
+					rePosBullet = false;
+					break;
+				}
+			}
+			if (rePosBullet) {
+				int indexMaxTimeAlive = 0;
+				for (int i = 0; i < proyectiles.size(); ++i) {
+					if (proyectiles[i]->getTimeOfLife() > proyectiles[indexMaxTimeAlive]->getTimeOfLife()) {
+						indexMaxTimeAlive = i;
+					}
+				}
+				proyectiles[indexMaxTimeAlive]->resetPhysics(posCam,dirCam,Projectile::ProjectileType::CANNON_BULLET, Projectile::IntegratorType::EULER_SEMIEXPLICIT);
+			}
 			break;
-
+		//TANK_BULLET
+		case 'T':
+			for (int i = 0; i < proyectiles.size(); ++i) {
+				if (proyectiles[i] == nullptr) {
+					proyectiles[i] = new Projectile(posCam, dirCam, Projectile::ProjectileType::TANK_BULLET, Projectile::IntegratorType::EULER_SEMIEXPLICIT);
+					rePosBullet = false;
+					break;
+				}
+			}
+			if (rePosBullet) {
+				int indexMaxTimeAlive = 0;
+				for (int i = 0; i < proyectiles.size(); ++i) {
+					if (proyectiles[i]->getTimeOfLife() > proyectiles[indexMaxTimeAlive]->getTimeOfLife()) {
+						indexMaxTimeAlive = i;
+					}
+				}
+				proyectiles[indexMaxTimeAlive]->resetPhysics(posCam, dirCam, Projectile::ProjectileType::TANK_BULLET, Projectile::IntegratorType::EULER_SEMIEXPLICIT);
+			}
+			break;
+		//PISTOL
+		case 'P':
+			for (int i = 0; i < proyectiles.size(); ++i) {
+				if (proyectiles[i] == nullptr) {
+					proyectiles[i] = new Projectile(posCam, dirCam, Projectile::ProjectileType::PISTOL, Projectile::IntegratorType::EULER_SEMIEXPLICIT);
+					rePosBullet = false;
+					break;
+				}
+			}
+			if (rePosBullet) {
+				int indexMaxTimeAlive = 0;
+				for (int i = 0; i < proyectiles.size(); ++i) {
+					if (proyectiles[i]->getTimeOfLife() > proyectiles[indexMaxTimeAlive]->getTimeOfLife()) {
+						indexMaxTimeAlive = i;
+					}
+				}
+				proyectiles[indexMaxTimeAlive]->resetPhysics(posCam, dirCam, Projectile::ProjectileType::PISTOL, Projectile::IntegratorType::EULER_SEMIEXPLICIT);
+			}
+			break;
+		//LASER_PISTOL
+		case 'L':
+			for (int i = 0; i < proyectiles.size(); ++i) {
+				if (proyectiles[i] == nullptr) {
+					proyectiles[i] = new Projectile(posCam, dirCam, Projectile::ProjectileType::LASER_PISTOL, Projectile::IntegratorType::EULER_SEMIEXPLICIT);
+					rePosBullet = false;
+					break;
+				}
+			}
+			if (rePosBullet) {
+				int indexMaxTimeAlive = 0;
+				for (int i = 0; i < proyectiles.size(); ++i) {
+					if (proyectiles[i]->getTimeOfLife() > proyectiles[indexMaxTimeAlive]->getTimeOfLife()) {
+						indexMaxTimeAlive = i;
+					}
+				}
+				proyectiles[indexMaxTimeAlive]->resetPhysics(posCam, dirCam, Projectile::ProjectileType::LASER_PISTOL, Projectile::IntegratorType::EULER_SEMIEXPLICIT);
+			}
+			break;
 		default:
 			break;
 	}

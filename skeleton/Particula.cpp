@@ -4,7 +4,7 @@
 
 using namespace physx;
 
-Particula::Particula(Vector3 vel, Vector3 pos, Vector3 acc, float mass, Vector4 color, float timeOfLife)
+Particula::Particula(Vector3 vel, Vector3 pos, Vector3 acc, float mass, Vector4 color)
 {
 	//CREATIONOFGEOMETRY
 	PxSphereGeometry _sphereParticle(2);
@@ -16,7 +16,7 @@ Particula::Particula(Vector3 vel, Vector3 pos, Vector3 acc, float mass, Vector4 
 	_acc = acc;
 	_mass = mass;
 	_color = color;
-	_timeOfLife = timeOfLife;
+	_timeOfLife = 0;
 	//RENDERITEM
 	_renderItem = new RenderItem(shapeParticle,_pos,_color);
 	//REGISTER

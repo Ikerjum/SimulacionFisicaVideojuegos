@@ -1,11 +1,12 @@
 #include "Projectile.h"
 #include "Particula.h"
 
-Projectile::Projectile(Vector3 initialPos,Vector3 initialDir, ProjectileType projectileType, IntegratorType integratortype, float timeOfLife) :
-	Particula(initialPos, initialDir, Vector3(0.0f, -9.8f, 0.0f), 1.0f,Vector4(0.0f, 0.0f, 0.0f, 1.0f), timeOfLife)
+Projectile::Projectile(Vector3 initialPos,Vector3 initialDir, ProjectileType projectileType, IntegratorType integratortype) :
+	Particula(initialDir, initialPos, Vector3(0.0f, -9.8f, 0.0f), 1.0f,Vector4(0.0f, 0.0f, 0.0f, 1.0f))
 {
 	_projectileType = projectileType;
 	_integratortype = integratortype;
+	_damping = 0.995;
 
 	setPos(initialPos);
 	
@@ -14,7 +15,7 @@ Projectile::Projectile(Vector3 initialPos,Vector3 initialDir, ProjectileType pro
 	Vector3 accParticle = Vector3(0.0f, -9.8f, 0.0f);
 	setAcc(accParticle);
 
-	Vector3 velParticle = Vector3(initialPos.x, initialPos.y, initialPos.z);
+	Vector3 velParticle = initialDir;
 
 	switch (_projectileType) {
 	case CANNON_BULLET:
@@ -31,7 +32,7 @@ Projectile::Projectile(Vector3 initialPos,Vector3 initialDir, ProjectileType pro
 		break;
 	case LASER_PISTOL:
 		setVel(velParticle * 10000.f);
-		setColor(Vector4(0.0f, 0.0f, 0.0f, 1.0f));
+		setColor(Vector4(1.0f, 1.0f, 1.0f, 1.0f));
 		break;
 	}
 
@@ -57,18 +58,21 @@ void Projectile::update(double t)
 	incrementTimeOfLife(t);
 }
 
-void Projectile::resetPhysics(Vector3 initialPos,Vector3 initialVel, ProjectileType projectileType, IntegratorType integratortype)
+void Projectile::resetPhysics(Vector3 initialPos,Vector3 initialDir, ProjectileType projectileType, IntegratorType integratortype)
 {
 	_projectileType = projectileType;
 	_integratortype = integratortype;
+	_damping = 0.995;
+
 
 	setPos(initialPos);
-	setVel(initialVel);
+
+	initialDir.normalize();
 
 	Vector3 accParticle = Vector3(0.0f, -9.8f, 0.0f);
 	setAcc(accParticle);
 
-	Vector3 velParticle = Vector3(initialPos.x, initialPos.y, initialPos.z);
+	Vector3 velParticle = initialDir;
 
 	switch (_projectileType) {
 	case CANNON_BULLET:
@@ -85,7 +89,9 @@ void Projectile::resetPhysics(Vector3 initialPos,Vector3 initialVel, ProjectileT
 		break;
 	case LASER_PISTOL:
 		setVel(velParticle * 10000.f);
-		setColor(Vector4(0.0f, 0.0f, 0.0f, 1.0f));
+		setColor(Vector4(1.0f, 1.0f, 1.0f, 1.0f));
 		break;
 	}
+
+	setTimeOfLife(0.0f);
 }
