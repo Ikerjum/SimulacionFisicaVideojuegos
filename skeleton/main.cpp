@@ -3,6 +3,8 @@
 #include <PxPhysicsAPI.h>
 
 #include <vector>
+#include <chrono>
+#include <thread>
 
 #include "core.hpp"
 #include "RenderUtils.hpp"
@@ -12,6 +14,7 @@
 #include "Vector3D.h"
 #include "Particula.h"
 #include "Projectile.h"
+#include "GeneradorP.h"
 
 std::string display_text = "This is a test";
 
@@ -40,6 +43,7 @@ RenderItem* AxeZ = nullptr;
 double dumping = 0.99;
 std::vector<Particula*> particulas(10);
 std::vector<Projectile*> proyectiles(10);
+GeneradorP* generador;
 
 void CreateAxes()
 {
@@ -170,6 +174,8 @@ void stepPhysics(bool interactive, double t)
 			proyectiles[i]->update(t);
 		}
 	}
+
+	std::this_thread::sleep_for(std::chrono::microseconds(10));
 }
 
 // Function to clean data
@@ -251,7 +257,7 @@ void keyPress(unsigned char key, const PxTransform& camera)
 			//}
 			for (int i = 0; i < proyectiles.size(); ++i) {
 				if (proyectiles[i] == nullptr) {
-					proyectiles[i] = new Projectile(posCam,dirCam,Projectile::ProjectileType::CANNON_BULLET,Projectile::IntegratorType::EULER_SEMIEXPLICIT);
+					proyectiles[i] = new Projectile(posCam,dirCam,Projectile::ProjectileType::CANNON_BULLET,Projectile::IntegratorType::VERLET);
 					rePosBullet = false;
 					break;
 				}
@@ -263,7 +269,7 @@ void keyPress(unsigned char key, const PxTransform& camera)
 						indexMaxTimeAlive = i;
 					}
 				}
-				proyectiles[indexMaxTimeAlive]->resetPhysics(posCam,dirCam,Projectile::ProjectileType::CANNON_BULLET, Projectile::IntegratorType::EULER_SEMIEXPLICIT);
+				proyectiles[indexMaxTimeAlive]->resetPhysics(posCam,dirCam,Projectile::ProjectileType::CANNON_BULLET, Projectile::IntegratorType::VERLET);
 			}
 			break;
 		//TANK_BULLET

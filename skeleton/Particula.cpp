@@ -4,6 +4,10 @@
 
 using namespace physx;
 
+Particula::Particula() : _vel(Vector3(0,0,0)), _pos(Vector3(0,0,0)), _acc(Vector3(0,0,0)), _mass(1.0f), _color(Vector4(0, 0, 0, 0))
+{
+}
+
 Particula::Particula(Vector3 vel, Vector3 pos, Vector3 acc, float mass, Vector4 color)
 {
 	//CREATIONOFGEOMETRY
@@ -11,14 +15,14 @@ Particula::Particula(Vector3 vel, Vector3 pos, Vector3 acc, float mass, Vector4 
 	PxShape* shapeParticle = CreateShape(_sphereParticle);
 	//TRANSFORM
 	_vel = vel;
-	_pos = new PxTransform(pos);
-	_oldPos = pos - vel * 0.016; //1/60 fps
+	_pos = PxTransform(pos);
+	_oldPos = pos - vel; 
 	_acc = acc;
 	_mass = mass;
 	_color = color;
 	_timeOfLife = 0;
 	//RENDERITEM
-	_renderItem = new RenderItem(shapeParticle,_pos,_color);
+	_renderItem = new RenderItem(shapeParticle,&_pos,_color);
 	//REGISTER
 	RegisterRenderItem(_renderItem);
 	//_renderItem = nullptr;
@@ -27,7 +31,6 @@ Particula::Particula(Vector3 vel, Vector3 pos, Vector3 acc, float mass, Vector4 
 Particula::~Particula()
 {
 	DeregisterRenderItem(_renderItem);
-	delete _pos;
 }
 
 /*
@@ -58,7 +61,7 @@ Particula::~Particula()
 //Actualizamos primero la posicion con la velocidad vieja y luego la velocidad, barato computacionalmente pero inestable y con errores acumulativos
 void Particula::integrate_EulerExplicit(double t, double damping)
 {
-	_pos->p = _pos->p + (_vel * t);
+	_pos.p = _pos.p + (_vel * t);
 	_vel = _vel + (t * _acc);
 	_vel = _vel * pow(damping, t); //Correccion de velocidad con dumping
 }
@@ -68,12 +71,12 @@ void Particula::integrate_EulerSemiImplicit(double t, double damping)
 {
 	_vel = _vel + (t * _acc);
 	_vel = _vel * pow(damping, t); //Correccion de velocidad con dumping
-	_pos->p = _pos->p + (_vel * t);
+	_pos.p = _pos.p + (_vel * t);
 }
 
 void Particula::integrate_Verlet(double t, double damping)
 {
-	Vector3 temp = _pos->p;  // guardar posición actual (será la nueva "anterior")
-	_pos->p = _pos->p + (_pos->p - _oldPos) * pow(damping, t) + _acc * (t * t);
+	Vector3 temp = _pos.p;  // guardar posición actual (será la nueva "anterior")
+	_pos.p = _pos.p + (_pos.p - _oldPos) * pow(damping, t) + _acc * (t * t);
 	_oldPos = temp;  // actualizar la posición anterior
 }
