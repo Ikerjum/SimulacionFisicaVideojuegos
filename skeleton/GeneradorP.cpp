@@ -86,18 +86,27 @@ void GeneradorP::updateParticles(double t)
 			(*it)->integrate_Verlet(t,0.99);
 		}
 
-		list<Particula*>::iterator it = _listaP.begin();
-		bool borrado = false;
 
-		while (it != _listaP.end() && !borrado) {
-			if ((*it)->getTimeOfLife() < 0) {
-				std::cout << "BORRADO" << std::endl;
-				delete (*it);
-				_listaP.erase(it);
-				break;
+		bool borrado = false;
+		list<Particula*>::iterator it = _listaP.begin();
+		
+		//while (it != _listaP.end() && !borrado) {
+		//	if ((*it)->getTimeOfLife() < 0) {
+		//		std::cout << "BORRADO" << std::endl;
+		//		delete (*it);
+		//		_listaP.erase(it);
+		//		break;
+		//	}
+		//	else it++;
+		//}
+
+		_listaP.remove_if([](Particula* p) {  
+			if (p->getTimeOfLife() < 0) {
+			delete p;
+			return true; 
 			}
-			it++;
-		}
+			return false;
+		});
 
 		//for (list<Particula*>::iterator it = _listaP.begin(); it != _listaP.end(); it++) {
 		//	//(*it)->integrate_Verlet(t, 0.99);
