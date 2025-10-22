@@ -40,7 +40,7 @@ RenderItem* AxeCenter = nullptr;
 RenderItem* AxeX = nullptr;
 RenderItem* AxeY = nullptr;
 RenderItem* AxeZ = nullptr;
-double dumping = 0.99;
+
 std::vector<Particula*> particulas(10);
 std::vector<Projectile*> proyectiles(10);
 GeneradorP* generador;
@@ -148,6 +148,11 @@ void initPhysics(bool interactive)
 	CreateAxes();
 	//CreateParticles();
 
+	generador = new GeneradorP();
+	double probGeneration = 100.0;
+	//VEL,POS,DIR
+	generador->GenerateP(Vector3(0,0,0),Vector3(15,0,15),Vector3(0,9.8,0),probGeneration);
+
 	}
 
 // Function to configure what happens in each step of physics
@@ -174,6 +179,8 @@ void stepPhysics(bool interactive, double t)
 			proyectiles[i]->update(t);
 		}
 	}
+
+	generador->updateParticles(t);
 
 	std::this_thread::sleep_for(std::chrono::microseconds(10));
 }
@@ -204,6 +211,13 @@ void cleanupPhysics(bool interactive)
 	//	}
 	//}
 
+	for (Particula* i : generador->getParticles()) {
+		if (i != nullptr) {
+			delete i;
+			i = nullptr;
+		}
+	}
+
 	for (int i = 0; i < proyectiles.size(); ++i) {
 		if (proyectiles[i] != nullptr) {
 			delete proyectiles[i]; //Llamara a la destructora de particula
@@ -233,8 +247,6 @@ void keyPress(unsigned char key, const PxTransform& camera)
 
 	switch(toupper(key))
 	{
-	//case 'B': break;
-	//case ' ':	break;
 		//CANNON_BULLET
 		case 'C':
 			//for (int i = 0; i < particulas.size(); ++i) {

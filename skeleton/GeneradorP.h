@@ -3,7 +3,9 @@
 #include <list>
 #include "core.hpp"
 #include "RenderUtils.hpp"
-#include "Particula.h"
+
+class Particula;
+
 using namespace physx;
 using namespace std;
 
@@ -36,10 +38,11 @@ private:
 public:
 	GeneradorP();
 	~GeneradorP();
-	Particula* CreateModelP(Vector3& pos, Vector3& vel, Vector3& dir, double& probGen);
-	virtual std::list<Particula*> GenerateP(Vector3& pos, Vector3& vel, Vector3& dir, double& probGen);
-	void clonarP();
-
+	Particula* CreateModelP(Vector3& vel, Vector3& pos, Vector3& dir, double& probGen);
+	virtual void GenerateP(Vector3& vel, Vector3& pos, Vector3& dir, double& probGen);
+	Particula* clonarP(Particula* particula);
+	std::list<Particula*> getParticles() const { return _listaP; }
+	void updateParticles(double t);
 	//void imprime();
 };
 

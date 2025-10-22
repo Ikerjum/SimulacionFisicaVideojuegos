@@ -4,6 +4,7 @@
 
 using namespace physx;
 
+
 class Particula
 {
 public:
@@ -22,6 +23,7 @@ public:
 	}
 
 	~Particula();
+	void update();
 	void integrate_EulerExplicit(double t, double damping);
 	void integrate_EulerSemiImplicit(double t, double damping);
 	void integrate_Verlet(double t, double damping);

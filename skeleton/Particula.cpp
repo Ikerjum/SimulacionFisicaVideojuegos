@@ -20,7 +20,7 @@ Particula::Particula(Vector3 vel, Vector3 pos, Vector3 acc, float mass, Vector4 
 	_acc = acc;
 	_mass = mass;
 	_color = color;
-	_timeOfLife = 0;
+	_timeOfLife = 20.f;
 	//RENDERITEM
 	_renderItem = new RenderItem(shapeParticle,&_pos,_color);
 	//REGISTER
@@ -31,6 +31,11 @@ Particula::Particula(Vector3 vel, Vector3 pos, Vector3 acc, float mass, Vector4 
 Particula::~Particula()
 {
 	DeregisterRenderItem(_renderItem);
+}
+
+void
+Particula::update() {
+	_timeOfLife--;
 }
 
 /*
@@ -64,6 +69,8 @@ void Particula::integrate_EulerExplicit(double t, double damping)
 	_pos.p = _pos.p + (_vel * t);
 	_vel = _vel + (t * _acc);
 	_vel = _vel * pow(damping, t); //Correccion de velocidad con dumping
+	
+	update();
 }
 
 //Actualizamos primero la velocidad y se usa la misma velocidad para calcular la posicion
@@ -72,6 +79,8 @@ void Particula::integrate_EulerSemiImplicit(double t, double damping)
 	_vel = _vel + (t * _acc);
 	_vel = _vel * pow(damping, t); //Correccion de velocidad con dumping
 	_pos.p = _pos.p + (_vel * t);
+	
+	update();
 }
 
 void Particula::integrate_Verlet(double t, double damping)
@@ -79,4 +88,6 @@ void Particula::integrate_Verlet(double t, double damping)
 	Vector3 temp = _pos.p;  // guardar posición actual (será la nueva "anterior")
 	_pos.p = _pos.p + (_pos.p - _oldPos) * pow(damping, t) + _acc * (t * t);
 	_oldPos = temp;  // actualizar la posición anterior
+	
+	update();
 }
