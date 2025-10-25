@@ -13,12 +13,12 @@ Particula::Particula(Vector3 vel, Vector3 pos, Vector3 acc, float mass, Vector4 
 {
 	//CREATIONOFGEOMETRY
 	PxSphereGeometry _sphereParticle(tam);
-	PxShape* shapeParticle = CreateShape(_sphereParticle);
+	_shape = CreateShape(_sphereParticle);
 
 	//TRANSFORM
 	_vel = vel;
 	_pos = PxTransform(pos);
-	_oldPos = pos - vel;
+	_oldPos = pos - vel * OLD_POS_CONSTANT;
 	_acc = acc;
 	_mass = mass;
 	_tam = tam;
@@ -26,21 +26,57 @@ Particula::Particula(Vector3 vel, Vector3 pos, Vector3 acc, float mass, Vector4 
 	_timeOfLife = timeOfLife;
 
 	//RENDERITEM
-	_renderItem = new RenderItem(shapeParticle, &_pos, _color);
+	_renderItem = new RenderItem(_shape, &_pos, _color); //REGISTER EN LA CONSTRUCTORA
 
-	//REGISTER
-	RegisterRenderItem(_renderItem);
+}
+
+Particula::Particula(const Particula& other)
+{
+	_vel = other._vel;
+	_pos = other._pos;
+	_oldPos = other._pos.p - other._vel * OLD_POS_CONSTANT;
+	_acc = other._acc;
+	_mass = other._mass;
+	_color = other._color;
+	_tam = other._tam;
+	_timeOfLife = other._timeOfLife;
+	_renderItem = nullptr;
+	_shape = nullptr;
+}
+
+Particula& Particula::operator=(const Particula& other)
+{
+	if (this != &other)
+	{
+		_vel = other._vel;
+		_pos = other._pos;
+		_oldPos = other._pos.p - other._vel * OLD_POS_CONSTANT;
+		_acc = other._acc;
+		_mass = other._mass;
+		_color = other._color;
+		_tam = other._tam;
+		_timeOfLife = other._timeOfLife;
+		_renderItem = nullptr;
+		_shape = nullptr;
+	}
+	return *this;
 }
 
 Particula::~Particula()
 {
-	DeregisterRenderItem(_renderItem);
+	if (_renderItem) {
+		_renderItem->release(); //LLAMA A DEREGISTER-RENDER-ITEM POR SU CUENTA Y HACE EL SHAPE->RELEASE
+		_renderItem = nullptr;
+	}
+	_shape = nullptr; //En el release del renderItem ya se hace release del shape
 }
 
 void
 Particula::update(double t) {
 	_timeOfLife -= (float)t;
-	if (_timeOfLife < 0.0f) _timeOfLife = 0.0f;
+	if (_timeOfLife < 0.0f) {
+		_timeOfLife = 0.0f;
+	}
 }
 
 /*
@@ -69,30 +105,41 @@ Particula::update(double t) {
 */
 
 //Actualizamos primero la posicion con la velocidad vieja y luego la velocidad, barato computacionalmente pero inestable y con errores acumulativos
-void Particula::integrate_EulerExplicit(double t, double damping)
+void Particula::integrate_EulerExplicit(double t)
 {
 	_pos.p = _pos.p + (_vel * t);
 	_vel = _vel + (t * _acc);
-	_vel = _vel * pow(damping, t); //Correccion de velocidad con dumping
+	_vel = _vel * pow(Particula::DAMPING, t); //Correccion de velocidad con dumping
 
 	update(t);
 }
 
 //Actualizamos primero la velocidad y se usa la misma velocidad para calcular la posicion
-void Particula::integrate_EulerSemiImplicit(double t, double damping)
+void Particula::integrate_EulerSemiImplicit(double t)
 {
 	_vel = _vel + (t * _acc);
-	_vel = _vel * pow(damping, t); //Correccion de velocidad con dumping
+	_vel = _vel * pow(Particula::DAMPING, t); //Correccion de velocidad con dumping
 	_pos.p = _pos.p + (_vel * t);
 
 	update(t);
 }
 
-void Particula::integrate_Verlet(double t, double damping)
+void Particula::integrate_Verlet(double t)
 {
 	Vector3 temp = _pos.p;  // guardar posición actual (será la nueva "anterior")
-	_pos.p = _pos.p + (_pos.p - _oldPos) * pow(damping, t) + _acc * (t * t);
+	_pos.p = _pos.p + (_pos.p - _oldPos) * pow(Particula::DAMPING, t) + _acc * (t * t);
 	_oldPos = temp;  // actualizar la posición anterior
 
 	update(t);
+}
+
+Particula* Particula::clone() const
+{
+	Particula* p = new Particula(*this);
+
+	PxSphereGeometry _sphereParticle(p->_tam);
+	p->_shape = CreateShape(_sphereParticle);
+	p->_renderItem = new RenderItem(p->_shape, &p->_pos, p->_color);
+
+	return p;
 }

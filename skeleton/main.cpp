@@ -14,7 +14,7 @@
 #include "Vector3D.h"
 #include "Particula.h"
 #include "Projectile.h"
-#include "GeneradorP.h"
+#include "WaterParticleGenerator.h"
 
 std::string display_text = "This is a test";
 
@@ -43,7 +43,9 @@ RenderItem* AxeZ = nullptr;
 
 std::vector<Particula*> particulas(10);
 std::vector<Projectile*> proyectiles(10);
-GeneradorP* generador;
+
+WaterParticleGenerator* WaterGenerator;
+std::vector<Particula*> GeneratorParticles;
 
 void CreateAxes()
 {
@@ -150,10 +152,20 @@ void initPhysics(bool interactive)
 	CreateAxes();
 	//CreateParticles();
 
-	generador = new GeneradorP();
-	double probGeneration = 100.0;
-	//VEL,POS,DIR
-	generador->GenerateP(Vector3(0,0,0),Vector3(15,0,15),Vector3(0,9.8,0),probGeneration);
+
+	Vector3 velModel = Vector3(0.0f, 8.0f, 0.0f);
+	Vector3 accModel = Vector3(0.0f, -10.0f, 0.0f);
+	Vector4 colorModel = Vector4(0.0f, 0.3f, 1.0f, 1.0f);
+	PxReal tamModel = 0.5f;
+	float timeOfLifeModel = 3.0f;
+	float massModel = 0.1f;
+	Vector3 generatorPos = Vector3(0.0f, 30.0f, 0.0f);
+	Particula* particleModel = new Particula(velModel, generatorPos, accModel, massModel, colorModel, tamModel, timeOfLifeModel);
+
+	// 2. CREA EL GENERADOR con el modelo
+	// Posición del generador (la fuente)
+	WaterGenerator = new WaterParticleGenerator(generatorPos,particleModel,1);
+
 
 	}
 
@@ -166,23 +178,26 @@ void stepPhysics(bool interactive, double t)
 
 	gScene->simulate(t);
 	gScene->fetchResults(true);
-	//particulas[0]->integrate_EulerExplicit(t, dumping);
-	//particulas[1]->integrate_EulerSemiImplicit(t, dumping);
+	//particulas[0]->integrate_EulerExplicit(t);
+	//particulas[1]->integrate_EulerSemiImplicit(t);
 	
 	//for (int i = 0; i < particulas.size(); ++i) {
 	//	if (particulas[i] != nullptr) {
-	//		particulas[i]->integrate_EulerSemiImplicit(t, dumping);
-	//		particulas[i]->incrementTimeOfLife(t);
+	//		particulas[i]->integrate_EulerSemiImplicit(t);
 	//	}
 	//}
-
+	
 	for (int i = 0; i < proyectiles.size(); ++i) {
 		if (proyectiles[i] != nullptr) {
 			proyectiles[i]->update(t);
+			if (proyectiles[i]->getTimeOfLife() <= 0) {
+				delete proyectiles[i];
+				proyectiles[i] = nullptr;
+			}
 		}
 	}
 
-	generador->updateParticles(t);
+	WaterGenerator->update(t);
 
 	std::this_thread::sleep_for(std::chrono::microseconds(10));
 }
@@ -193,32 +208,17 @@ void cleanupPhysics(bool interactive)
 {
 	PX_UNUSED(interactive);
 
-	// Rigid Body ++++++++++++++++++++++++++++++++++++++++++
-	gScene->release();
-	gDispatcher->release();
-	// -----------------------------------------------------
-	gPhysics->release();	
-	PxPvdTransport* transport = gPvd->getTransport();
-	gPvd->release();
-	transport->release();
 	DeregisterRenderItem(AxeCenter);
 	DeregisterRenderItem(AxeX);
 	DeregisterRenderItem(AxeY);
 	DeregisterRenderItem(AxeZ);
-	
+
 	//for (int i = 0; i < particulas.size(); ++i) {
 	//	if (particulas[i] != nullptr) {
 	//		delete proyectiles[i]; //Llamara a la destructora de particula
 	//		proyectiles[i] = nullptr;
 	//	}
 	//}
-
-	for (Particula* i : generador->getParticles()) {
-		if (i != nullptr) {
-			delete i;
-			i = nullptr;
-		}
-	}
 
 	for (int i = 0; i < proyectiles.size(); ++i) {
 		if (proyectiles[i] != nullptr) {
@@ -227,6 +227,18 @@ void cleanupPhysics(bool interactive)
 		}
 	}
 
+	if (WaterGenerator) delete WaterGenerator;
+	WaterGenerator = nullptr;
+
+
+	// Rigid Body ++++++++++++++++++++++++++++++++++++++++++
+	gScene->release();
+	gDispatcher->release();
+	// -----------------------------------------------------
+	gPhysics->release();	
+	PxPvdTransport* transport = gPvd->getTransport();
+	gPvd->release();
+	transport->release();
 	gFoundation->release();
 }
 

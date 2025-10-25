@@ -8,28 +8,20 @@ using namespace physx;
 class Particula
 {
 public:
+    static constexpr double DAMPING = 0.999; //Para el damping global en todas las particulas
+    static constexpr float OLD_POS_CONSTANT = 0.01f; //Para calcular la anterior posicion de verlet
+
     Particula();
     Particula(Vector3 vel, Vector3 pos, Vector3 acc, float mass, Vector4 color, PxReal tam, float timeOfLife);
-
-    Particula* operator=(Particula* copia) {
-        Particula* p;
-        p->_vel = copia->_vel;
-        p->_pos = copia->_pos;
-        p->_oldPos = copia->_oldPos;
-        p->_acc = copia->_acc;
-        p->_mass = copia->_mass;
-        p->_color = copia->_color;
-        p->_tam = copia->_tam;
-        p->_timeOfLife = copia->_timeOfLife;
-        delete copia;
-        return p;
-    }
+    // Constructor de copia de datos simple (opcional, pero útil)
+    Particula(const Particula& other);
+    Particula& operator=(const Particula& other);
 
     ~Particula();
     void update(double t);
-    void integrate_EulerExplicit(double t, double damping);
-    void integrate_EulerSemiImplicit(double t, double damping);
-    void integrate_Verlet(double t, double damping);
+    void integrate_EulerExplicit(double t);
+    void integrate_EulerSemiImplicit(double t);
+    void integrate_Verlet(double t);
 
     void setPos(Vector3 pos) { _pos.p = pos; }
     void setOldPos(Vector3 pos) { _oldPos = pos; }
@@ -53,6 +45,9 @@ public:
     float getTimeOfLife() const { return _timeOfLife; }
 
     RenderItem* getRenderItem() { return _renderItem; }
+
+    Particula* clone() const;
+
 private:
     PxTransform _pos;
     Vector3 _oldPos;
@@ -65,4 +60,5 @@ private:
 
 protected:
     RenderItem* _renderItem;
+    PxShape* _shape;
 };

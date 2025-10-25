@@ -38,7 +38,7 @@ Projectile::Projectile(Vector3 initialPos, Vector3 initialDir, ProjectileType pr
 
 	Vector3 actualVel = getVel();
 	setOldPos(initialPos - actualVel * 0.001f);
-	setTimeOfLife(40.0f);
+	setTimeOfLife(2.0f);
 }
 
 void Projectile::update(double t)
@@ -46,13 +46,13 @@ void Projectile::update(double t)
 	switch (_integratortype)
 	{
 	case EULER_EXPLICIT:
-		integrate_EulerExplicit(t, _damping);
+		integrate_EulerExplicit(t);
 		break;
 	case EULER_SEMIEXPLICIT:
-		integrate_EulerSemiImplicit(t, _damping);
+		integrate_EulerSemiImplicit(t);
 		break;
 	case VERLET:
-		integrate_Verlet(t, _damping);
+		integrate_Verlet(t);
 		break;
 	default:
 		break;
@@ -94,5 +94,5 @@ void Projectile::resetPhysics(Vector3 initialPos, Vector3 initialDir, Projectile
 
 	Vector3 actualVel = getVel();
 	setOldPos(initialPos - actualVel * 0.001f);
-	setTimeOfLife(40.0f);
+	setTimeOfLife(2.0f);
 }
