@@ -1,15 +1,15 @@
 #include "Projectile.h"
 #include "Particula.h"
 
-Projectile::Projectile(Vector3 initialPos,Vector3 initialDir, ProjectileType projectileType, IntegratorType integratortype) :
-	Particula(initialDir, initialPos, Vector3(0.0f, -9.8f, 0.0f), 1.0f,Vector4(0.0f, 0.0f, 0.0f, 1.0f))
+Projectile::Projectile(Vector3 initialPos, Vector3 initialDir, ProjectileType projectileType, IntegratorType integratortype) :
+	Particula(initialDir, initialPos, Vector3(0.0f, -9.8f, 0.0f), 1.0f, Vector4(0.0f, 0.0f, 0.0f, 1.0f), 2.0f, 40.0f)
 {
 	_projectileType = projectileType;
 	_integratortype = integratortype;
 	_damping = 0.995;
 
 	setPos(initialPos);
-	
+
 	initialDir.normalize();
 
 	Vector3 accParticle = Vector3(0.0f, -9.8f, 0.0f);
@@ -19,23 +19,26 @@ Projectile::Projectile(Vector3 initialPos,Vector3 initialDir, ProjectileType pro
 
 	switch (_projectileType) {
 	case CANNON_BULLET:
-		setVel(velParticle * 250.f);
-		setColor(Vector4(1.0f,0.0f,0.0f,1.0f));
+		setVel(velParticle * 500.f);
+		setColor(Vector4(1.0f, 0.0f, 0.0f, 1.0f));
 		break;
 	case TANK_BULLET:
-		setVel(velParticle * 1800.f);
+		setVel(velParticle * 3600.f);
 		setColor(Vector4(0.0f, 1.0f, 0.0f, 1.0f));
 		break;
 	case PISTOL:
-		setVel(velParticle * 330.f);
+		setVel(velParticle * 660.f);
 		setColor(Vector4(0.0f, 0.0f, 1.0f, 1.0f));
 		break;
 	case LASER_PISTOL:
-		setVel(velParticle * 10000.f);
+		setVel(velParticle * 20000.f);
 		setColor(Vector4(1.0f, 1.0f, 1.0f, 1.0f));
 		break;
 	}
 
+	Vector3 actualVel = getVel();
+	setOldPos(initialPos - actualVel * 0.001f);
+	setTimeOfLife(40.0f);
 }
 
 void Projectile::update(double t)
@@ -54,11 +57,9 @@ void Projectile::update(double t)
 	default:
 		break;
 	}
-
-	incrementTimeOfLife(t);
 }
 
-void Projectile::resetPhysics(Vector3 initialPos,Vector3 initialDir, ProjectileType projectileType, IntegratorType integratortype)
+void Projectile::resetPhysics(Vector3 initialPos, Vector3 initialDir, ProjectileType projectileType, IntegratorType integratortype)
 {
 	_projectileType = projectileType;
 	_integratortype = integratortype;
@@ -66,9 +67,7 @@ void Projectile::resetPhysics(Vector3 initialPos,Vector3 initialDir, ProjectileT
 
 
 	setPos(initialPos);
-
 	initialDir.normalize();
-
 	Vector3 accParticle = Vector3(0.0f, -9.8f, 0.0f);
 	setAcc(accParticle);
 
@@ -76,22 +75,24 @@ void Projectile::resetPhysics(Vector3 initialPos,Vector3 initialDir, ProjectileT
 
 	switch (_projectileType) {
 	case CANNON_BULLET:
-		setVel(velParticle * 250.f);
+		setVel(velParticle * 500.f);
 		setColor(Vector4(1.0f, 0.0f, 0.0f, 1.0f));
 		break;
 	case TANK_BULLET:
-		setVel(velParticle * 1800.f);
+		setVel(velParticle * 3600.f);
 		setColor(Vector4(0.0f, 1.0f, 0.0f, 1.0f));
 		break;
 	case PISTOL:
-		setVel(velParticle * 330.f);
+		setVel(velParticle * 660.f);
 		setColor(Vector4(0.0f, 0.0f, 1.0f, 1.0f));
 		break;
 	case LASER_PISTOL:
-		setVel(velParticle * 10000.f);
+		setVel(velParticle * 20000.f);
 		setColor(Vector4(1.0f, 1.0f, 1.0f, 1.0f));
 		break;
 	}
 
-	setTimeOfLife(0.0f);
+	Vector3 actualVel = getVel();
+	setOldPos(initialPos - actualVel * 0.001f);
+	setTimeOfLife(40.0f);
 }

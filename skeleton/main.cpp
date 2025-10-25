@@ -98,10 +98,11 @@ void CreateParticle()
 	Vector3 posParticle = Vector3(0.0f, 0.0f, 0.0f);
 	Vector3 velParticle = Vector3(10.0f, 90.0f, 0.0f);
 	Vector3 accParticle = Vector3(0.0f, -9.8f, 0.0f);
-	Vector4 color = Vector4(0.0f, 0.0f, 0.0f, 0.0f);
 	float massParticle = 1.0f;
+	Vector4 color = Vector4(0.0f, 0.0f, 0.0f, 0.0f);
+	PxReal tamParticle = 2;
 	float timeOfLifeParticle = 10.0f;
-	particulas[0] = new Particula(velParticle,posParticle,accParticle,massParticle,color);
+	particulas[0] = new Particula(velParticle,posParticle,accParticle,massParticle,color,tamParticle,timeOfLifeParticle);
 }
 
 void CreateParticles() {
@@ -110,14 +111,15 @@ void CreateParticles() {
 		Vector3 posParticle = Vector3(0.0f, 0.0f, 0.0f);
 		Vector3 velParticle = Vector3(-165.0f, 0.0f, 0.0f);
 		Vector3 accParticle = Vector3(0.0f, -9.8f, 0.0f);
+		float massParticle = 1.0f;
 		Vector4 color1 = Vector4(1.0f, 0.0f, 0.0f, 1.0f);
 		Vector4 color2 = Vector4(0.0f, 1.0f, 0.0f, 1.0f);
 		Vector4 color3 = Vector4(0.0f, 0.0f, 1.0f, 1.0f);
-		float massParticle = 1.0f;
+		PxReal tamParticle = 2;
 		float timeOfLifeParticle = 10.0f;
-		particulas[0] = new Particula(velParticle, posParticle, accParticle, massParticle ,color1 );
-		particulas[1] = new Particula(velParticle, posParticle, accParticle, massParticle ,color2 );
-		particulas[2] = new Particula(velParticle, posParticle, accParticle, massParticle ,color3 );
+		particulas[0] = new Particula(velParticle, posParticle, accParticle, massParticle ,color1, tamParticle, timeOfLifeParticle );
+		particulas[1] = new Particula(velParticle, posParticle, accParticle, massParticle ,color2, tamParticle, timeOfLifeParticle );
+		particulas[2] = new Particula(velParticle, posParticle, accParticle, massParticle ,color3, tamParticle, timeOfLifeParticle );
 	}
 }
 
@@ -226,7 +228,52 @@ void cleanupPhysics(bool interactive)
 	}
 
 	gFoundation->release();
+}
+
+// Función auxiliar que pones antes de initPhysics o keyPress en main.cpp
+void ShootProjectile(Projectile::ProjectileType type, Projectile::IntegratorType integrator, const Vector3& posCam, const Vector3& dirCam)
+{
+	int indexToReuse = -1;
+
+	for (int i = 0; i < proyectiles.size(); ++i) {
+		if (proyectiles[i] == nullptr) {
+			proyectiles[i] = new Projectile(posCam, dirCam, type, integrator);
+			return;
+		}
 	}
+
+	for (int i = 0; i < proyectiles.size(); ++i) {
+		if (proyectiles[i] != nullptr && proyectiles[i]->getTimeOfLife() <= 0.0f) {
+			indexToReuse = i;
+			break;
+		}
+	}
+
+	if (indexToReuse == -1) {
+
+		int indexMinTime = -1;
+		float minTime = 0.0f;
+
+		for (int i = 0; i < proyectiles.size(); ++i) {
+			if (proyectiles[i] != nullptr) {
+
+				if (indexMinTime == -1) {
+					minTime = proyectiles[i]->getTimeOfLife();
+					indexMinTime = i;
+				}
+				else if (proyectiles[i]->getTimeOfLife() < minTime) {
+					minTime = proyectiles[i]->getTimeOfLife();
+					indexMinTime = i;
+				}
+			}
+		}
+		indexToReuse = indexMinTime;
+	}
+
+	if (indexToReuse != -1) {
+		proyectiles[indexToReuse]->resetPhysics(posCam, dirCam, type, integrator);
+	}
+}
 
 // Function called when a key is pressed
 void keyPress(unsigned char key, const PxTransform& camera)
@@ -267,79 +314,19 @@ void keyPress(unsigned char key, const PxTransform& camera)
 			//	particulas[indexMaxTimeAlive]->setAcc(accParticle);
 			//	particulas[indexMaxTimeAlive]->setTimeOfLife(0);
 			//}
-			for (int i = 0; i < proyectiles.size(); ++i) {
-				if (proyectiles[i] == nullptr) {
-					proyectiles[i] = new Projectile(posCam,dirCam,Projectile::ProjectileType::CANNON_BULLET,Projectile::IntegratorType::VERLET);
-					rePosBullet = false;
-					break;
-				}
-			}
-			if (rePosBullet) {
-				int indexMaxTimeAlive = 0;
-				for (int i = 0; i < proyectiles.size(); ++i) {
-					if (proyectiles[i]->getTimeOfLife() > proyectiles[indexMaxTimeAlive]->getTimeOfLife()) {
-						indexMaxTimeAlive = i;
-					}
-				}
-				proyectiles[indexMaxTimeAlive]->resetPhysics(posCam,dirCam,Projectile::ProjectileType::CANNON_BULLET, Projectile::IntegratorType::VERLET);
-			}
+			ShootProjectile(Projectile::CANNON_BULLET, Projectile::IntegratorType::VERLET, posCam, dirCam);
 			break;
 		//TANK_BULLET
 		case 'T':
-			for (int i = 0; i < proyectiles.size(); ++i) {
-				if (proyectiles[i] == nullptr) {
-					proyectiles[i] = new Projectile(posCam, dirCam, Projectile::ProjectileType::TANK_BULLET, Projectile::IntegratorType::EULER_SEMIEXPLICIT);
-					rePosBullet = false;
-					break;
-				}
-			}
-			if (rePosBullet) {
-				int indexMaxTimeAlive = 0;
-				for (int i = 0; i < proyectiles.size(); ++i) {
-					if (proyectiles[i]->getTimeOfLife() > proyectiles[indexMaxTimeAlive]->getTimeOfLife()) {
-						indexMaxTimeAlive = i;
-					}
-				}
-				proyectiles[indexMaxTimeAlive]->resetPhysics(posCam, dirCam, Projectile::ProjectileType::TANK_BULLET, Projectile::IntegratorType::EULER_SEMIEXPLICIT);
-			}
+			ShootProjectile(Projectile::TANK_BULLET, Projectile::IntegratorType::VERLET, posCam, dirCam);
 			break;
 		//PISTOL
 		case 'P':
-			for (int i = 0; i < proyectiles.size(); ++i) {
-				if (proyectiles[i] == nullptr) {
-					proyectiles[i] = new Projectile(posCam, dirCam, Projectile::ProjectileType::PISTOL, Projectile::IntegratorType::EULER_SEMIEXPLICIT);
-					rePosBullet = false;
-					break;
-				}
-			}
-			if (rePosBullet) {
-				int indexMaxTimeAlive = 0;
-				for (int i = 0; i < proyectiles.size(); ++i) {
-					if (proyectiles[i]->getTimeOfLife() > proyectiles[indexMaxTimeAlive]->getTimeOfLife()) {
-						indexMaxTimeAlive = i;
-					}
-				}
-				proyectiles[indexMaxTimeAlive]->resetPhysics(posCam, dirCam, Projectile::ProjectileType::PISTOL, Projectile::IntegratorType::EULER_SEMIEXPLICIT);
-			}
+			ShootProjectile(Projectile::PISTOL, Projectile::IntegratorType::VERLET, posCam, dirCam);
 			break;
 		//LASER_PISTOL
 		case 'L':
-			for (int i = 0; i < proyectiles.size(); ++i) {
-				if (proyectiles[i] == nullptr) {
-					proyectiles[i] = new Projectile(posCam, dirCam, Projectile::ProjectileType::LASER_PISTOL, Projectile::IntegratorType::EULER_SEMIEXPLICIT);
-					rePosBullet = false;
-					break;
-				}
-			}
-			if (rePosBullet) {
-				int indexMaxTimeAlive = 0;
-				for (int i = 0; i < proyectiles.size(); ++i) {
-					if (proyectiles[i]->getTimeOfLife() > proyectiles[indexMaxTimeAlive]->getTimeOfLife()) {
-						indexMaxTimeAlive = i;
-					}
-				}
-				proyectiles[indexMaxTimeAlive]->resetPhysics(posCam, dirCam, Projectile::ProjectileType::LASER_PISTOL, Projectile::IntegratorType::EULER_SEMIEXPLICIT);
-			}
+			ShootProjectile(Projectile::LASER_PISTOL, Projectile::IntegratorType::VERLET, posCam, dirCam);
 			break;
 		default:
 			break;

@@ -4,28 +4,32 @@
 
 using namespace physx;
 
-Particula::Particula() : _vel(Vector3(0,0,0)), _pos(Vector3(0,0,0)), _acc(Vector3(0,0,0)), _mass(1.0f), _color(Vector4(0, 0, 0, 0))
+Particula::Particula() : _vel(Vector3(0, 0, 0)), _pos(Vector3(0, 0, 0)), _oldPos(Vector3(_pos.p - _vel)), _acc(Vector3(0, 0, 0)), _mass(1.0f),
+_color(Vector4(0, 0, 0, 0)), _tam(1), _timeOfLife(5.0f), _renderItem(nullptr)
 {
 }
 
-Particula::Particula(Vector3 vel, Vector3 pos, Vector3 acc, float mass, Vector4 color)
+Particula::Particula(Vector3 vel, Vector3 pos, Vector3 acc, float mass, Vector4 color, PxReal tam, float timeOfLife)
 {
 	//CREATIONOFGEOMETRY
-	PxSphereGeometry _sphereParticle(2);
+	PxSphereGeometry _sphereParticle(tam);
 	PxShape* shapeParticle = CreateShape(_sphereParticle);
+
 	//TRANSFORM
 	_vel = vel;
 	_pos = PxTransform(pos);
-	_oldPos = pos - vel; 
+	_oldPos = pos - vel;
 	_acc = acc;
 	_mass = mass;
+	_tam = tam;
 	_color = color;
-	_timeOfLife = 20.f;
+	_timeOfLife = timeOfLife;
+
 	//RENDERITEM
-	_renderItem = new RenderItem(shapeParticle,&_pos,_color);
+	_renderItem = new RenderItem(shapeParticle, &_pos, _color);
+
 	//REGISTER
 	RegisterRenderItem(_renderItem);
-	//_renderItem = nullptr;
 }
 
 Particula::~Particula()
@@ -34,8 +38,9 @@ Particula::~Particula()
 }
 
 void
-Particula::update() {
-	_timeOfLife--;
+Particula::update(double t) {
+	_timeOfLife -= (float)t;
+	if (_timeOfLife < 0.0f) _timeOfLife = 0.0f;
 }
 
 /*
@@ -69,8 +74,8 @@ void Particula::integrate_EulerExplicit(double t, double damping)
 	_pos.p = _pos.p + (_vel * t);
 	_vel = _vel + (t * _acc);
 	_vel = _vel * pow(damping, t); //Correccion de velocidad con dumping
-	
-	update();
+
+	update(t);
 }
 
 //Actualizamos primero la velocidad y se usa la misma velocidad para calcular la posicion
@@ -79,8 +84,8 @@ void Particula::integrate_EulerSemiImplicit(double t, double damping)
 	_vel = _vel + (t * _acc);
 	_vel = _vel * pow(damping, t); //Correccion de velocidad con dumping
 	_pos.p = _pos.p + (_vel * t);
-	
-	update();
+
+	update(t);
 }
 
 void Particula::integrate_Verlet(double t, double damping)
@@ -88,6 +93,6 @@ void Particula::integrate_Verlet(double t, double damping)
 	Vector3 temp = _pos.p;  // guardar posición actual (será la nueva "anterior")
 	_pos.p = _pos.p + (_pos.p - _oldPos) * pow(damping, t) + _acc * (t * t);
 	_oldPos = temp;  // actualizar la posición anterior
-	
-	update();
+
+	update(t);
 }

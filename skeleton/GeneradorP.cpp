@@ -63,8 +63,8 @@ GeneradorP::GenerateP(Vector3& vel, Vector3& pos, Vector3& dir, double& probGen)
 		std::cout << "PosZ: " << (_modelPos.z * _u(_mt)) << "\n";
 		Vector3 posVar = Vector3(_modelPos.x * _u(_mt),_modelPos.y, _modelPos.z * _u(_mt));
 		Vector3 dirVar = _modelDir * _u(_mt);
-		Particula* p = new Particula(velVar, posVar, dirVar, 1.0f, { 1.0f,1.0f,1.0f,1.0f });
-		p->setTimeOfLife(50.0f * _u(_mt));
+		Particula* p = new Particula(velVar, posVar, dirVar, 1.0f, { 1.0f,1.0f,1.0f,1.0f },2,3.0f);
+		p->setTimeOfLife(3.0f * _u(_mt));
 		_listaP.push_back(p);
 	}
 }
@@ -101,7 +101,7 @@ void GeneradorP::updateParticles(double t)
 		//}
 
 		_listaP.remove_if([](Particula* p) {  
-			if (p->getTimeOfLife() < 0) {
+			if (p->getTimeOfLife() <= 0) {
 			delete p;
 			return true; 
 			}
