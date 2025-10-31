@@ -3,6 +3,7 @@
 #include <random>
 #include <vector>
 #include <list>
+#include "ForceGenerator.h"
 
 using namespace physx;
 using namespace std;
@@ -55,5 +56,7 @@ protected:
 	std::mt19937 _mt;
 	std::uniform_real_distribution<double> _u;
 	std::normal_distribution<double> _n;
+
+	std::vector<ForceGenerator*> _forceGenerators;
 };
 

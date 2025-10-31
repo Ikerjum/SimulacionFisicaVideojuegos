@@ -154,11 +154,12 @@ void initPhysics(bool interactive)
 
 
 	Vector3 velModel = Vector3(0.0f, 8.0f, 0.0f);
-	Vector3 accModel = Vector3(0.0f, -10.0f, 0.0f);
+	//Vector3 accModel = Vector3(0.0f, -10.0f, 0.0f);
+	Vector3 accModel = Vector3(0.0f, 0.0f, 0.0f); //La fuerza la gestiona el generador de fuerzas
 	Vector4 colorModel = Vector4(0.0f, 0.3f, 1.0f, 1.0f);
-	PxReal tamModel = 0.5f;
+	PxReal tamModel = 5.0f;
 	float timeOfLifeModel = 3.0f;
-	float massModel = 0.1f;
+	float massModel = 10.0f;
 	Vector3 generatorPos = Vector3(0.0f, 30.0f, 0.0f);
 	Particula* particleModel = new Particula(velModel, generatorPos, accModel, massModel, colorModel, tamModel, timeOfLifeModel);
 

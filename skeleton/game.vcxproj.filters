@@ -14,6 +14,8 @@
     <ClCompile Include="Projectile.cpp" />
     <ClCompile Include="ParticleGenerator.cpp" />
     <ClCompile Include="WaterParticleGenerator.cpp" />
+    <ClCompile Include="GravityForceGenerator.cpp" />
+    <ClCompile Include="WindForceGenerator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core.hpp" />
@@ -30,6 +32,9 @@
     <ClInclude Include="Projectile.h" />
     <ClInclude Include="ParticleGenerator.h" />
     <ClInclude Include="WaterParticleGenerator.h" />
+    <ClInclude Include="ForceGenerator.h" />
+    <ClInclude Include="GravityForceGenerator.h" />
+    <ClInclude Include="WindForceGenerator.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Render">
