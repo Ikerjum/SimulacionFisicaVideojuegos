@@ -10,7 +10,7 @@ private:
 public:
 	//ForceGenerator() : _ForceAcceleration(), _ForceVelocity() {};
 	ForceGenerator(Vector3 acc) : _ForceAcceleration(acc), _ForceVelocity() {};
-	ForceGenerator(Vector3 acc, Vector3 vel) : _ForceAcceleration(acc), _ForceVelocity(acc) {}; //Para el viento
+	ForceGenerator(Vector3 acc, Vector3 vel) : _ForceAcceleration(acc), _ForceVelocity(vel) {}; //Para el viento
 	~ForceGenerator() {};
 	virtual void putAcceleration(Particula* p) = 0;
 	Vector3 getForceAcceleration() { return _ForceAcceleration; }

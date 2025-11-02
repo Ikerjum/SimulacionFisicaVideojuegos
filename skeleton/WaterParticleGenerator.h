@@ -21,7 +21,7 @@ public:
 
         //GENERADORES DE FUERZAS
         _forceGenerators.push_back(new GravityForceGenerator(Vector3(0, -9.8, 0))); //Aplicamos la gravedad al generador de fuerzas
-        _forceGenerators.push_back(new WindForceGenerator(Vector3(5.0, 0, 5.0)));
+        //_forceGenerators.push_back(new WindForceGenerator(Vector3(5.0, 0, 5.0)));
 
         Particula* newP = _modelP->clone();
 
@@ -100,9 +100,8 @@ public:
     }
     void ApplyForces(Particula* newParticle)
     {
-        Particula* exampleParticle = new Particula();
         for (int i = 0; i < _forceGenerators.size(); ++i) {
-            _forceGenerators[i]->putAcceleration(exampleParticle);
+            _forceGenerators[i]->putAcceleration(newParticle);
         }
 
     }
