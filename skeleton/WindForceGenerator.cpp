@@ -1,15 +1,20 @@
 #include "WindForceGenerator.h"
 
-void WindForceGenerator::putAcceleration(Particula* p)
+Vector3 
+WindForceGenerator::putForce(Particula* p)
 {
-	if (p->getMass() != 0) { //Si la masa es distinta de 0
-		p->setAcc(Vector3(getForceAcceleration().x / p->getMass() + p->getAcc().x,
-			p->getAcc().y,
-			getForceAcceleration().z / p->getMass() + p->getAcc().z));
-	}
-	else { //En caso de que la masa sea 0, no tenemos aceleracion
-		p->setAcc(Vector3(0, 0, 0));
-	}
-	//Fg = m * g;
-	// a = F / m; Esto es para modificar la aceleracion
+	if (p->getMass() == 0 || p == nullptr) 
+		return Vector3(0, 0, 0);
+	
+	float massParticle = p->getMass();
+
+	Vector3 v = p->getVel();
+	Vector3 v_wind = getForceVelocity();
+
+	Vector3 v_rel = v_wind - v;
+
+	float speed = v_rel.magnitude();
+
+	Vector3 WindForce = _k1 * v_rel + _k2 * speed * v_rel;
+	return WindForce;
 }

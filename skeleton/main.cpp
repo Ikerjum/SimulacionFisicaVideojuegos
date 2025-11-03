@@ -153,19 +153,19 @@ void initPhysics(bool interactive)
 	//CreateParticles();
 
 
-	Vector3 velModel = Vector3(0.0f, 8.0f, 0.0f);
+	Vector3 velModel = Vector3(0.0f, 0.0f, 0.0f);
 	//Vector3 accModel = Vector3(0.0f, -10.0f, 0.0f);
 	Vector3 accModel = Vector3(0.0f, 0.0f, 0.0f); //La fuerza la gestiona el generador de fuerzas
-	Vector4 colorModel = Vector4(0.0f, 0.3f, 1.0f, 1.0f);
-	PxReal tamModel = 5.0f;
-	float timeOfLifeModel = 3.0f;
-	float massModel = 10.0f;
-	Vector3 generatorPos = Vector3(0.0f, 30.0f, 0.0f);
+	Vector4 colorModel = Vector4(0.0f, 0.3f, 1.0f, 0.1f);
+	PxReal tamModel = 0.3f;
+	float timeOfLifeModel = 10.0f;
+	float massModel = 20.0f;
+	Vector3 generatorPos = Vector3(0.0f, 80.0f, 0.0f);
 	Particula* particleModel = new Particula(velModel, generatorPos, accModel, massModel, colorModel, tamModel, timeOfLifeModel);
 
 	// 2. CREA EL GENERADOR con el modelo
 	// Posición del generador (la fuente)
-	WaterGenerator = new WaterParticleGenerator(generatorPos,particleModel,1);
+	WaterGenerator = new WaterParticleGenerator(generatorPos,particleModel,3);
 
 
 	}
@@ -340,6 +340,11 @@ void keyPress(unsigned char key, const PxTransform& camera)
 		//LASER_PISTOL
 		case 'L':
 			ShootProjectile(Projectile::LASER_PISTOL, Projectile::IntegratorType::VERLET, posCam, dirCam);
+			break;
+		case ' ': //ESPACIO
+			if (WaterGenerator) {
+				WaterGenerator->triggerExplosion(Vector3(0,0,0));
+			}
 			break;
 		default:
 			break;

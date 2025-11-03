@@ -128,6 +128,7 @@ void Particula::integrate_Verlet(double t)
 {
 	Vector3 temp = _pos.p;  // guardar posición actual (será la nueva "anterior")
 	_pos.p = _pos.p + (_pos.p - _oldPos) * pow(Particula::DAMPING, t) + _acc * (t * t);
+	_vel = (_pos.p - _oldPos) / (2.0 * t);
 	_oldPos = temp;  // actualizar la posición anterior
 
 	update(t);

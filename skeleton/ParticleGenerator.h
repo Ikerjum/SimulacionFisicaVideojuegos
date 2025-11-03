@@ -15,7 +15,7 @@ public:
 	ParticleGenerator(Vector3 pos, Particula* modelP, int ParticlesPerFrame) : 
 		_pos(PxTransform(pos)), _modelP(modelP), _particlesPerFrame(ParticlesPerFrame), 
 		_generatorParticlesV(), _generatorParticlesL(),
-		_u(0.0,1.0), _n(0.0,1.0) //Valores por defecto de la distribucion uniforme y la normal
+		_u(-1.0,1.0), _n(0.0,1.0) //Valores por defecto de la distribucion uniforme y la normal
 	{
 	}
 

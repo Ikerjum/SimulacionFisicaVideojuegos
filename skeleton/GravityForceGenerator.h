@@ -6,5 +6,5 @@
 class GravityForceGenerator : public ForceGenerator {
 public:
 	GravityForceGenerator(Vector3 acc) : ForceGenerator(acc) {}
-	void putAcceleration(Particula* p) override;
+	Vector3 putForce(Particula* p) override;
 };
