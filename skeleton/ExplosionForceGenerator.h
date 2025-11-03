@@ -23,8 +23,13 @@ public:
 	void update(double dt) override { 
 		if (_active) {
 			_time += dt; 
-			if (_time > 4.0f * _tau) _active = false;
+			if (_time > _tau) {
+				deactivate();
+				_time = 0.0f;
+			}
 		}
 	}
 	Vector3 putForce(Particula* p) override;
+
+	bool getIsActive() { return _active; }
 };

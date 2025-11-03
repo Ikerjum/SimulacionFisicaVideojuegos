@@ -3,7 +3,7 @@
 
 Vector3 ExplosionForceGenerator::putForce(Particula* p)
 {
-    if (p == nullptr || p->getMass() == 0) return Vector3(0, 0, 0);
+    if (p == nullptr || p->getMass() == 0 || !_active) return Vector3(0, 0, 0);
     Vector3 pos = p->getPos().p;
     Vector3 dir = pos - _center;
 

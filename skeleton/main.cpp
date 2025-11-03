@@ -160,7 +160,7 @@ void initPhysics(bool interactive)
 	PxReal tamModel = 0.3f;
 	float timeOfLifeModel = 10.0f;
 	float massModel = 20.0f;
-	Vector3 generatorPos = Vector3(0.0f, 80.0f, 0.0f);
+	Vector3 generatorPos = Vector3(0.0f, 0.0f, 0.0f);
 	Particula* particleModel = new Particula(velModel, generatorPos, accModel, massModel, colorModel, tamModel, timeOfLifeModel);
 
 	// 2. CREA EL GENERADOR con el modelo
