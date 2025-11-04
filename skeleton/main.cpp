@@ -15,6 +15,7 @@
 #include "Particula.h"
 #include "Projectile.h"
 #include "WaterParticleGenerator.h"
+#include "ExplosionParticleGenerator.h"
 
 std::string display_text = "This is a test";
 
@@ -45,6 +46,7 @@ std::vector<Particula*> particulas(10);
 std::vector<Projectile*> proyectiles(10);
 
 WaterParticleGenerator* WaterGenerator;
+ExplosionParticleGenerator* ExplosionGenerator;
 std::vector<Particula*> GeneratorParticles;
 
 void CreateAxes()
@@ -153,20 +155,29 @@ void initPhysics(bool interactive)
 	//CreateParticles();
 
 
-	Vector3 velModel = Vector3(0.0f, 0.0f, 0.0f);
+	Vector3 velModelWater = Vector3(0.0f, 0.0f, 0.0f);
 	//Vector3 accModel = Vector3(0.0f, -10.0f, 0.0f);
-	Vector3 accModel = Vector3(0.0f, 0.0f, 0.0f); //La fuerza la gestiona el generador de fuerzas
-	Vector4 colorModel = Vector4(0.0f, 0.3f, 1.0f, 0.1f);
-	PxReal tamModel = 0.3f;
-	float timeOfLifeModel = 10.0f;
-	float massModel = 20.0f;
-	Vector3 generatorPos = Vector3(0.0f, 0.0f, 0.0f);
-	Particula* particleModel = new Particula(velModel, generatorPos, accModel, massModel, colorModel, tamModel, timeOfLifeModel);
+	Vector3 accModelWater = Vector3(0.0f, 0.0f, 0.0f); //La fuerza la gestiona el generador de fuerzas
+	Vector4 colorModelWater = Vector4(0.0f, 0.3f, 1.0f, 1.0f);
+	PxReal tamModelWater = 0.3f;
+	float timeOfLifeModelWater = 10.0f;
+	float massModelWater = 20.0f;
+	Vector3 generatorPosWater = Vector3(0.0f, 100.0f, 0.0f);
+	Particula* particleModelWater = new Particula(velModelWater, generatorPosWater, accModelWater, massModelWater, colorModelWater, tamModelWater, timeOfLifeModelWater);
+
+	Vector3 velModelExplosion = Vector3(0.0f, 0.0f, 0.0f);
+	Vector3 accModelExplosion = Vector3(0.0f, 0.0f, 0.0f);
+	Vector4 colorModelExplosion = Vector4(1.0f, 0.3f, 0.0f, 1.0f);
+	PxReal tamModelExplosion = 0.6f;
+	float timeOfLifeModelExplosion = 5.0f;
+	float massModelExplosion = 10.0f;
+	Vector3 generatorPosExplosion = Vector3(0.0f, 0.0f, 0.0f);
+	Particula* particleModelExplosion = new Particula(velModelExplosion, generatorPosExplosion, accModelExplosion, massModelExplosion, colorModelExplosion, tamModelExplosion, timeOfLifeModelExplosion);
 
 	// 2. CREA EL GENERADOR con el modelo
 	// Posición del generador (la fuente)
-	WaterGenerator = new WaterParticleGenerator(generatorPos,particleModel,3);
-
+	WaterGenerator = new WaterParticleGenerator(generatorPosWater,particleModelWater,3);
+	ExplosionGenerator = new ExplosionParticleGenerator(generatorPosExplosion, particleModelExplosion, 3);
 
 	}
 
@@ -199,6 +210,7 @@ void stepPhysics(bool interactive, double t)
 	}
 
 	WaterGenerator->update(t);
+	ExplosionGenerator->update(t);
 
 	std::this_thread::sleep_for(std::chrono::microseconds(10));
 }
@@ -230,6 +242,8 @@ void cleanupPhysics(bool interactive)
 
 	if (WaterGenerator) delete WaterGenerator;
 	WaterGenerator = nullptr;
+	if (ExplosionGenerator) delete ExplosionGenerator;
+	ExplosionGenerator = nullptr;
 
 
 	// Rigid Body ++++++++++++++++++++++++++++++++++++++++++
@@ -308,7 +322,7 @@ void keyPress(unsigned char key, const PxTransform& camera)
 	switch(toupper(key))
 	{
 		//CANNON_BULLET
-		case 'C':
+		case 'Y':
 			//for (int i = 0; i < particulas.size(); ++i) {
 			//	if (particulas[i] == nullptr) {
 			//		particulas[i] = new Particula(velParticle,posCam, accParticle, massParticle, color, timeOfLifeParticle);
@@ -330,20 +344,30 @@ void keyPress(unsigned char key, const PxTransform& camera)
 			ShootProjectile(Projectile::CANNON_BULLET, Projectile::IntegratorType::VERLET, posCam, dirCam);
 			break;
 		//TANK_BULLET
-		case 'T':
+		case 'U':
 			ShootProjectile(Projectile::TANK_BULLET, Projectile::IntegratorType::VERLET, posCam, dirCam);
 			break;
 		//PISTOL
-		case 'P':
+		case 'I':
 			ShootProjectile(Projectile::PISTOL, Projectile::IntegratorType::VERLET, posCam, dirCam);
 			break;
 		//LASER_PISTOL
-		case 'L':
+		case 'O':
 			ShootProjectile(Projectile::LASER_PISTOL, Projectile::IntegratorType::VERLET, posCam, dirCam);
 			break;
+		//EXPLOSIVE_MINE
+		case 'P':
+			ShootProjectile(Projectile::EXPLOSIVE_MINE, Projectile::IntegratorType::VERLET, posCam, dirCam);
+			break;
 		case ' ': //ESPACIO
-			if (WaterGenerator) {
-				WaterGenerator->triggerExplosion(Vector3(0,0,0));
+			if (ExplosionGenerator) {
+				for (int i = 0; i < proyectiles.size(); ++i) {
+					if (proyectiles[i] != nullptr) {
+						ExplosionGenerator->triggerExplosion(proyectiles[i]->getPos().p);
+						delete proyectiles[i];
+						proyectiles[i] = nullptr;
+					}
+				}
 			}
 			break;
 		default:

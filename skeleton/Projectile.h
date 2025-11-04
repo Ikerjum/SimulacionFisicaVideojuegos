@@ -8,7 +8,7 @@ using namespace physx;
 class Projectile : public Particula 
 {
 public:
-	enum ProjectileType { CANNON_BULLET, TANK_BULLET, PISTOL, LASER_PISTOL };
+	enum ProjectileType { CANNON_BULLET, TANK_BULLET, PISTOL, LASER_PISTOL, EXPLOSIVE_MINE };
 	enum IntegratorType { EULER_EXPLICIT, EULER_SEMIEXPLICIT, VERLET };
 private:
 	ProjectileType _projectileType;

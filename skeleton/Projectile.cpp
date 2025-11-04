@@ -34,6 +34,10 @@ Projectile::Projectile(Vector3 initialPos, Vector3 initialDir, ProjectileType pr
 		setVel(velParticle * 20000.f);
 		setColor(Vector4(1.0f, 1.0f, 1.0f, 1.0f));
 		break;
+	case EXPLOSIVE_MINE:
+		setVel(velParticle * 700.f);
+		setColor(Vector4(1.0f, 0.6f, 0.0f, 1.0f));
+		break;
 	}
 
 	Vector3 actualVel = getVel();
@@ -89,6 +93,10 @@ void Projectile::resetPhysics(Vector3 initialPos, Vector3 initialDir, Projectile
 	case LASER_PISTOL:
 		setVel(velParticle * 20000.f);
 		setColor(Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+		break;
+	case EXPLOSIVE_MINE:
+		setVel(velParticle * 700.f);
+		setColor(Vector4(1.0f, 0.6f, 0.0f, 1.0f));
 		break;
 	}
 

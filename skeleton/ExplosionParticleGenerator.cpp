@@ -1,18 +1,17 @@
-#include "WaterParticleGenerator.h"
+#include "ExplosionParticleGenerator.h"
 
-WaterParticleGenerator::WaterParticleGenerator(Vector3 pos, Particula* model, int ParticlesPerFrame) : ParticleGenerator(pos,model,ParticlesPerFrame)
+ExplosionParticleGenerator::ExplosionParticleGenerator(Vector3 pos, Particula* model, int ParticlesPerFrame) : ParticleGenerator(pos, model, ParticlesPerFrame)
 {
     std::random_device rd;
     _mt.seed(rd());
 
     //GENERADORES DE FUERZAS, LO HACEMOS SOLO UNA VEZ EN LA CONSTRUCTORA
     _forceGenerators.push_back(new GravityForceGenerator(Vector3(0, -9.8, 0))); //Aplicamos la gravedad al generador de fuerzas
-    //_forceGenerators.push_back(new WindForceGenerator(Vector3(100.0, 0, 0.0),0.5f,0.02f));
-    //_explosionForceGenerator = new ExplosionForceGenerator(Vector3(0, 0, 0), 100000.0, 50.0f, 50.0f);
-    //_forceGenerators.push_back(_explosionForceGenerator);
+    _explosionForceGenerator = new ExplosionForceGenerator(Vector3(0, 0, 0), 100000.0, 50.0f, 50.0f);
+    _forceGenerators.push_back(_explosionForceGenerator);
 }
 
-Particula* WaterParticleGenerator::generateP()
+Particula* ExplosionParticleGenerator::generateP()
 {
 
     //SE PUEDEN REDEFINIR LAS CONSTANTES PARA ESTE GENERADOR DE PARTICULAS
@@ -23,9 +22,9 @@ Particula* WaterParticleGenerator::generateP()
 
     //VARIACION DE POSICION
     Vector3 basePos = _modelP->getPos().p;
-    float RANGO_POS_X = 30.0f;
-    float RANGO_POS_Y = 0.0f;
-    float RANGO_POS_Z = 30.0f;
+    float RANGO_POS_X = 0.5f;
+    float RANGO_POS_Y = 0.5f;
+    float RANGO_POS_Z = 0.5f;
 
     Vector3 newPos = basePos + Vector3(
         _n(_mt) * RANGO_POS_X,
@@ -67,7 +66,7 @@ Particula* WaterParticleGenerator::generateP()
     return newP;
 }
 
-void WaterParticleGenerator::update(double t)
+void ExplosionParticleGenerator::update(double t)
 {
     for (int i = 0; i < _particlesPerFrame; ++i) {
         Particula* newParticle = generateP();
@@ -99,12 +98,24 @@ void WaterParticleGenerator::update(double t)
     }
 }
 
-void WaterParticleGenerator::ApplyForces(Particula* newParticle, double t)
+void ExplosionParticleGenerator::ApplyForces(Particula* newParticle, double t)
 {
     newParticle->setAcc(Vector3(0, 0, 0));
     float massParticle = newParticle->getMass();
     for (int i = 0; i < _forceGenerators.size(); ++i) {
         Vector3 newForce = _forceGenerators[i]->putForce(newParticle);
         if (massParticle != 0.0f) newParticle->setAcc(newParticle->getAcc() + newForce / massParticle);
+    }
+    if (_explosionForceGenerator) {
+        if (_explosionForceGenerator->getIsActive()) {
+            _explosionForceGenerator->update(t);
+        }
+    }
+}
+
+void ExplosionParticleGenerator::triggerExplosion(Vector3 pos)
+{
+    if (_explosionForceGenerator && !_explosionForceGenerator->getIsActive()) {
+        _explosionForceGenerator->activate(pos);
     }
 }
