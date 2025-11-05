@@ -47,7 +47,9 @@ std::vector<Projectile*> proyectiles(10);
 
 WaterParticleGenerator* WaterGenerator;
 ExplosionParticleGenerator* ExplosionGenerator;
+Particula* particleModelExplosion;
 std::vector<Particula*> GeneratorParticles;
+std::vector<ExplosionParticleGenerator*> ExplosionGeneratorToProjectiles;
 
 void CreateAxes()
 {
@@ -172,7 +174,7 @@ void initPhysics(bool interactive)
 	float timeOfLifeModelExplosion = 5.0f;
 	float massModelExplosion = 10.0f;
 	Vector3 generatorPosExplosion = Vector3(0.0f, 0.0f, 0.0f);
-	Particula* particleModelExplosion = new Particula(velModelExplosion, generatorPosExplosion, accModelExplosion, massModelExplosion, colorModelExplosion, tamModelExplosion, timeOfLifeModelExplosion);
+	particleModelExplosion = new Particula(velModelExplosion, generatorPosExplosion, accModelExplosion, massModelExplosion, colorModelExplosion, tamModelExplosion, timeOfLifeModelExplosion);
 
 	// 2. CREA EL GENERADOR con el modelo
 	// Posición del generador (la fuente)
@@ -361,12 +363,17 @@ void keyPress(unsigned char key, const PxTransform& camera)
 			break;
 		case ' ': //ESPACIO
 			if (ExplosionGenerator) {
-				for (int i = 0; i < proyectiles.size(); ++i) {
+				int i = 0;
+				bool encontrado = false;
+				while (i < proyectiles.size() && !encontrado) {
 					if (proyectiles[i] != nullptr) {
+						ExplosionGenerator->setPos(proyectiles[i]->getPos().p);
 						ExplosionGenerator->triggerExplosion(proyectiles[i]->getPos().p);
 						delete proyectiles[i];
 						proyectiles[i] = nullptr;
+						encontrado = true;
 					}
+					else i++;
 				}
 			}
 			break;

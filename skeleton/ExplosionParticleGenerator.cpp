@@ -13,11 +13,6 @@ ExplosionParticleGenerator::ExplosionParticleGenerator(Vector3 pos, Particula* m
 
 Particula* ExplosionParticleGenerator::generateP()
 {
-
-    //SE PUEDEN REDEFINIR LAS CONSTANTES PARA ESTE GENERADOR DE PARTICULAS
-    //_u = std::uniform_real_distribution<double>(-1.0, 1.0);
-    //_n = std::normal_distribution<double>(-1.0, 1.0);
-
     Particula* newP = _modelP->clone();
 
     //VARIACION DE POSICION
@@ -33,35 +28,27 @@ Particula* ExplosionParticleGenerator::generateP()
     );
 
     newP->setPos(newPos);
-    //newP->setPos(basePos);
 
-    //VARIACION DE VELOCIDAD
-    Vector3 baseVel = _modelP->getVel();
+    return newP;
+}
 
-    //float RANGO_VEL_X = 5.0f;
-    //float RANGO_VEL_Y = 0.0f;
-    //float RANGO_VEL_Z = 5.0f;
-    //
-    //Vector3 newVel = baseVel + Vector3(
-    //    _n(_mt) * RANGO_VEL_X,
-    //    _n(_mt) * RANGO_VEL_Y,
-    //    _n(_mt) * RANGO_VEL_Z
-    //);
-    //
-    //newP->setVel(newVel);
-    //Adaptacion de la posicion antigua para verlet LO HACEMOS EN EL UPDATE
-    /*newP->setOldPos(newP->getPos().p - newVel * Particula::OLD_POS_CONSTANT);*/
+Particula* ExplosionParticleGenerator::generatePInOnePosition(Vector3 pos)
+{
+    Particula* newP = _modelP->clone();
 
-    float offset = _n(_mt);
+    //VARIACION DE POSICION
+    Vector3 basePos = pos;
+    float RANGO_POS_X = 0.5f;
+    float RANGO_POS_Y = 0.5f;
+    float RANGO_POS_Z = 0.5f;
 
-    //float baseTam = _modelP->getTam();
-    //float VARIACION_TAM = baseTam * offset;
-    //
-    //float baseMass = _modelP->getMass();
-    //float VARIACION_MASA = baseMass * offset;
-    //
-    //newP->setTam(VARIACION_TAM);
-    //newP->setMass(VARIACION_MASA);
+    Vector3 newPos = basePos + Vector3(
+        _n(_mt) * RANGO_POS_X,
+        _n(_mt) * RANGO_POS_Y,
+        _n(_mt) * RANGO_POS_Z
+    );
+
+    newP->setPos(newPos);
 
     return newP;
 }
@@ -109,12 +96,14 @@ void ExplosionParticleGenerator::ApplyForces(Particula* newParticle, double t)
     if (_explosionForceGenerator) {
         if (_explosionForceGenerator->getIsActive()) {
             _explosionForceGenerator->update(t);
+            generatePInOnePosition(getPos().p);
         }
     }
 }
 
 void ExplosionParticleGenerator::triggerExplosion(Vector3 pos)
 {
+
     if (_explosionForceGenerator && !_explosionForceGenerator->getIsActive()) {
         _explosionForceGenerator->activate(pos);
     }
