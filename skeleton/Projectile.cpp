@@ -2,7 +2,7 @@
 #include "Particula.h"
 
 Projectile::Projectile(Vector3 initialPos, Vector3 initialDir, ProjectileType projectileType, IntegratorType integratortype) :
-	Particula(initialDir, initialPos, Vector3(0.0f, -9.8f, 0.0f), 20.0f, Vector4(0.0f, 0.0f, 0.0f, 1.0f), 2.0f, 40.0f)
+	Particula(initialDir, initialPos, Vector3(0.0f, -9.8f, 0.0f), 20.0f, Vector4(0.0f, 0.0f, 0.0f, 1.0f), 2.0f, 200.0f)
 {
 	_projectileType = projectileType;
 	_integratortype = integratortype;
@@ -20,7 +20,7 @@ Projectile::Projectile(Vector3 initialPos, Vector3 initialDir, ProjectileType pr
 	}
 
 	_forceGenerators.push_back(new GravityForceGenerator(Vector3(0, -9.8, 0))); //Aplicamos la gravedad al generador de fuerzas
-	_windForceGenerator = new WindForceGenerator(Vector3(100.0f, 0.0f, 0.0f), 0.5f, 0.02f);
+	_windForceGenerator = new WindForceGenerator(Vector3(0.0f, 0.0f, 0.0f), 0.5f, 0.02f);
 	_forceGenerators.push_back(_windForceGenerator);
 
 	Vector3 velParticle = initialDir;
@@ -73,8 +73,7 @@ Projectile::Projectile(Vector3 initialPos, Vector3 initialDir, ProjectileType pr
 		break;
 	}
 
-	Vector3 actualVel = getVel();
-	setOldPos(initialPos - actualVel * 0.001f);
+	setOldPos(initialPos - getVel() * 0.001f);
 	setTimeOfLife(2.0f);
 }
 
@@ -139,7 +138,7 @@ void Projectile::resetPhysics(Vector3 initialPos, Vector3 initialDir, Projectile
 	}
 
 	_forceGenerators.push_back(new GravityForceGenerator(Vector3(0, -9.8, 0))); //Aplicamos la gravedad al generador de fuerzas
-	_forceGenerators.push_back(new WindForceGenerator(Vector3(100.0, 0, 0.0), 0.5, 0.02f));
+	_forceGenerators.push_back(new WindForceGenerator(Vector3(0.0f, 0.0f, 0.0f), 0.5f, 0.02f));
 
 	Vector3 velParticle = initialDir;
 
@@ -191,8 +190,7 @@ void Projectile::resetPhysics(Vector3 initialPos, Vector3 initialDir, Projectile
 		break;
 	}
 
-	Vector3 actualVel = getVel();
-	setOldPos(initialPos - actualVel * 0.001f);
+	setOldPos(initialPos - getVel() * 0.001f);
 	setTimeOfLife(2.0f);
 }
 
@@ -201,16 +199,16 @@ void Projectile::changeDirection(WindDir dir)
 	switch (dir)
 	{
 	case Projectile::FRONT:
-		_windForceGenerator->setWindVel(Vector3(0.0f, 0.0f, 100.0f));
+		_windForceGenerator->setWindVel(Vector3(-100.0f, 0.0f, -100.0f));
 		break;
 	case Projectile::BACK:
-		_windForceGenerator->setWindVel(Vector3(0.0f, 0.0f, -100.0f));
+		_windForceGenerator->setWindVel(Vector3(100.0f, 0.0f, 100.0f));
 		break;
 	case Projectile::LEFT:
-		_windForceGenerator->setWindVel(Vector3(-100.0f, 0.0f, 0.0f));
+		_windForceGenerator->setWindVel(Vector3(-100.0f, 0.0f, 100.0f));
 		break;
 	case Projectile::RIGHT:
-		_windForceGenerator->setWindVel(Vector3(100.0f, 0.0f, 0.0f));
+		_windForceGenerator->setWindVel(Vector3(100.0f, 0.0f, -100.0f));
 		break;
 	default:
 		break;

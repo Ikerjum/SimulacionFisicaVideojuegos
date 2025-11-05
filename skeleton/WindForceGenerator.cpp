@@ -9,7 +9,7 @@ WindForceGenerator::putForce(Particula* p)
 	float massParticle = p->getMass();
 
 	Vector3 v = p->getVel();
-	Vector3 v_wind = getForceVelocity();
+	Vector3 v_wind = _windVel;
 
 	Vector3 v_rel = v_wind - v;
 

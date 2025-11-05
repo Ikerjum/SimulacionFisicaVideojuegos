@@ -9,6 +9,8 @@
 class WaterParticleGenerator :
     public ParticleGenerator
 {
+private:
+    WindForceGenerator* _windForceGenerator;
 public:
     WaterParticleGenerator(Vector3 pos, Particula* model, int ParticlesPerFrame);
     Particula* generateP() override;

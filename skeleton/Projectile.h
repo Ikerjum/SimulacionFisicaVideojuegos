@@ -23,6 +23,7 @@ private:
 	Vector3 _initialPos;
 	std::vector<ForceGenerator*> _forceGenerators;
 	WindForceGenerator* _windForceGenerator;
+	float _speedWind;
 public:
 	Projectile(Vector3 initialPos,Vector3 initialDir, ProjectileType projectileType, IntegratorType integratortype);
 	~Projectile();
