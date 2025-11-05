@@ -51,7 +51,6 @@ ExplosionParticleGenerator* ExplosionGenerator;
 PaintParticleGenerator* PaintGenerator;
 Particula* particleModelExplosion;
 std::vector<Particula*> GeneratorParticles;
-std::vector<ExplosionParticleGenerator*> ExplosionGeneratorToProjectiles;
 
 void CreateAxes()
 {
@@ -180,9 +179,9 @@ void initPhysics(bool interactive)
 
 	// 2. CREA EL GENERADOR con el modelo
 	// Posición del generador (la fuente)
-	WaterGenerator = new WaterParticleGenerator(generatorPosWater,particleModelWater,3);
+	WaterGenerator = new WaterParticleGenerator(generatorPosWater,particleModelWater,4);
 	//ExplosionGenerator = new ExplosionParticleGenerator(generatorPosExplosion, particleModelExplosion, 3);
-	PaintGenerator = new PaintParticleGenerator(generatorPosExplosion, particleModelExplosion, 1);
+	PaintGenerator = new PaintParticleGenerator(generatorPosExplosion, particleModelExplosion, 2);
 
 	}
 
@@ -309,6 +308,23 @@ void ShootProjectile(Projectile::ProjectileType type, Projectile::IntegratorType
 	}
 }
 
+void PaintInScene()
+{
+	if (PaintGenerator) {
+		int i = 0;
+		bool encontrado = false;
+		while (i < proyectiles.size() && !encontrado) {
+			if (proyectiles[i] != nullptr) {
+				PaintGenerator->triggerExplosion(proyectiles[i]->getPos().p, PaintGenerator->getColor());
+				delete proyectiles[i];
+				proyectiles[i] = nullptr;
+				encontrado = true;
+			}
+			else i++;
+		}
+	}
+}
+
 // Function called when a key is pressed
 void keyPress(unsigned char key, const PxTransform& camera)
 {
@@ -392,24 +408,40 @@ void keyPress(unsigned char key, const PxTransform& camera)
 			PaintGenerator->setColor(Vector4(1.0f, 1.0f, 0.0f, 1.0f));
 			break;
 		case ' ': //ESPACIO
-			if (PaintGenerator) {
-				int i = 0;
-				bool encontrado = false;
-				while (i < proyectiles.size() && !encontrado) {
-					if (proyectiles[i] != nullptr) {
-						PaintGenerator->triggerExplosion(proyectiles[i]->getPos().p,PaintGenerator->getColor());
-						delete proyectiles[i];
-						proyectiles[i] = nullptr;
-						encontrado = true;
-					}
-					else i++;
-				}
-			}
+			PaintInScene();
 			break;
 		case 'B':
 			if (PaintGenerator) {
 				PaintGenerator->unpaint();
 			}
+		case 'T':
+			for (int i = 0; i < proyectiles.size(); ++i) {
+				if (proyectiles[i] != nullptr) {
+					proyectiles[i]->changeDirection(Projectile::FRONT);
+				}
+			}
+			break;
+		case 'F':
+			for (int i = 0; i < proyectiles.size(); ++i) {
+				if (proyectiles[i] != nullptr) {
+					proyectiles[i]->changeDirection(Projectile::LEFT);
+				}
+			}
+			break;
+		case 'G':
+			for (int i = 0; i < proyectiles.size(); ++i) {
+				if (proyectiles[i] != nullptr) {
+					proyectiles[i]->changeDirection(Projectile::BACK);
+				}
+			}
+			break;
+		case 'H':
+			for (int i = 0; i < proyectiles.size(); ++i) {
+				if (proyectiles[i] != nullptr) {
+					proyectiles[i]->changeDirection(Projectile::RIGHT);
+				}
+			}
+			break;
 		default:
 			break;
 	}
