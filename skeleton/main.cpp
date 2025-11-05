@@ -16,6 +16,7 @@
 #include "Projectile.h"
 #include "WaterParticleGenerator.h"
 #include "ExplosionParticleGenerator.h"
+#include "PaintParticleGenerator.h"
 
 std::string display_text = "This is a test";
 
@@ -47,6 +48,7 @@ std::vector<Projectile*> proyectiles(10);
 
 WaterParticleGenerator* WaterGenerator;
 ExplosionParticleGenerator* ExplosionGenerator;
+PaintParticleGenerator* PaintGenerator;
 Particula* particleModelExplosion;
 std::vector<Particula*> GeneratorParticles;
 std::vector<ExplosionParticleGenerator*> ExplosionGeneratorToProjectiles;
@@ -179,7 +181,8 @@ void initPhysics(bool interactive)
 	// 2. CREA EL GENERADOR con el modelo
 	// Posición del generador (la fuente)
 	WaterGenerator = new WaterParticleGenerator(generatorPosWater,particleModelWater,3);
-	ExplosionGenerator = new ExplosionParticleGenerator(generatorPosExplosion, particleModelExplosion, 3);
+	//ExplosionGenerator = new ExplosionParticleGenerator(generatorPosExplosion, particleModelExplosion, 3);
+	PaintGenerator = new PaintParticleGenerator(Vector3(0, 0, 0), particleModelExplosion, 1);
 
 	}
 
@@ -212,7 +215,8 @@ void stepPhysics(bool interactive, double t)
 	}
 
 	WaterGenerator->update(t);
-	ExplosionGenerator->update(t);
+	//ExplosionGenerator->update(t);
+	PaintGenerator->update(t);
 
 	std::this_thread::sleep_for(std::chrono::microseconds(10));
 }
@@ -244,9 +248,10 @@ void cleanupPhysics(bool interactive)
 
 	if (WaterGenerator) delete WaterGenerator;
 	WaterGenerator = nullptr;
-	if (ExplosionGenerator) delete ExplosionGenerator;
-	ExplosionGenerator = nullptr;
-
+	//if (ExplosionGenerator) delete ExplosionGenerator;
+	//ExplosionGenerator = nullptr;
+	if (PaintGenerator) delete PaintGenerator;
+	PaintGenerator = nullptr;
 
 	// Rigid Body ++++++++++++++++++++++++++++++++++++++++++
 	gScene->release();
@@ -362,13 +367,27 @@ void keyPress(unsigned char key, const PxTransform& camera)
 			ShootProjectile(Projectile::EXPLOSIVE_MINE, Projectile::IntegratorType::VERLET, posCam, dirCam);
 			break;
 		case ' ': //ESPACIO
-			if (ExplosionGenerator) {
+			//if (ExplosionGenerator) {
+			//	int i = 0;
+			//	bool encontrado = false;
+			//	while (i < proyectiles.size() && !encontrado) {
+			//		if (proyectiles[i] != nullptr) {
+			//			ExplosionGenerator->setPos(proyectiles[i]->getPos().p);
+			//			ExplosionGenerator->triggerExplosion(proyectiles[i]->getPos().p);
+			//			delete proyectiles[i];
+			//			proyectiles[i] = nullptr;
+			//			encontrado = true;
+			//		}
+			//		else i++;
+			//	}
+			//}
+			if (PaintGenerator) {
 				int i = 0;
 				bool encontrado = false;
 				while (i < proyectiles.size() && !encontrado) {
 					if (proyectiles[i] != nullptr) {
-						ExplosionGenerator->setPos(proyectiles[i]->getPos().p);
-						ExplosionGenerator->triggerExplosion(proyectiles[i]->getPos().p);
+						PaintGenerator->setPos(proyectiles[i]->getPos().p);
+						PaintGenerator->triggerExplosion(proyectiles[i]->getPos().p);
 						delete proyectiles[i];
 						proyectiles[i] = nullptr;
 						encontrado = true;
@@ -377,6 +396,10 @@ void keyPress(unsigned char key, const PxTransform& camera)
 				}
 			}
 			break;
+		case 'B':
+			if (PaintGenerator) {
+				PaintGenerator->unpaint();
+			}
 		default:
 			break;
 	}

@@ -31,5 +31,5 @@ public:
 	}
 	Vector3 putForce(Particula* p) override;
 
-	bool getIsActive() { return _active; }
+	bool getIsActive() const { return _active; }
 };
