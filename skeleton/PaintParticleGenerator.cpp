@@ -7,8 +7,10 @@ PaintParticleGenerator::PaintParticleGenerator(Vector3 pos, Particula* model, in
     _mt.seed(rd());
 
     //GENERADORES DE FUERZAS, LO HACEMOS SOLO UNA VEZ EN LA CONSTRUCTORA
-    //_forceGenerators.push_back(new GravityForceGenerator(Vector3(0, -9.8, 0))); //Aplicamos la gravedad al generador de fuerzas
-    _explosionForceGenerator = new ExplosionForceGenerator(Vector3(0, 0, 0), 100000.0, 1.0f, 1.0f);
+    _forceGenerators.push_back(new GravityForceGenerator(Vector3(0, -9.8, 0))); //Aplicamos la gravedad al generador de fuerzas
+    //POSICION,FUERZA,TIEMPO DE VIDA,RADIO DE ALCANCE
+    //Al ser el radio muy pequeño, habran algunas particulas afectadas por la explosion pero otras solo seran afectadas por la gravedad
+    _explosionForceGenerator = new ExplosionForceGenerator(Vector3(0, 0, 0), 50000.0, 2.0f, 1.0f);
     _forceGenerators.push_back(_explosionForceGenerator);
 }
 
@@ -18,7 +20,7 @@ Particula* PaintParticleGenerator::generateP()
     Particula* newP = _modelP->clone();
 
     //VARIACION DE POSICION
-    Vector3 basePos = _modelP->getPos().p;
+    Vector3 basePos = getPos().p; //Ponemos la posicion base en el proyectil, es decir en la zona donde reposicionamos el generador de particulas
     float RANGO_POS_X = 0.5f;
     float RANGO_POS_Y = 0.5f;
     float RANGO_POS_Z = 0.5f;
@@ -36,43 +38,14 @@ Particula* PaintParticleGenerator::generateP()
 
 void PaintParticleGenerator::update(double t)
 {
-    _explosionForceGenerator->update(t);
-    std::cout << "ACTIVE: " << _explosionForceGenerator->getIsActive() << "\n";
-    if (_explosionForceGenerator->getIsActive()) {
-
-        for (int i = 0; i < _particlesPerFrame; ++i) {
-            Particula* newParticle = generateP();
-            if (newParticle) {
-                newParticle->setAcc(Vector3(0.0f, 0.0f, 0.0f));
-                newParticle->setOldPos(newParticle->getPos().p - newParticle->getVel() * float(t));
-                newParticle->setColor({ 1.0f,1.0f,1.0f,1.0f });
-                ApplyForces(newParticle, t); //Recorremos los generadores de fuerzas y aplicamos la aceleracion necesitada
-
-                _generatorParticlesV.push_back(newParticle);
-            }
-        }
-
-        //PARA LAS PARTICULAS PINTADAS
-        for (int i = 0; i < _particlesPerFrame; ++i) {
-            Particula* newParticle = generateP();
-            if (newParticle) {
-                newParticle->setAcc(Vector3(0.0f, 0.0f, 0.0f));
-                newParticle->setTimeOfLife(100.0f);
-                newParticle->setOldPos(newParticle->getPos().p - newParticle->getVel() * float(t));
-                newParticle->setColor({ 1.0f,0.3f,0.0f,1.0f });
-                //ApplyForces(newParticle, t); //Recorremos los generadores de fuerzas y aplicamos la aceleracion necesitada
-
-                _paintParticles.push_back(newParticle);
-            }
-        }
-    }
+    _explosionForceGenerator->update(t); //Gestiona la duracion de la explosion
 
     if (!_generatorParticlesV.empty()) {
         for (int i = 0; i < _generatorParticlesV.size(); ) {
             Particula* p = _generatorParticlesV[i];
             ApplyForces(p, t); //Aplicamos fuerzas antes de integrar y recalculamos en cada frame
             p->integrate_Verlet(t);
-            if (p->getTimeOfLife() <= 0.0f || p->getPos().p.y < -20.0f) {
+            if (p->getTimeOfLife() <= 0.0f) {
                 delete p;
                 p = nullptr;
                 _generatorParticlesV[i] = _generatorParticlesV.back();
@@ -84,20 +57,28 @@ void PaintParticleGenerator::update(double t)
         }
     }
 
-    if (!_paintParticles.empty()) {
-        for (int i = 0; i < _paintParticles.size(); ) {
-            Particula* p = _paintParticles[i];
-            //ApplyForces(p, t); //Aplicamos fuerzas antes de integrar y recalculamos en cada frame
-            p->integrate_Verlet(t);
-            if (p->getTimeOfLife() <= 0.0f) {
-                delete p;
-                p = nullptr;
-                _paintParticles[i] = _paintParticles.back();
-                _paintParticles.pop_back();
-            }
-            else {
-                ++i;
-            }
+    if (!_explosionForceGenerator->getIsActive()) return;
+
+    for (int i = 0; i < _particlesPerFrame; ++i) {
+        Particula* newParticle = generateP();
+        if (newParticle) {
+            newParticle->setAcc(Vector3(0.0f, 0.0f, 0.0f));
+            newParticle->setOldPos(newParticle->getPos().p - newParticle->getVel() * float(t));
+            newParticle->setTimeOfLife(1.0f);
+            ApplyForces(newParticle, t); //Recorremos los generadores de fuerzas y aplicamos la aceleracion necesitada
+            newParticle->integrate_Verlet(t);
+
+            _generatorParticlesV.push_back(newParticle);
+        }
+    }
+
+    //PARA LAS PARTICULAS PINTADAS
+    for (int i = 0; i < _particlesPerFrame; ++i) {
+        Particula* newParticle = generateP();
+        if (newParticle) {
+            newParticle->setAcc(Vector3(0.0f, 0.0f, 0.0f));
+            newParticle->setOldPos(newParticle->getPos().p - newParticle->getVel() * float(t));
+            _paintParticles.push_back(newParticle);
         }
     }
     
@@ -113,10 +94,11 @@ void PaintParticleGenerator::ApplyForces(Particula* newParticle, double t)
     }
 }
 
-void PaintParticleGenerator::triggerExplosion(Vector3 pos)
+void PaintParticleGenerator::triggerExplosion(Vector3 pos, Vector4 color)
 {
-
     if (_explosionForceGenerator && !_explosionForceGenerator->getIsActive()) {
+        _modelP->setColor(color);
+        setPos(pos); //Ponemos el generador en la posicion pasada por referencia que es la posicion del proyectil
         _explosionForceGenerator->activate(pos);
     }
 }

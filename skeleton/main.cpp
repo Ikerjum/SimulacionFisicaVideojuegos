@@ -176,13 +176,13 @@ void initPhysics(bool interactive)
 	float timeOfLifeModelExplosion = 5.0f;
 	float massModelExplosion = 10.0f;
 	Vector3 generatorPosExplosion = Vector3(0.0f, 0.0f, 0.0f);
-	particleModelExplosion = new Particula(velModelExplosion, generatorPosExplosion, accModelExplosion, massModelExplosion, colorModelExplosion, tamModelExplosion, timeOfLifeModelExplosion);
+	Particula* particleModelExplosion = new Particula(velModelExplosion, generatorPosExplosion, accModelExplosion, massModelExplosion, colorModelExplosion, tamModelExplosion, timeOfLifeModelExplosion);
 
 	// 2. CREA EL GENERADOR con el modelo
 	// Posición del generador (la fuente)
 	WaterGenerator = new WaterParticleGenerator(generatorPosWater,particleModelWater,3);
 	//ExplosionGenerator = new ExplosionParticleGenerator(generatorPosExplosion, particleModelExplosion, 3);
-	PaintGenerator = new PaintParticleGenerator(Vector3(0, 0, 0), particleModelExplosion, 1);
+	PaintGenerator = new PaintParticleGenerator(generatorPosExplosion, particleModelExplosion, 1);
 
 	}
 
@@ -366,28 +366,38 @@ void keyPress(unsigned char key, const PxTransform& camera)
 		case 'P':
 			ShootProjectile(Projectile::EXPLOSIVE_MINE, Projectile::IntegratorType::VERLET, posCam, dirCam);
 			break;
+		//-----------------------------------------------------------------------------------------------------
+		case '1':
+			ShootProjectile(Projectile::PAINT_WHITE, Projectile::IntegratorType::VERLET, posCam, dirCam);
+			PaintGenerator->setColor(Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+			break;
+		case '2':
+			ShootProjectile(Projectile::PAINT_BLACK, Projectile::IntegratorType::VERLET, posCam, dirCam);
+			PaintGenerator->setColor(Vector4(0.0f, 0.0f, 0.0f, 1.0f));
+			break;
+		case '3':
+			ShootProjectile(Projectile::PAINT_RED, Projectile::IntegratorType::VERLET, posCam, dirCam);
+			PaintGenerator->setColor(Vector4(1.0f, 0.0f, 0.0f, 1.0f));
+			break;
+		case '4':
+			ShootProjectile(Projectile::PAINT_BLUE, Projectile::IntegratorType::VERLET, posCam, dirCam);
+			PaintGenerator->setColor(Vector4(0.0f, 0.0f, 1.0f, 1.0f));
+			break;
+		case '5':
+			ShootProjectile(Projectile::PAINT_GREEN, Projectile::IntegratorType::VERLET, posCam, dirCam);
+			PaintGenerator->setColor(Vector4(0.0f, 1.0f, 0.0f, 1.0f));
+			break;
+		case '6':
+			ShootProjectile(Projectile::PAINT_YELLOW, Projectile::IntegratorType::VERLET, posCam, dirCam);
+			PaintGenerator->setColor(Vector4(1.0f, 1.0f, 0.0f, 1.0f));
+			break;
 		case ' ': //ESPACIO
-			//if (ExplosionGenerator) {
-			//	int i = 0;
-			//	bool encontrado = false;
-			//	while (i < proyectiles.size() && !encontrado) {
-			//		if (proyectiles[i] != nullptr) {
-			//			ExplosionGenerator->setPos(proyectiles[i]->getPos().p);
-			//			ExplosionGenerator->triggerExplosion(proyectiles[i]->getPos().p);
-			//			delete proyectiles[i];
-			//			proyectiles[i] = nullptr;
-			//			encontrado = true;
-			//		}
-			//		else i++;
-			//	}
-			//}
 			if (PaintGenerator) {
 				int i = 0;
 				bool encontrado = false;
 				while (i < proyectiles.size() && !encontrado) {
 					if (proyectiles[i] != nullptr) {
-						PaintGenerator->setPos(proyectiles[i]->getPos().p);
-						PaintGenerator->triggerExplosion(proyectiles[i]->getPos().p);
+						PaintGenerator->triggerExplosion(proyectiles[i]->getPos().p,PaintGenerator->getColor());
 						delete proyectiles[i];
 						proyectiles[i] = nullptr;
 						encontrado = true;

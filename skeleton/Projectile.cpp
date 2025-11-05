@@ -38,6 +38,31 @@ Projectile::Projectile(Vector3 initialPos, Vector3 initialDir, ProjectileType pr
 		setVel(velParticle * 700.f);
 		setColor(Vector4(1.0f, 0.6f, 0.0f, 1.0f));
 		break;
+	//-----------------------------------------------
+	case PAINT_WHITE:
+		setVel(velParticle * 500.f);
+		setColor(Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+		break;
+	case PAINT_BLACK:
+		setVel(velParticle * 500.f);
+		setColor(Vector4(0.0f, 0.0f, 0.0f, 1.0f));
+		break;
+	case PAINT_RED:
+		setVel(velParticle * 500.f);
+		setColor(Vector4(1.0f, 0.0f, 0.0f, 1.0f));
+		break;
+	case PAINT_BLUE:
+		setVel(velParticle * 500.f);
+		setColor(Vector4(0.0f, 0.0f, 1.0f, 1.0f));
+		break;
+	case PAINT_GREEN:
+		setVel(velParticle * 500.f);
+		setColor(Vector4(0.0f, 1.0f, 0.0f, 1.0f));
+		break;
+	case PAINT_YELLOW:
+		setVel(velParticle * 500.f);
+		setColor(Vector4(1.0f, 1.0f, 0.0f, 1.0f));
+		break;
 	}
 
 	Vector3 actualVel = getVel();
@@ -97,6 +122,31 @@ void Projectile::resetPhysics(Vector3 initialPos, Vector3 initialDir, Projectile
 	case EXPLOSIVE_MINE:
 		setVel(velParticle * 700.f);
 		setColor(Vector4(1.0f, 0.6f, 0.0f, 1.0f));
+		break;
+	//-----------------------------------------------
+	case PAINT_WHITE:
+		setVel(velParticle * 500.f);
+		setColor(Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+		break;
+	case PAINT_BLACK:
+		setVel(velParticle * 500.f);
+		setColor(Vector4(0.0f, 0.0f, 0.0f, 1.0f));
+		break;
+	case PAINT_RED:
+		setVel(velParticle * 500.f);
+		setColor(Vector4(1.0f, 0.0f, 0.0f, 1.0f));
+		break;
+	case PAINT_BLUE:
+		setVel(velParticle * 500.f);
+		setColor(Vector4(0.0f, 0.0f, 1.0f, 1.0f));
+		break;
+	case PAINT_GREEN:
+		setVel(velParticle * 500.f);
+		setColor(Vector4(0.0f, 1.0f, 0.0f, 1.0f));
+		break;
+	case PAINT_YELLOW:
+		setVel(velParticle * 500.f);
+		setColor(Vector4(1.0f, 1.0f, 0.0f, 1.0f));
 		break;
 	}
 

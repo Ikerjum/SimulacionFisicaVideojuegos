@@ -12,11 +12,15 @@ class PaintParticleGenerator :
 private:
     ExplosionForceGenerator* _explosionForceGenerator;
     std::vector<Particula*> _paintParticles;
+    Vector4 _paintColor;
 public:
     PaintParticleGenerator(Vector3 pos, Particula* model, int ParticlesPerFrame);
     Particula* generateP() override;
     void update(double t) override;
     void ApplyForces(Particula* newParticle, double t);
-    void triggerExplosion(Vector3 pos);
+    void triggerExplosion(Vector3 pos, Vector4 color);
     void unpaint();
+
+    void setColor(Vector4 newColor) { _paintColor = newColor; }
+    Vector4 getColor() const { return _paintColor; }
 };
