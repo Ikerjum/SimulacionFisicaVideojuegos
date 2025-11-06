@@ -6,7 +6,7 @@
 class ParticleSystem
 {
 private:
-	std::vector<ParticleGenerator*> _particleGenerators;
+	std::vector<ParticleGenerator*> _particleGenerators; //Conjunto de generadores de particulas
 public:
 	ParticleSystem();
 	~ParticleSystem();

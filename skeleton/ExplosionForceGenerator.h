@@ -7,7 +7,7 @@ class ExplosionForceGenerator : public ForceGenerator {
 private:
 	Vector3 _center; //Centro de la explosion
 	float _K; //Intensidad de la explosion
-	float _tau; //Constante de decaimiento temporal
+	float _tau; //Tiempo necesario para que la explosion se desactive
 	float _R; //radio maximo de accion
 	double _time; //tiempo transcurrido desde que ha empezado la explosion
 	bool _active;

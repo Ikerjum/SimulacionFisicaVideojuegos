@@ -112,9 +112,9 @@ void initPhysics(bool interactive)
 	sceneDesc.simulationEventCallback = &gContactReportCallback;
 	gScene = gPhysics->createScene(sceneDesc);
 
-	_axes = new Axes();
-	_GroundDown = new Ground(PxVec3(0.0f,0.0f,0.0f));
-	_GroundUp = new Ground(PxVec3(0.0f,60.0f,0.0f));
+	_axes = new Axes(); //Creamos ejes para posicionarnos en el espacio
+	_GroundDown = new Ground(PxVec3(0.0f,0.0f,0.0f)); //Creamos suelo abajjo
+	_GroundUp = new Ground(PxVec3(0.0f,60.0f,0.0f)); //Creamos suelo arriba
 	//CreateParticles();
 
 	//MODELO DE LA PARTICULA DE AGUA DE LLUVIA
@@ -137,18 +137,17 @@ void initPhysics(bool interactive)
 	Vector3 generatorPosExplosion = Vector3(0.0f, 0.0f, 0.0f);
 	Particula* particleModelExplosion = new Particula(velModelExplosion, generatorPosExplosion, accModelExplosion, massModelExplosion, colorModelExplosion, tamModelExplosion, timeOfLifeModelExplosion);
 
-	// 2. CREA EL GENERADOR con el modelo
-	// Posición del generador (la fuente)
+
+	//GENERADORES
 	WindUpGenerator = new WindForceGenerator(Vector3(0.0f, 6000.0f, 0.0f),false);
-	GravityDownGenerator = new GravityForceGenerator(Vector3(0.0f, -9.8f, 0.0f),true);
+	//GravityDownGenerator = new GravityForceGenerator(Vector3(0.0f, -9.8f, 0.0f));
 
 	WaterGenerator = new WaterParticleGenerator(generatorPosWater,particleModelWater,4);
-	WaterGenerator->addGravityForce(GravityDownGenerator);
 	WaterGenerator->addWindForce(WindUpGenerator);
 	PaintGenerator = new PaintParticleGenerator(generatorPosExplosion, particleModelExplosion, 6);
 
-	WaterSystem = new ParticleSystem();
-	WaterSystem->addParticleGenerator(WaterGenerator);
+	//WaterSystem = new ParticleSystem();
+	//WaterSystem->addParticleGenerator(WaterGenerator);
 }
 
 void PaintInScene(Projectile* projectile) {
@@ -230,6 +229,9 @@ void cleanupPhysics(bool interactive)
 	if (PaintGenerator) delete PaintGenerator;
 	PaintGenerator = nullptr;
 
+	if (WindUpGenerator) delete WindUpGenerator;
+	WindUpGenerator = nullptr;
+
 
 	// Rigid Body ++++++++++++++++++++++++++++++++++++++++++
 	gScene->release();
@@ -242,20 +244,20 @@ void cleanupPhysics(bool interactive)
 	gFoundation->release();
 }
 
-// Función auxiliar que pones antes de initPhysics o keyPress en main.cpp
 void ShootProjectile(Projectile::ProjectileType type, Projectile::IntegratorType integrator, const Vector3& posCam, const Vector3& dirCam)
 {
 	int indexToReuse = -1;
 
+	//Al disparar un proyectil si encontramos un hueco que no haya sido ocupado creamos el proyectil
 	for (int i = 0; i < proyectiles.size(); ++i) {
 		if (proyectiles[i] == nullptr) {
 			proyectiles[i] = new Projectile(posCam, dirCam, type, integrator);
 			proyectiles[i]->addWindForce(WindUpGenerator);
-			proyectiles[i]->addGravityForce(GravityDownGenerator);
 			return;
 		}
 	}
 
+	//Si encontramos un proyectil cuyo tiempo de vida sea menor que el limite, lo guardamos para reutilizarlo
 	for (int i = 0; i < proyectiles.size(); ++i) {
 		if (proyectiles[i] != nullptr && proyectiles[i]->getTimeOfLife() <= 0.0f) {
 			indexToReuse = i;
@@ -263,6 +265,7 @@ void ShootProjectile(Projectile::ProjectileType type, Projectile::IntegratorType
 		}
 	}
 
+	//Si no hemos encontrado aun un proyectil a reutilizar, decidimos entre el que tiene la menor cantidad de tiempo de vida
 	if (indexToReuse == -1) {
 
 		int indexMinTime = -1;
@@ -284,6 +287,7 @@ void ShootProjectile(Projectile::ProjectileType type, Projectile::IntegratorType
 		indexToReuse = indexMinTime;
 	}
 
+	//En caso de encontrar el proyectil, volvemos a aplicar sus fisicas
 	if (indexToReuse != -1) {
 		proyectiles[indexToReuse]->resetPhysics(posCam, dirCam, type, integrator);
 	}
@@ -313,10 +317,11 @@ void ManageWindForce()
 	bool newState = !WindUpGenerator->isActive();
 	WindUpGenerator->setActive(newState);
 
+	//Cambiamos el estado activo del viento para la lluvia
 	if (WaterGenerator && WaterGenerator->getWindForce())
 		WaterGenerator->getWindForce()->setActive(newState);
 
-	// Actualizamos posición del generador según estado actual (si eso es la intención)
+	//Axtualizamos la posicion del generador al activar las fuerzas del viento para mostrar las particulas hacia arriba
 	if (WaterGenerator) {
 		if (WaterGenerator->getWindForce()->isActive())
 			WaterGenerator->setPos(Vector3(WaterGenerator->getPos().p.x, _GroundDown->getPos().y, WaterGenerator->getPos().p.z));
@@ -324,34 +329,17 @@ void ManageWindForce()
 			WaterGenerator->setPos(Vector3(WaterGenerator->getPos().p.x, _GroundUp->getPos().y, WaterGenerator->getPos().p.z));
 	}
 
+	//Cambiamos el estado activo del viento para los proyectiles
 	for (int i = 0; i < proyectiles.size(); ++i) {
 		if (proyectiles[i] != nullptr && proyectiles[i]->getWindForce())
 			proyectiles[i]->getWindForce()->setActive(newState);
 	}
 }
 
-void ManageGravity() {
-
-	if (!GravityDownGenerator) return;
-
-	// Queremos invertir el estado globalmente
-	bool newState = !GravityDownGenerator->isActive();
-	GravityDownGenerator->setActive(newState);
-
-	// Si hay referencias a la misma instancia, esta llamada es redundante pero segura.
-	if (WaterGenerator && WaterGenerator->getGravityForce())
-		WaterGenerator->getGravityForce()->setActive(newState);
-
-	for (int i = 0; i < proyectiles.size(); ++i) {
-		if (proyectiles[i] != nullptr && proyectiles[i]->getGravityForce())
-			proyectiles[i]->getGravityForce()->setActive(newState);
-	}
-}
-
 void UnPaintAllInScene()
 {
 	if (PaintGenerator) {
-		PaintGenerator->unpaint();
+		PaintGenerator->unpaint(); //Borramos toda la pintura generada en la escena
 	}
 }
 
@@ -364,13 +352,12 @@ void keyPress(unsigned char key, const PxTransform& camera)
 	Vector3 posCam = cam->getEye();
 	Vector3 dirCam = cam->getDir();
 
-	Vector3 velParticle = Vector3(dirCam.x * 70.0f, dirCam.y * 70.0f, dirCam.z * 70.0f);
-	Vector3 accParticle = Vector3(0.0f, -9.8f, 0.0f);
-	Vector4 color = Vector4(1.0f, 1.0f, 0.0f, 1.0f);
-	float massParticle = 1.0f;
-	float timeOfLifeParticle = 10.0f;
-
-	bool rePosBullet = true;
+	//Vector3 velParticle = Vector3(dirCam.x * 70.0f, dirCam.y * 70.0f, dirCam.z * 70.0f);
+	//Vector3 accParticle = Vector3(0.0f, -9.8f, 0.0f);
+	//Vector4 color = Vector4(1.0f, 1.0f, 0.0f, 1.0f);
+	//float massParticle = 1.0f;
+	//float timeOfLifeParticle = 10.0f;
+	//bool rePosBullet = true;
 
 	switch(toupper(key))
 	{
@@ -406,9 +393,6 @@ void keyPress(unsigned char key, const PxTransform& camera)
 			break;
 		case 'V': //ACTIVAMOS Y DESACTIVAMOS LA FUERZA DEL VIENTO
 			ManageWindForce();
-			break;
-		case 'G': //ACTIVAMOS Y DESACTIVAMOS LA FUERZA DE LA GRAVEDAD
-			ManageGravity();
 			break;
 		default:
 			break;
