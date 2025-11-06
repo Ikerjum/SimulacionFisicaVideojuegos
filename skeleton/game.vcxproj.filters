@@ -20,6 +20,8 @@
     <ClCompile Include="ExplosionParticleGenerator.cpp" />
     <ClCompile Include="PaintParticleGenerator.cpp" />
     <ClCompile Include="Ground.cpp" />
+    <ClCompile Include="Axes.cpp" />
+    <ClCompile Include="ParticleSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core.hpp" />
@@ -43,6 +45,8 @@
     <ClInclude Include="ExplosionParticleGenerator.h" />
     <ClInclude Include="PaintParticleGenerator.h" />
     <ClInclude Include="Ground.h" />
+    <ClInclude Include="Axes.h" />
+    <ClInclude Include="ParticleSystem.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Render">

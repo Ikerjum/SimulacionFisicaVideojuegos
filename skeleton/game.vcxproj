@@ -262,6 +262,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PaintParticleGenerator.cpp" />
     <ClCompile Include="ParticleGenerator.cpp" />
+    <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="Particula.cpp" />
     <ClCompile Include="Projectile.cpp" />
     <ClCompile Include="RenderUtils.cpp" />
@@ -281,6 +282,7 @@
     <ClInclude Include="Ground.h" />
     <ClInclude Include="PaintParticleGenerator.h" />
     <ClInclude Include="ParticleGenerator.h" />
+    <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="Particula.h" />
     <ClInclude Include="Projectile.h" />
     <ClInclude Include="RenderUtils.hpp" />
