@@ -257,6 +257,7 @@
     <ClCompile Include="ExplosionForceGenerator.cpp" />
     <ClCompile Include="ExplosionParticleGenerator.cpp" />
     <ClCompile Include="GravityForceGenerator.cpp" />
+    <ClCompile Include="Ground.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PaintParticleGenerator.cpp" />
     <ClCompile Include="ParticleGenerator.cpp" />
@@ -275,6 +276,7 @@
     <ClInclude Include="ExplosionParticleGenerator.h" />
     <ClInclude Include="ForceGenerator.h" />
     <ClInclude Include="GravityForceGenerator.h" />
+    <ClInclude Include="Ground.h" />
     <ClInclude Include="PaintParticleGenerator.h" />
     <ClInclude Include="ParticleGenerator.h" />
     <ClInclude Include="Particula.h" />

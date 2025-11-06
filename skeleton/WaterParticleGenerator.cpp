@@ -12,6 +12,14 @@ WaterParticleGenerator::WaterParticleGenerator(Vector3 pos, Particula* model, in
     //_forceGenerators.push_back(_explosionForceGenerator);
 }
 
+WaterParticleGenerator::~WaterParticleGenerator()
+{
+    for (int i = 0; i < _forceGenerators.size(); ++i) {
+        delete _forceGenerators[i];
+        _forceGenerators[i] = nullptr;
+    }
+}
+
 Particula* WaterParticleGenerator::generateP()
 {
 
@@ -22,7 +30,7 @@ Particula* WaterParticleGenerator::generateP()
     Particula* newP = _modelP->clone();
 
     //VARIACION DE POSICION
-    Vector3 basePos = _modelP->getPos().p;
+    Vector3 basePos = getPos().p;
     float RANGO_POS_X = 30.0f;
     float RANGO_POS_Y = 0.0f;
     float RANGO_POS_Z = 30.0f;
@@ -87,7 +95,7 @@ void WaterParticleGenerator::update(double t)
         ApplyForces(p, t); //Aplicamos fuerzas antes de integrar y recalculamos en cada frame
         p->integrate_Verlet(t);
 
-        if (p->getTimeOfLife() <= 0.0f || p->getPos().p.y < -20.0f) {
+        if (p->getTimeOfLife() <= 0.0f) {
             delete p;
             p = nullptr;
             _generatorParticlesV[i] = _generatorParticlesV.back();
@@ -107,4 +115,9 @@ void WaterParticleGenerator::ApplyForces(Particula* newParticle, double t)
         Vector3 newForce = _forceGenerators[i]->putForce(newParticle);
         if (massParticle != 0.0f) newParticle->setAcc(newParticle->getAcc() + newForce / massParticle);
     }
+}
+
+void WaterParticleGenerator::addWindForce(WindForceGenerator* externalForceGenerator) {
+    _windForceGenerator = new WindForceGenerator(externalForceGenerator->getWindVel(), externalForceGenerator->isActive());
+    _forceGenerators.push_back(_windForceGenerator);
 }

@@ -13,7 +13,10 @@ private:
 	bool _active;
 public:
 	ExplosionForceGenerator(Vector3 center, float K, float tau, float R) 
-		: ForceGenerator(), _center(center), _K(K), _tau(tau), _R(R), _time(0.0f), _active(false) {}
+		: ForceGenerator(), _center(center), _K(K), _tau(tau), _R(R), _time(0.0f), _active(false) 
+	{
+		setActive(true); //Por defecto siempre empezamos con el generador de explosiones activado
+	}
 	void activate(Vector3 newCenter) {
 		_center = newCenter;
 		_time = 0.0f;

@@ -3,7 +3,7 @@
 Vector3 
 WindForceGenerator::putForce(Particula* p)
 {
-	if (p->getMass() == 0 || p == nullptr) 
+	if (p->getMass() == 0 || p == nullptr || !isActive()) 
 		return Vector3(0, 0, 0);
 	
 	float massParticle = p->getMass();

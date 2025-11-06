@@ -17,6 +17,8 @@
 #include "WaterParticleGenerator.h"
 #include "ExplosionParticleGenerator.h"
 #include "PaintParticleGenerator.h"
+#include "WindForceGenerator.h"
+#include "Ground.h"
 
 std::string display_text = "This is a test";
 
@@ -50,7 +52,9 @@ WaterParticleGenerator* WaterGenerator;
 ExplosionParticleGenerator* ExplosionGenerator;
 PaintParticleGenerator* PaintGenerator;
 Particula* particleModelExplosion;
+WindForceGenerator* WindUpGenerator;
 std::vector<Particula*> GeneratorParticles;
+Ground* myGround = nullptr;
 
 void CreateAxes()
 {
@@ -163,9 +167,9 @@ void initPhysics(bool interactive)
 	Vector3 accModelWater = Vector3(0.0f, 0.0f, 0.0f); //La fuerza la gestiona el generador de fuerzas
 	Vector4 colorModelWater = Vector4(0.0f, 0.3f, 1.0f, 1.0f);
 	PxReal tamModelWater = 0.3f;
-	float timeOfLifeModelWater = 10.0f;
+	float timeOfLifeModelWater = 5.0f;
 	float massModelWater = 20.0f;
-	Vector3 generatorPosWater = Vector3(0.0f, 100.0f, 0.0f);
+	Vector3 generatorPosWater = Vector3(0.0f, 70.0f, 0.0f);
 	Particula* particleModelWater = new Particula(velModelWater, generatorPosWater, accModelWater, massModelWater, colorModelWater, tamModelWater, timeOfLifeModelWater);
 
 	Vector3 velModelExplosion = Vector3(0.0f, 0.0f, 0.0f);
@@ -179,9 +183,13 @@ void initPhysics(bool interactive)
 
 	// 2. CREA EL GENERADOR con el modelo
 	// Posición del generador (la fuente)
+	WindUpGenerator = new WindForceGenerator(Vector3(0.0f, 6000.0f, 0.0f),false);
 	WaterGenerator = new WaterParticleGenerator(generatorPosWater,particleModelWater,4);
+	WaterGenerator->addWindForce(WindUpGenerator);
 	//ExplosionGenerator = new ExplosionParticleGenerator(generatorPosExplosion, particleModelExplosion, 3);
 	PaintGenerator = new PaintParticleGenerator(generatorPosExplosion, particleModelExplosion, 2);
+
+	myGround = new Ground();
 
 	}
 
@@ -252,6 +260,9 @@ void cleanupPhysics(bool interactive)
 	if (PaintGenerator) delete PaintGenerator;
 	PaintGenerator = nullptr;
 
+	if (myGround) delete myGround;
+	myGround = nullptr;
+
 	// Rigid Body ++++++++++++++++++++++++++++++++++++++++++
 	gScene->release();
 	gDispatcher->release();
@@ -271,6 +282,7 @@ void ShootProjectile(Projectile::ProjectileType type, Projectile::IntegratorType
 	for (int i = 0; i < proyectiles.size(); ++i) {
 		if (proyectiles[i] == nullptr) {
 			proyectiles[i] = new Projectile(posCam, dirCam, type, integrator);
+			proyectiles[i]->addWindForce(WindUpGenerator);
 			return;
 		}
 	}
@@ -315,7 +327,7 @@ void PaintInScene()
 		bool encontrado = false;
 		while (i < proyectiles.size() && !encontrado) {
 			if (proyectiles[i] != nullptr) {
-				PaintGenerator->triggerExplosion(proyectiles[i]->getPos().p, PaintGenerator->getColor());
+				PaintGenerator->triggerExplosion(proyectiles[i]->getPos().p, proyectiles[i]->getProjectileColor());
 				delete proyectiles[i];
 				proyectiles[i] = nullptr;
 				encontrado = true;
@@ -414,31 +426,18 @@ void keyPress(unsigned char key, const PxTransform& camera)
 			if (PaintGenerator) {
 				PaintGenerator->unpaint();
 			}
-		case 'T':
-			for (int i = 0; i < proyectiles.size(); ++i) {
-				if (proyectiles[i] != nullptr) {
-					proyectiles[i]->changeDirection(Projectile::FRONT);
-				}
-			}
 			break;
-		case 'F':
-			for (int i = 0; i < proyectiles.size(); ++i) {
-				if (proyectiles[i] != nullptr) {
-					proyectiles[i]->changeDirection(Projectile::LEFT);
+		case 'V':
+			if (WindUpGenerator) {
+				WindUpGenerator->toggleActive();
+				if (WaterGenerator) {
+					WaterGenerator->getWindForce()->toggleActive();
+					WaterGenerator->setPos(Vector3(WaterGenerator->getPos().p.x, -1 * WaterGenerator->getPos().p.y, WaterGenerator->getPos().p.z));
 				}
-			}
-			break;
-		case 'G':
-			for (int i = 0; i < proyectiles.size(); ++i) {
-				if (proyectiles[i] != nullptr) {
-					proyectiles[i]->changeDirection(Projectile::BACK);
-				}
-			}
-			break;
-		case 'H':
-			for (int i = 0; i < proyectiles.size(); ++i) {
-				if (proyectiles[i] != nullptr) {
-					proyectiles[i]->changeDirection(Projectile::RIGHT);
+				for (int i = 0; i < proyectiles.size();++i) {
+					if (proyectiles[i] != nullptr) {
+						proyectiles[i]->getWindForce()->toggleActive();
+					}
 				}
 			}
 			break;

@@ -3,7 +3,7 @@
 Vector3 
 GravityForceGenerator::putForce(Particula* p)
 {
-	if (p->getMass() != 0 || p != nullptr) { //Si la masa es distinta de 0 o p == nullptr
+	if (p->getMass() != 0 || p != nullptr || !isActive()) { //Si la masa es distinta de 0 o p == nullptr
 		return getForceAcceleration() * p->getMass();
 	}
 	//En caso de que la masa sea 0, no tenemos aceleracion
