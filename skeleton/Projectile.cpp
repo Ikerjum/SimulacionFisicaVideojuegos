@@ -72,7 +72,7 @@ Projectile::Projectile(Vector3 initialPos, Vector3 initialDir, ProjectileType pr
 	}
 
 	setOldPos(initialPos - getVel() * 0.001f);
-	setTimeOfLife(2.0f);
+	setTimeOfLife(100.0f);
 }
 
 Projectile::~Projectile()
@@ -188,7 +188,7 @@ void Projectile::resetPhysics(Vector3 initialPos, Vector3 initialDir, Projectile
 	}
 
 	setOldPos(initialPos - getVel() * 0.001f);
-	setTimeOfLife(2.0f);
+	setTimeOfLife(100.0f);
 }
 
 void Projectile::addWindForce(WindForceGenerator* externalForceGenerator)

@@ -127,7 +127,7 @@ void initPhysics(bool interactive)
 	Vector3 accModelExplosion = Vector3(0.0f, 0.0f, 0.0f);
 	Vector4 colorModelExplosion = Vector4(1.0f, 0.3f, 0.0f, 1.0f);
 	PxReal tamModelExplosion = 0.6f;
-	float timeOfLifeModelExplosion = 5.0f;
+	float timeOfLifeModelExplosion = 100.0f;
 	float massModelExplosion = 100.0f;
 	Vector3 generatorPosExplosion = Vector3(0.0f, 0.0f, 0.0f);
 	Particula* particleModelExplosion = new Particula(velModelExplosion, generatorPosExplosion, accModelExplosion, massModelExplosion, colorModelExplosion, tamModelExplosion, timeOfLifeModelExplosion);
@@ -342,44 +342,44 @@ void keyPress(unsigned char key, const PxTransform& camera)
 
 	switch(toupper(key))
 	{
-		//CANNON_BULLET
-		case 'Y':
-			//for (int i = 0; i < particulas.size(); ++i) {
-			//	if (particulas[i] == nullptr) {
-			//		particulas[i] = new Particula(velParticle,posCam, accParticle, massParticle, color, timeOfLifeParticle);
-			//		rePosBullet = false;
-			//		break;
-			//	}
-			//}
-			//
-			//if (rePosBullet) {
-			//	int indexMaxTimeAlive = 0;
-			//	for (int i = 0; i < particulas.size(); ++i) {
-			//			if (particulas[i]->getTimeOfLife() > particulas[indexMaxTimeAlive]->getTimeOfLife()) indexMaxTimeAlive = i;
-			//	}
-			//	particulas[indexMaxTimeAlive]->setPos(posCam);
-			//	particulas[indexMaxTimeAlive]->setVel(velParticle);
-			//	particulas[indexMaxTimeAlive]->setAcc(accParticle);
-			//	particulas[indexMaxTimeAlive]->setTimeOfLife(0);
-			//}
-			ShootProjectile(Projectile::CANNON_BULLET, Projectile::IntegratorType::VERLET, posCam, dirCam);
-			break;
-		//TANK_BULLET
-		case 'U':
-			ShootProjectile(Projectile::TANK_BULLET, Projectile::IntegratorType::VERLET, posCam, dirCam);
-			break;
-		//PISTOL
-		case 'I':
-			ShootProjectile(Projectile::PISTOL, Projectile::IntegratorType::VERLET, posCam, dirCam);
-			break;
-		//LASER_PISTOL
-		case 'O':
-			ShootProjectile(Projectile::LASER_PISTOL, Projectile::IntegratorType::VERLET, posCam, dirCam);
-			break;
-		//EXPLOSIVE_MINE
-		case 'P':
-			ShootProjectile(Projectile::EXPLOSIVE_MINE, Projectile::IntegratorType::VERLET, posCam, dirCam);
-			break;
+		////CANNON_BULLET
+		//case 'Y':
+		//	//for (int i = 0; i < particulas.size(); ++i) {
+		//	//	if (particulas[i] == nullptr) {
+		//	//		particulas[i] = new Particula(velParticle,posCam, accParticle, massParticle, color, timeOfLifeParticle);
+		//	//		rePosBullet = false;
+		//	//		break;
+		//	//	}
+		//	//}
+		//	//
+		//	//if (rePosBullet) {
+		//	//	int indexMaxTimeAlive = 0;
+		//	//	for (int i = 0; i < particulas.size(); ++i) {
+		//	//			if (particulas[i]->getTimeOfLife() > particulas[indexMaxTimeAlive]->getTimeOfLife()) indexMaxTimeAlive = i;
+		//	//	}
+		//	//	particulas[indexMaxTimeAlive]->setPos(posCam);
+		//	//	particulas[indexMaxTimeAlive]->setVel(velParticle);
+		//	//	particulas[indexMaxTimeAlive]->setAcc(accParticle);
+		//	//	particulas[indexMaxTimeAlive]->setTimeOfLife(0);
+		//	//}
+		//	ShootProjectile(Projectile::CANNON_BULLET, Projectile::IntegratorType::VERLET, posCam, dirCam);
+		//	break;
+		////TANK_BULLET
+		//case 'U':
+		//	ShootProjectile(Projectile::TANK_BULLET, Projectile::IntegratorType::VERLET, posCam, dirCam);
+		//	break;
+		////PISTOL
+		//case 'I':
+		//	ShootProjectile(Projectile::PISTOL, Projectile::IntegratorType::VERLET, posCam, dirCam);
+		//	break;
+		////LASER_PISTOL
+		//case 'O':
+		//	ShootProjectile(Projectile::LASER_PISTOL, Projectile::IntegratorType::VERLET, posCam, dirCam);
+		//	break;
+		////EXPLOSIVE_MINE
+		//case 'P':
+		//	ShootProjectile(Projectile::EXPLOSIVE_MINE, Projectile::IntegratorType::VERLET, posCam, dirCam);
+		//	break;
 		//-----------------------------------------------------------------------------------------------------
 		case '1':
 			ShootProjectile(Projectile::PAINT_WHITE, Projectile::IntegratorType::VERLET, posCam, dirCam);
