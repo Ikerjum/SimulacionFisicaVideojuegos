@@ -12,6 +12,7 @@
 
 #include <iostream>
 #include "Vector3D.h"
+#include "Axes.h"
 #include "Particula.h"
 #include "Projectile.h"
 #include "WaterParticleGenerator.h"
@@ -40,68 +41,16 @@ PxDefaultCpuDispatcher*	gDispatcher = NULL;
 PxScene*				gScene      = NULL;
 ContactReportCallback gContactReportCallback;
 
-RenderItem* AxeCenter = nullptr;
-RenderItem* AxeX = nullptr;
-RenderItem* AxeY = nullptr;
-RenderItem* AxeZ = nullptr;
-
 std::vector<Particula*> particulas(10);
 std::vector<Projectile*> proyectiles(10);
 
+Axes* _axes;
+Ground* _GroundDown = nullptr;
+Ground* _GroundUp = nullptr;
 WaterParticleGenerator* WaterGenerator;
 ExplosionParticleGenerator* ExplosionGenerator;
 PaintParticleGenerator* PaintGenerator;
-Particula* particleModelExplosion;
 WindForceGenerator* WindUpGenerator;
-std::vector<Particula*> GeneratorParticles;
-Ground* myGround = nullptr;
-
-void CreateAxes()
-{
-	//AXES
-	Vector4 colorAxe = { 0.0f,0.0f,0.0f,1.0f };
-
-	// ESFERA CENTRAL
-	PxSphereGeometry _sphereCenter(2);
-	//_sphere.radius = 0.5f;
-	//PxMaterial* _sphereMaterial = gPhysics->createMaterial(1.0f, 1.0f, 1.0f);
-	PxShape* shapeCenter = CreateShape(_sphereCenter);
-	//PxVec3 pos = PxVec3(0.0f, 0.0f, 0.0f);
-	Vector3 posCenter = Vector3(0.0f, 0.0f, 0.0f);
-	//PxQuat rot = PxQuat(0.0f, 0.0f, 0.0f, 0.0f);
-	PxTransform* transformCenter = new PxTransform(posCenter);
-	//transform->p = pos;
-	//transform->q = rot;
-	AxeCenter = new RenderItem(shapeCenter, transformCenter, colorAxe);
-	RegisterRenderItem(AxeCenter);
-
-	//ESFERA DERECHA
-	PxSphereGeometry _sphereDch(2);
-	PxShape* shapeDch = CreateShape(_sphereDch);
-	Vector3 posDch = Vector3(10.0f, 0.0f, 0.0f);
-	PxTransform* transformDch = new PxTransform(posDch);
-	//Vector4 colorDch = { 0.3f,0.1f,0.5f,1.0f };
-	AxeX = new RenderItem(shapeDch, transformDch, colorAxe);
-	RegisterRenderItem(AxeX);
-
-	//ESFERA IZQUIERDA
-	PxSphereGeometry _sphereIzq(2);
-	PxShape* shapeIzq = CreateShape(_sphereIzq);
-	Vector3 posIzq = Vector3(0.0f, 0.0f, 10.0f);
-	PxTransform* transformIzq = new PxTransform(posIzq);
-	//Vector4 colorIzq = { 0.3f,0.1f,0.5f,1.0f };
-	AxeY = new RenderItem(shapeIzq, transformIzq, colorAxe);
-	RegisterRenderItem(AxeY);
-
-	//ESFERA DERECHA
-	PxSphereGeometry _sphereUp(2);
-	PxShape* shapeUp = CreateShape(_sphereUp);
-	Vector3 posUp = Vector3(0.0f, 10.0f, 0.0f);
-	PxTransform* transformUp = new PxTransform(posUp);
-	//Vector4 colorUp = { 0.3f,0.1f,0.5f,1.0f };
-	AxeZ = new RenderItem(shapeUp, transformUp, colorAxe);
-	RegisterRenderItem(AxeZ);
-}
 
 void CreateParticle()
 {
@@ -158,26 +107,28 @@ void initPhysics(bool interactive)
 	sceneDesc.simulationEventCallback = &gContactReportCallback;
 	gScene = gPhysics->createScene(sceneDesc);
 
-	CreateAxes();
+	_axes = new Axes();
+	_GroundDown = new Ground(PxVec3(0.0f,0.0f,0.0f));
+	_GroundUp = new Ground(PxVec3(0.0f,60.0f,0.0f));
 	//CreateParticles();
 
-
+	//MODELO DE LA PARTICULA DE AGUA DE LLUVIA
 	Vector3 velModelWater = Vector3(0.0f, 0.0f, 0.0f);
-	//Vector3 accModel = Vector3(0.0f, -10.0f, 0.0f);
-	Vector3 accModelWater = Vector3(0.0f, 0.0f, 0.0f); //La fuerza la gestiona el generador de fuerzas
+	Vector3 accModelWater = Vector3(0.0f, 0.0f, 0.0f); //La aceleracion se gestiona el generador de fuerzas
 	Vector4 colorModelWater = Vector4(0.0f, 0.3f, 1.0f, 1.0f);
 	PxReal tamModelWater = 0.3f;
 	float timeOfLifeModelWater = 5.0f;
 	float massModelWater = 20.0f;
-	Vector3 generatorPosWater = Vector3(0.0f, 70.0f, 0.0f);
+	Vector3 generatorPosWater = Vector3(0.0f, _GroundUp->getPos().y, 0.0f);
 	Particula* particleModelWater = new Particula(velModelWater, generatorPosWater, accModelWater, massModelWater, colorModelWater, tamModelWater, timeOfLifeModelWater);
 
+	//MODELO DE LA PARTICULA DE PINTURA
 	Vector3 velModelExplosion = Vector3(0.0f, 0.0f, 0.0f);
 	Vector3 accModelExplosion = Vector3(0.0f, 0.0f, 0.0f);
 	Vector4 colorModelExplosion = Vector4(1.0f, 0.3f, 0.0f, 1.0f);
 	PxReal tamModelExplosion = 0.6f;
 	float timeOfLifeModelExplosion = 5.0f;
-	float massModelExplosion = 10.0f;
+	float massModelExplosion = 100.0f;
 	Vector3 generatorPosExplosion = Vector3(0.0f, 0.0f, 0.0f);
 	Particula* particleModelExplosion = new Particula(velModelExplosion, generatorPosExplosion, accModelExplosion, massModelExplosion, colorModelExplosion, tamModelExplosion, timeOfLifeModelExplosion);
 
@@ -186,12 +137,15 @@ void initPhysics(bool interactive)
 	WindUpGenerator = new WindForceGenerator(Vector3(0.0f, 6000.0f, 0.0f),false);
 	WaterGenerator = new WaterParticleGenerator(generatorPosWater,particleModelWater,4);
 	WaterGenerator->addWindForce(WindUpGenerator);
-	//ExplosionGenerator = new ExplosionParticleGenerator(generatorPosExplosion, particleModelExplosion, 3);
-	PaintGenerator = new PaintParticleGenerator(generatorPosExplosion, particleModelExplosion, 2);
+	PaintGenerator = new PaintParticleGenerator(generatorPosExplosion, particleModelExplosion, 6);
 
-	myGround = new Ground();
+}
 
+void PaintInScene(Projectile* projectile) {
+	if (PaintGenerator && projectile) {
+		PaintGenerator->triggerExplosion(projectile->getPos().p, projectile->getProjectileColor());
 	}
+}
 
 // Function to configure what happens in each step of physics
 // interactive: true if the game is rendering, false if it offline
@@ -202,6 +156,7 @@ void stepPhysics(bool interactive, double t)
 
 	gScene->simulate(t);
 	gScene->fetchResults(true);
+
 	//particulas[0]->integrate_EulerExplicit(t);
 	//particulas[1]->integrate_EulerSemiImplicit(t);
 	
@@ -214,7 +169,8 @@ void stepPhysics(bool interactive, double t)
 	for (int i = 0; i < proyectiles.size(); ++i) {
 		if (proyectiles[i] != nullptr) {
 			proyectiles[i]->update(t);
-			if (proyectiles[i]->getTimeOfLife() <= 0) {
+			if (proyectiles[i]->getTimeOfLife() <= 0 || proyectiles[i]->getPos().p.y >= _GroundUp->getPos().y || proyectiles[i]->getPos().p.y <= _GroundDown->getPos().y) {
+				PaintInScene(proyectiles[i]);
 				delete proyectiles[i];
 				proyectiles[i] = nullptr;
 			}
@@ -234,10 +190,12 @@ void cleanupPhysics(bool interactive)
 {
 	PX_UNUSED(interactive);
 
-	DeregisterRenderItem(AxeCenter);
-	DeregisterRenderItem(AxeX);
-	DeregisterRenderItem(AxeY);
-	DeregisterRenderItem(AxeZ);
+	if (_axes) delete _axes;
+	_axes = nullptr;
+	if (_GroundDown) delete _GroundDown;
+	_GroundDown = nullptr;
+	if (_GroundUp) delete _GroundUp;
+	_GroundUp = nullptr;
 
 	//for (int i = 0; i < particulas.size(); ++i) {
 	//	if (particulas[i] != nullptr) {
@@ -260,8 +218,6 @@ void cleanupPhysics(bool interactive)
 	if (PaintGenerator) delete PaintGenerator;
 	PaintGenerator = nullptr;
 
-	if (myGround) delete myGround;
-	myGround = nullptr;
 
 	// Rigid Body ++++++++++++++++++++++++++++++++++++++++++
 	gScene->release();
@@ -334,6 +290,36 @@ void PaintInScene()
 			}
 			else i++;
 		}
+	}
+}
+
+void ManageWindForce()
+{
+	if (WindUpGenerator) {
+		WindUpGenerator->toggleActive();
+		if (WaterGenerator) {
+			WaterGenerator->getWindForce()->toggleActive();
+			if (WaterGenerator->getWindForce()->isActive()) {
+				WaterGenerator->setPos(Vector3(WaterGenerator->getPos().p.x, _GroundDown->getPos().y, WaterGenerator->getPos().p.z));
+			}
+			else WaterGenerator->setPos(Vector3(WaterGenerator->getPos().p.x, _GroundUp->getPos().y, WaterGenerator->getPos().p.z));
+		}
+		for (int i = 0; i < proyectiles.size();++i) {
+			if (proyectiles[i] != nullptr) {
+				proyectiles[i]->getWindForce()->toggleActive();
+			}
+		}
+	}
+}
+
+void ManageGravity() {
+
+}
+
+void UnPaintAllInScene()
+{
+	if (PaintGenerator) {
+		PaintGenerator->unpaint();
 	}
 }
 
@@ -423,23 +409,13 @@ void keyPress(unsigned char key, const PxTransform& camera)
 			PaintInScene();
 			break;
 		case 'B':
-			if (PaintGenerator) {
-				PaintGenerator->unpaint();
-			}
+			UnPaintAllInScene();
 			break;
 		case 'V':
-			if (WindUpGenerator) {
-				WindUpGenerator->toggleActive();
-				if (WaterGenerator) {
-					WaterGenerator->getWindForce()->toggleActive();
-					WaterGenerator->setPos(Vector3(WaterGenerator->getPos().p.x, -1 * WaterGenerator->getPos().p.y, WaterGenerator->getPos().p.z));
-				}
-				for (int i = 0; i < proyectiles.size();++i) {
-					if (proyectiles[i] != nullptr) {
-						proyectiles[i]->getWindForce()->toggleActive();
-					}
-				}
-			}
+			ManageWindForce();
+			break;
+		case 'G':
+			ManageGravity();
 			break;
 		default:
 			break;

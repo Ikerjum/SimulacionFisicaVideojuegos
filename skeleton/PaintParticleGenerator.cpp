@@ -10,7 +10,7 @@ PaintParticleGenerator::PaintParticleGenerator(Vector3 pos, Particula* model, in
     _forceGenerators.push_back(new GravityForceGenerator(Vector3(0, -9.8, 0))); //Aplicamos la gravedad al generador de fuerzas
     //POSICION,FUERZA,TIEMPO DE VIDA,RADIO DE ALCANCE
     //Al ser el radio muy pequeño, habran algunas particulas afectadas por la explosion pero otras solo seran afectadas por la gravedad
-    _explosionForceGenerator = new ExplosionForceGenerator(Vector3(0, 0, 0), 50000.0, 2.0f, 1.0f);
+    _explosionForceGenerator = new ExplosionForceGenerator(Vector3(0, 0, 0), 50000.0, 2.0f, 2.0f);
     _forceGenerators.push_back(_explosionForceGenerator);
 }
 
@@ -21,9 +21,9 @@ Particula* PaintParticleGenerator::generateP()
 
     //VARIACION DE POSICION
     Vector3 basePos = getPos().p; //Ponemos la posicion base en el proyectil, es decir en la zona donde reposicionamos el generador de particulas
-    float RANGO_POS_X = 0.5f;
-    float RANGO_POS_Y = 0.5f;
-    float RANGO_POS_Z = 0.5f;
+    float RANGO_POS_X = 1.5f;
+    float RANGO_POS_Y = 1.5f;
+    float RANGO_POS_Z = 1.5f;
 
     Vector3 newPos = basePos + Vector3(
         _n(_mt) * RANGO_POS_X,
