@@ -20,6 +20,7 @@
 #include "PaintParticleGenerator.h"
 #include "WindForceGenerator.h"
 #include "Ground.h"
+#include "ParticleSystem.h"
 
 std::string display_text = "This is a test";
 
@@ -50,7 +51,11 @@ Ground* _GroundUp = nullptr;
 WaterParticleGenerator* WaterGenerator;
 ExplosionParticleGenerator* ExplosionGenerator;
 PaintParticleGenerator* PaintGenerator;
+
+GravityForceGenerator* GravityDownGenerator;
 WindForceGenerator* WindUpGenerator;
+
+ParticleSystem* WaterSystem;
 
 void CreateParticle()
 {
@@ -135,10 +140,15 @@ void initPhysics(bool interactive)
 	// 2. CREA EL GENERADOR con el modelo
 	// Posición del generador (la fuente)
 	WindUpGenerator = new WindForceGenerator(Vector3(0.0f, 6000.0f, 0.0f),false);
+	GravityDownGenerator = new GravityForceGenerator(Vector3(0.0f, -9.8f, 0.0f),true);
+
 	WaterGenerator = new WaterParticleGenerator(generatorPosWater,particleModelWater,4);
+	WaterGenerator->addGravityForce(GravityDownGenerator);
 	WaterGenerator->addWindForce(WindUpGenerator);
 	PaintGenerator = new PaintParticleGenerator(generatorPosExplosion, particleModelExplosion, 6);
 
+	WaterSystem = new ParticleSystem();
+	WaterSystem->addParticleGenerator(WaterGenerator);
 }
 
 void PaintInScene(Projectile* projectile) {
@@ -211,6 +221,8 @@ void cleanupPhysics(bool interactive)
 		}
 	}
 
+	if (WaterSystem) delete WaterSystem;
+	WaterSystem = nullptr;
 	if (WaterGenerator) delete WaterGenerator;
 	WaterGenerator = nullptr;
 	//if (ExplosionGenerator) delete ExplosionGenerator;
@@ -239,6 +251,7 @@ void ShootProjectile(Projectile::ProjectileType type, Projectile::IntegratorType
 		if (proyectiles[i] == nullptr) {
 			proyectiles[i] = new Projectile(posCam, dirCam, type, integrator);
 			proyectiles[i]->addWindForce(WindUpGenerator);
+			proyectiles[i]->addGravityForce(GravityDownGenerator);
 			return;
 		}
 	}
@@ -295,25 +308,44 @@ void PaintInScene()
 
 void ManageWindForce()
 {
-	if (WindUpGenerator) {
-		WindUpGenerator->toggleActive();
-		if (WaterGenerator) {
-			WaterGenerator->getWindForce()->toggleActive();
-			if (WaterGenerator->getWindForce()->isActive()) {
-				WaterGenerator->setPos(Vector3(WaterGenerator->getPos().p.x, _GroundDown->getPos().y, WaterGenerator->getPos().p.z));
-			}
-			else WaterGenerator->setPos(Vector3(WaterGenerator->getPos().p.x, _GroundUp->getPos().y, WaterGenerator->getPos().p.z));
-		}
-		for (int i = 0; i < proyectiles.size();++i) {
-			if (proyectiles[i] != nullptr) {
-				proyectiles[i]->getWindForce()->toggleActive();
-			}
-		}
+	if (!WindUpGenerator) return;
+
+	bool newState = !WindUpGenerator->isActive();
+	WindUpGenerator->setActive(newState);
+
+	if (WaterGenerator && WaterGenerator->getWindForce())
+		WaterGenerator->getWindForce()->setActive(newState);
+
+	// Actualizamos posición del generador según estado actual (si eso es la intención)
+	if (WaterGenerator) {
+		if (WaterGenerator->getWindForce()->isActive())
+			WaterGenerator->setPos(Vector3(WaterGenerator->getPos().p.x, _GroundDown->getPos().y, WaterGenerator->getPos().p.z));
+		else
+			WaterGenerator->setPos(Vector3(WaterGenerator->getPos().p.x, _GroundUp->getPos().y, WaterGenerator->getPos().p.z));
+	}
+
+	for (int i = 0; i < proyectiles.size(); ++i) {
+		if (proyectiles[i] != nullptr && proyectiles[i]->getWindForce())
+			proyectiles[i]->getWindForce()->setActive(newState);
 	}
 }
 
 void ManageGravity() {
 
+	if (!GravityDownGenerator) return;
+
+	// Queremos invertir el estado globalmente
+	bool newState = !GravityDownGenerator->isActive();
+	GravityDownGenerator->setActive(newState);
+
+	// Si hay referencias a la misma instancia, esta llamada es redundante pero segura.
+	if (WaterGenerator && WaterGenerator->getGravityForce())
+		WaterGenerator->getGravityForce()->setActive(newState);
+
+	for (int i = 0; i < proyectiles.size(); ++i) {
+		if (proyectiles[i] != nullptr && proyectiles[i]->getGravityForce())
+			proyectiles[i]->getGravityForce()->setActive(newState);
+	}
 }
 
 void UnPaintAllInScene()
@@ -342,84 +374,86 @@ void keyPress(unsigned char key, const PxTransform& camera)
 
 	switch(toupper(key))
 	{
-		////CANNON_BULLET
-		//case 'Y':
-		//	//for (int i = 0; i < particulas.size(); ++i) {
-		//	//	if (particulas[i] == nullptr) {
-		//	//		particulas[i] = new Particula(velParticle,posCam, accParticle, massParticle, color, timeOfLifeParticle);
-		//	//		rePosBullet = false;
-		//	//		break;
-		//	//	}
-		//	//}
-		//	//
-		//	//if (rePosBullet) {
-		//	//	int indexMaxTimeAlive = 0;
-		//	//	for (int i = 0; i < particulas.size(); ++i) {
-		//	//			if (particulas[i]->getTimeOfLife() > particulas[indexMaxTimeAlive]->getTimeOfLife()) indexMaxTimeAlive = i;
-		//	//	}
-		//	//	particulas[indexMaxTimeAlive]->setPos(posCam);
-		//	//	particulas[indexMaxTimeAlive]->setVel(velParticle);
-		//	//	particulas[indexMaxTimeAlive]->setAcc(accParticle);
-		//	//	particulas[indexMaxTimeAlive]->setTimeOfLife(0);
-		//	//}
-		//	ShootProjectile(Projectile::CANNON_BULLET, Projectile::IntegratorType::VERLET, posCam, dirCam);
-		//	break;
-		////TANK_BULLET
-		//case 'U':
-		//	ShootProjectile(Projectile::TANK_BULLET, Projectile::IntegratorType::VERLET, posCam, dirCam);
-		//	break;
-		////PISTOL
-		//case 'I':
-		//	ShootProjectile(Projectile::PISTOL, Projectile::IntegratorType::VERLET, posCam, dirCam);
-		//	break;
-		////LASER_PISTOL
-		//case 'O':
-		//	ShootProjectile(Projectile::LASER_PISTOL, Projectile::IntegratorType::VERLET, posCam, dirCam);
-		//	break;
-		////EXPLOSIVE_MINE
-		//case 'P':
-		//	ShootProjectile(Projectile::EXPLOSIVE_MINE, Projectile::IntegratorType::VERLET, posCam, dirCam);
-		//	break;
-		//-----------------------------------------------------------------------------------------------------
-		case '1':
+		case '1': //DISPARAMOS PROYECTIL BLANCO
 			ShootProjectile(Projectile::PAINT_WHITE, Projectile::IntegratorType::VERLET, posCam, dirCam);
 			PaintGenerator->setColor(Vector4(1.0f, 1.0f, 1.0f, 1.0f));
 			break;
-		case '2':
+		case '2': //DISPARAMOS PROYECTIL NEGRO
 			ShootProjectile(Projectile::PAINT_BLACK, Projectile::IntegratorType::VERLET, posCam, dirCam);
 			PaintGenerator->setColor(Vector4(0.0f, 0.0f, 0.0f, 1.0f));
 			break;
-		case '3':
+		case '3': //DISPARAMOS PROYECTIL ROJO
 			ShootProjectile(Projectile::PAINT_RED, Projectile::IntegratorType::VERLET, posCam, dirCam);
 			PaintGenerator->setColor(Vector4(1.0f, 0.0f, 0.0f, 1.0f));
 			break;
-		case '4':
+		case '4': //DISPARAMOS PROYECTIL AZUL
 			ShootProjectile(Projectile::PAINT_BLUE, Projectile::IntegratorType::VERLET, posCam, dirCam);
 			PaintGenerator->setColor(Vector4(0.0f, 0.0f, 1.0f, 1.0f));
 			break;
-		case '5':
+		case '5': //DISPARAMOS PROYECTIL VERDE
 			ShootProjectile(Projectile::PAINT_GREEN, Projectile::IntegratorType::VERLET, posCam, dirCam);
 			PaintGenerator->setColor(Vector4(0.0f, 1.0f, 0.0f, 1.0f));
-			break;
-		case '6':
+			break; 
+		case '6': //DISPARAMOS PROYECTIL AMARILLO
 			ShootProjectile(Projectile::PAINT_YELLOW, Projectile::IntegratorType::VERLET, posCam, dirCam);
 			PaintGenerator->setColor(Vector4(1.0f, 1.0f, 0.0f, 1.0f));
 			break;
-		case ' ': //ESPACIO
+		case ' ': //PINTAMOS SI HAY UN PROYECTIL DISPARADO Y SI NO ESTA SIENDO PINTADO OTRO MIENTRAS TANTO
 			PaintInScene();
 			break;
-		case 'B':
+		case 'B': //BORRAMOS TODO LO PINTADO
 			UnPaintAllInScene();
 			break;
-		case 'V':
+		case 'V': //ACTIVAMOS Y DESACTIVAMOS LA FUERZA DEL VIENTO
 			ManageWindForce();
 			break;
-		case 'G':
+		case 'G': //ACTIVAMOS Y DESACTIVAMOS LA FUERZA DE LA GRAVEDAD
 			ManageGravity();
 			break;
 		default:
 			break;
 	}
+
+	////CANNON_BULLET
+	//case 'Y':
+	//	//for (int i = 0; i < particulas.size(); ++i) {
+	//	//	if (particulas[i] == nullptr) {
+	//	//		particulas[i] = new Particula(velParticle,posCam, accParticle, massParticle, color, timeOfLifeParticle);
+	//	//		rePosBullet = false;
+	//	//		break;
+	//	//	}
+	//	//}
+	//	//
+	//	//if (rePosBullet) {
+	//	//	int indexMaxTimeAlive = 0;
+	//	//	for (int i = 0; i < particulas.size(); ++i) {
+	//	//			if (particulas[i]->getTimeOfLife() > particulas[indexMaxTimeAlive]->getTimeOfLife()) indexMaxTimeAlive = i;
+	//	//	}
+	//	//	particulas[indexMaxTimeAlive]->setPos(posCam);
+	//	//	particulas[indexMaxTimeAlive]->setVel(velParticle);
+	//	//	particulas[indexMaxTimeAlive]->setAcc(accParticle);
+	//	//	particulas[indexMaxTimeAlive]->setTimeOfLife(0);
+	//	//}
+	//	ShootProjectile(Projectile::CANNON_BULLET, Projectile::IntegratorType::VERLET, posCam, dirCam);
+	//	break;
+	////TANK_BULLET
+	//case 'U':
+	//	ShootProjectile(Projectile::TANK_BULLET, Projectile::IntegratorType::VERLET, posCam, dirCam);
+	//	break;
+	////PISTOL
+	//case 'I':
+	//	ShootProjectile(Projectile::PISTOL, Projectile::IntegratorType::VERLET, posCam, dirCam);
+	//	break;
+	////LASER_PISTOL
+	//case 'O':
+	//	ShootProjectile(Projectile::LASER_PISTOL, Projectile::IntegratorType::VERLET, posCam, dirCam);
+	//	break;
+	////EXPLOSIVE_MINE
+	//case 'P':
+	//	ShootProjectile(Projectile::EXPLOSIVE_MINE, Projectile::IntegratorType::VERLET, posCam, dirCam);
+	//	break;
+	//-----------------------------------------------------------------------------------------------------
+
 }
 
 void onCollision(physx::PxActor* actor1, physx::PxActor* actor2)

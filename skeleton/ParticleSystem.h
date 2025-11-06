@@ -1,9 +1,17 @@
 #pragma once
-#include "WaterParticleGenerator.h"
+#include <vector>
+#include "ForceGenerator.h"
+#include "ParticleGenerator.h"
 #include "WindForceGenerator.h"
 class ParticleSystem
 {
 private:
+	std::vector<ParticleGenerator*> _particleGenerators;
 public:
+	ParticleSystem();
+	~ParticleSystem();
+	void update(double t);
+	void addParticleGenerator(ParticleGenerator* particleG);
+	void addForce(ForceGenerator* forceG);
 };
 
