@@ -46,7 +46,7 @@ public:
 
     RenderItem* getRenderItem() { return _renderItem; }
 
-    Particula* clone() const;
+    Particula* clone(PxReal tam = 0) const;
 
 private:
     PxTransform _pos;

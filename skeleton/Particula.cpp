@@ -134,12 +134,18 @@ void Particula::integrate_Verlet(double t)
 	update(t);
 }
 
-Particula* Particula::clone() const
+Particula* Particula::clone(PxReal tam) const
 {
 	Particula* p = new Particula(*this);
 
-	PxSphereGeometry _sphereParticle(p->_tam);
-	p->_shape = CreateShape(_sphereParticle);
+	if (tam == 0) {
+		PxSphereGeometry _sphereParticle(p->_tam);
+		p->_shape = CreateShape(_sphereParticle);
+	}
+	else {
+		PxSphereGeometry _sphereParticle(tam);
+		p->_shape = CreateShape(_sphereParticle);
+	}
 	p->_renderItem = new RenderItem(p->_shape, &p->_pos, p->_color);
 
 	return p;

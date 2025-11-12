@@ -10,7 +10,7 @@ PaintParticleGenerator::PaintParticleGenerator(Vector3 pos, Particula* model, in
     _forceGenerators.push_back(new GravityForceGenerator(Vector3(0, -9.8, 0))); //Aplicamos la gravedad al generador de fuerzas
     //POSICION,FUERZA,TIEMPO DE VIDA,RADIO DE ALCANCE
     //Al ser el radio muy pequeño, habran algunas particulas afectadas por la explosion pero otras solo seran afectadas por la gravedad
-    _explosionForceGenerator = new ExplosionForceGenerator(Vector3(0, 0, 0), 50000.0, 2.0f, 2.0f);
+    _explosionForceGenerator = new ExplosionForceGenerator(Vector3(0, 0, 0), 50000.0, 2.0f, 10.0f);
     _forceGenerators.push_back(_explosionForceGenerator);
 }
 
@@ -33,6 +33,13 @@ Particula* PaintParticleGenerator::generateP()
 
     newP->setPos(newPos);
 
+    return newP;
+}
+
+Particula* PaintParticleGenerator::generateObstacle()
+{
+    Particula* newP = _modelP->clone();
+    //newP->setTam(newP->getTam() * 10);
     return newP;
 }
 
@@ -71,16 +78,6 @@ void PaintParticleGenerator::update(double t)
             _generatorParticlesV.push_back(newParticle);
         }
     }
-
-    //PARA LAS PARTICULAS PINTADAS
-    for (int i = 0; i < _particlesPerFrame; ++i) {
-        Particula* newParticle = generateP();
-        if (newParticle) {
-            newParticle->setAcc(Vector3(0.0f, 0.0f, 0.0f));
-            newParticle->setOldPos(newParticle->getPos().p - newParticle->getVel() * float(t));
-            _paintParticles.push_back(newParticle);
-        }
-    }
     
 }
 
@@ -99,19 +96,26 @@ void PaintParticleGenerator::triggerExplosion(Vector3 pos, Vector4 color)
     if (_explosionForceGenerator && !_explosionForceGenerator->getIsActive()) {
         _modelP->setColor(color);
         setPos(pos); //Ponemos el generador en la posicion pasada por referencia que es la posicion del proyectil
+
+        Particula* newParticle = generateP();
+        if (newParticle) {
+            newParticle->setPos(pos);
+            _obstacleParticles.push_back(newParticle);
+        }
+
         _explosionForceGenerator->activate(pos);
     }
 }
 
 void PaintParticleGenerator::unpaint()
 {
-    if (_paintParticles.empty()) return;
+    if (_obstacleParticles.empty()) return;
 
-    for (int i = 0; i < _paintParticles.size(); ) {
-        Particula* p = _paintParticles[i];
+    for (int i = 0; i < _obstacleParticles.size(); ) {
+        Particula* p = _obstacleParticles[i];
         delete p;
         p = nullptr;
-        _paintParticles[i] = _paintParticles.back();
-        _paintParticles.pop_back();
+        _obstacleParticles[i] = _obstacleParticles.back();
+        _obstacleParticles.pop_back();
     }
 }
