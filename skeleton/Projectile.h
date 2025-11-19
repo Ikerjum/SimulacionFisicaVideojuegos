@@ -24,7 +24,7 @@ private:
 	WindForceGenerator* _windForceGenerator;
 	Vector3 _speedWind;
 public:
-	Projectile(Vector3 initialPos,Vector3 initialDir, ProjectileType projectileType, IntegratorType integratortype);
+	Projectile(Vector3 initialPos,Vector3 initialDir, ProjectileType projectileType, IntegratorType integratortype, PxReal tam);
 	~Projectile();
 	void update(double t);
 	void ApplyForces(double t);

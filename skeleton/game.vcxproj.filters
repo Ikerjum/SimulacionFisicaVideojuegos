@@ -22,6 +22,7 @@
     <ClCompile Include="Ground.cpp" />
     <ClCompile Include="Axes.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
+    <ClCompile Include="Defense.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core.hpp" />
@@ -47,6 +48,7 @@
     <ClInclude Include="Ground.h" />
     <ClInclude Include="Axes.h" />
     <ClInclude Include="ParticleSystem.h" />
+    <ClInclude Include="Defense.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Render">

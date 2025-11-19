@@ -10,14 +10,14 @@ PaintParticleGenerator::PaintParticleGenerator(Vector3 pos, Particula* model, in
     _forceGenerators.push_back(new GravityForceGenerator(Vector3(0, -9.8, 0))); //Aplicamos la gravedad al generador de fuerzas
     //POSICION,FUERZA,TIEMPO DE VIDA,RADIO DE ALCANCE
     //Al ser el radio muy pequeño, habran algunas particulas afectadas por la explosion pero otras solo seran afectadas por la gravedad
-    _explosionForceGenerator = new ExplosionForceGenerator(Vector3(0, 0, 0), 50000.0, 2.0f, 10.0f);
+    _explosionForceGenerator = new ExplosionForceGenerator(Vector3(0, 0, 0), 60000.0, 2.0f, 30.0f);
     _forceGenerators.push_back(_explosionForceGenerator);
 }
 
 Particula* PaintParticleGenerator::generateP()
 {
-
-    Particula* newP = _modelP->clone();
+    PxReal tamP = 0.3;
+    Particula* newP = _modelP->clone(tamP);
 
     //VARIACION DE POSICION
     Vector3 basePos = getPos().p; //Ponemos la posicion base en el proyectil, es decir en la zona donde reposicionamos el generador de particulas
@@ -38,8 +38,23 @@ Particula* PaintParticleGenerator::generateP()
 
 Particula* PaintParticleGenerator::generateObstacle()
 {
-    Particula* newP = _modelP->clone();
-    //newP->setTam(newP->getTam() * 10);
+    PxReal tamP = 3.0;
+    Particula* newP = _modelP->clone(tamP);
+
+    ////VARIACION DE POSICION
+    //Vector3 basePos = getPos().p; //Ponemos la posicion base en el proyectil, es decir en la zona donde reposicionamos el generador de particulas
+    //float RANGO_POS_X = 1.5f;
+    //float RANGO_POS_Y = 1.5f;
+    //float RANGO_POS_Z = 1.5f;
+
+    //Vector3 newPos = basePos + Vector3(
+    //    _n(_mt) * RANGO_POS_X,
+    //    _n(_mt) * RANGO_POS_Y,
+    //    _n(_mt) * RANGO_POS_Z
+    //);
+
+    //newP->setPos(newPos);
+
     return newP;
 }
 
@@ -97,7 +112,7 @@ void PaintParticleGenerator::triggerExplosion(Vector3 pos, Vector4 color)
         _modelP->setColor(color);
         setPos(pos); //Ponemos el generador en la posicion pasada por referencia que es la posicion del proyectil
 
-        Particula* newParticle = generateP();
+        Particula* newParticle = generateObstacle();
         if (newParticle) {
             newParticle->setPos(pos);
             _obstacleParticles.push_back(newParticle);

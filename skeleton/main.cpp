@@ -57,6 +57,8 @@ WindForceGenerator* WindUpGenerator;
 
 ParticleSystem* WaterSystem;
 
+static constexpr PxReal TAM_PROJECTILE = 3;
+
 void CreateParticle()
 {
 	//PARTICULA
@@ -112,9 +114,11 @@ void initPhysics(bool interactive)
 	sceneDesc.simulationEventCallback = &gContactReportCallback;
 	gScene = gPhysics->createScene(sceneDesc);
 
-	_axes = new Axes(); //Creamos ejes para posicionarnos en el espacio
-	_GroundDown = new Ground(PxVec3(0.0f,0.0f,0.0f)); //Creamos suelo abajjo
-	_GroundUp = new Ground(PxVec3(0.0f,60.0f,0.0f)); //Creamos suelo arriba
+	//_axes = new Axes(); //Creamos ejes para posicionarnos en el espacio
+	//_GroundDown = new Ground(PxVec3(0.0f,0.0f,0.0f)); //Creamos suelo abajjo
+	//_GroundUp = new Ground(PxVec3(0.0f,60.0f,0.0f)); //Creamos suelo arriba
+	_GroundDown = new Ground(gPhysics, gScene, PxVec3(0.0f, 0.0f, 0.0f));
+	_GroundUp = new Ground(gPhysics, gScene, PxVec3(0.0f, 60.0f, 0.0f));
 	//CreateParticles();
 
 	//MODELO DE LA PARTICULA DE AGUA DE LLUVIA
@@ -176,14 +180,21 @@ void stepPhysics(bool interactive, double t)
 	//}
 	
 	for (int i = 0; i < proyectiles.size(); ++i) {
+
 		if (proyectiles[i] != nullptr) {
 			proyectiles[i]->update(t);
-			if (proyectiles[i]->getTimeOfLife() <= 0 || proyectiles[i]->getPos().p.y >= _GroundUp->getPos().y || proyectiles[i]->getPos().p.y <= _GroundDown->getPos().y) {
+
+			if (//proyectiles[i]->getTimeOfLife() <= 0 || 
+				proyectiles[i]->getPos().p.y + TAM_PROJECTILE >= _GroundUp->getPos().y || 
+				proyectiles[i]->getPos().p.y - TAM_PROJECTILE <= _GroundDown->getPos().y) {
+
 				PaintInScene(proyectiles[i]);
 				delete proyectiles[i];
 				proyectiles[i] = nullptr;
+
 			}
 		}
+
 	}
 
 	WaterGenerator->update(t);
@@ -244,14 +255,14 @@ void cleanupPhysics(bool interactive)
 	gFoundation->release();
 }
 
-void ShootProjectile(Projectile::ProjectileType type, Projectile::IntegratorType integrator, const Vector3& posCam, const Vector3& dirCam)
+void ShootProjectile(Projectile::ProjectileType type, Projectile::IntegratorType integrator, const Vector3& posCam, const Vector3& dirCam, PxReal tam)
 {
 	int indexToReuse = -1;
 
 	//Al disparar un proyectil si encontramos un hueco que no haya sido ocupado creamos el proyectil
 	for (int i = 0; i < proyectiles.size(); ++i) {
 		if (proyectiles[i] == nullptr) {
-			proyectiles[i] = new Projectile(posCam, dirCam, type, integrator);
+			proyectiles[i] = new Projectile(posCam, dirCam, type, integrator,tam);
 			proyectiles[i]->addWindForce(WindUpGenerator);
 			return;
 		}
@@ -362,27 +373,27 @@ void keyPress(unsigned char key, const PxTransform& camera)
 	switch(toupper(key))
 	{
 		case '1': //DISPARAMOS PROYECTIL BLANCO
-			ShootProjectile(Projectile::PAINT_WHITE, Projectile::IntegratorType::VERLET, posCam, dirCam);
+			ShootProjectile(Projectile::PAINT_WHITE, Projectile::IntegratorType::VERLET, posCam, dirCam, TAM_PROJECTILE);
 			PaintGenerator->setColor(Vector4(1.0f, 1.0f, 1.0f, 1.0f));
 			break;
 		case '2': //DISPARAMOS PROYECTIL NEGRO
-			ShootProjectile(Projectile::PAINT_BLACK, Projectile::IntegratorType::VERLET, posCam, dirCam);
+			ShootProjectile(Projectile::PAINT_BLACK, Projectile::IntegratorType::VERLET, posCam, dirCam, TAM_PROJECTILE);
 			PaintGenerator->setColor(Vector4(0.0f, 0.0f, 0.0f, 1.0f));
 			break;
 		case '3': //DISPARAMOS PROYECTIL ROJO
-			ShootProjectile(Projectile::PAINT_RED, Projectile::IntegratorType::VERLET, posCam, dirCam);
+			ShootProjectile(Projectile::PAINT_RED, Projectile::IntegratorType::VERLET, posCam, dirCam, TAM_PROJECTILE);
 			PaintGenerator->setColor(Vector4(1.0f, 0.0f, 0.0f, 1.0f));
 			break;
 		case '4': //DISPARAMOS PROYECTIL AZUL
-			ShootProjectile(Projectile::PAINT_BLUE, Projectile::IntegratorType::VERLET, posCam, dirCam);
+			ShootProjectile(Projectile::PAINT_BLUE, Projectile::IntegratorType::VERLET, posCam, dirCam, TAM_PROJECTILE);
 			PaintGenerator->setColor(Vector4(0.0f, 0.0f, 1.0f, 1.0f));
 			break;
 		case '5': //DISPARAMOS PROYECTIL VERDE
-			ShootProjectile(Projectile::PAINT_GREEN, Projectile::IntegratorType::VERLET, posCam, dirCam);
+			ShootProjectile(Projectile::PAINT_GREEN, Projectile::IntegratorType::VERLET, posCam, dirCam, TAM_PROJECTILE);
 			PaintGenerator->setColor(Vector4(0.0f, 1.0f, 0.0f, 1.0f));
 			break; 
 		case '6': //DISPARAMOS PROYECTIL AMARILLO
-			ShootProjectile(Projectile::PAINT_YELLOW, Projectile::IntegratorType::VERLET, posCam, dirCam);
+			ShootProjectile(Projectile::PAINT_YELLOW, Projectile::IntegratorType::VERLET, posCam, dirCam, TAM_PROJECTILE);
 			PaintGenerator->setColor(Vector4(1.0f, 1.0f, 0.0f, 1.0f));
 			break;
 		case ' ': //PINTAMOS SI HAY UN PROYECTIL DISPARADO Y SI NO ESTA SIENDO PINTADO OTRO MIENTRAS TANTO
