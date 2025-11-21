@@ -253,7 +253,9 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AnchoredSpringFG.cpp" />
     <ClCompile Include="Axes.cpp" />
+    <ClCompile Include="BuoyancyBounceGenerator.cpp" />
     <ClCompile Include="callbacks.cpp" />
     <ClCompile Include="Defense.cpp" />
     <ClCompile Include="ExplosionForceGenerator.cpp" />
@@ -269,11 +271,14 @@
     <ClCompile Include="RenderUtils.cpp" />
     <ClCompile Include="Render\Camera.cpp" />
     <ClCompile Include="Render\Render.cpp" />
+    <ClCompile Include="SpringForceGenerator.cpp" />
     <ClCompile Include="WaterParticleGenerator.cpp" />
     <ClCompile Include="WindForceGenerator.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AnchoredSpringFG.h" />
     <ClInclude Include="Axes.h" />
+    <ClInclude Include="BuoyancyBounceGenerator.h" />
     <ClInclude Include="callbacks.hpp" />
     <ClInclude Include="core.hpp" />
     <ClInclude Include="Defense.h" />
@@ -290,6 +295,7 @@
     <ClInclude Include="RenderUtils.hpp" />
     <ClInclude Include="Render\Camera.h" />
     <ClInclude Include="Render\Render.h" />
+    <ClInclude Include="SpringForceGenerator.h" />
     <ClInclude Include="Vector3D.h" />
     <ClInclude Include="WaterParticleGenerator.h" />
     <ClInclude Include="WindForceGenerator.h" />

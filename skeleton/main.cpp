@@ -21,6 +21,9 @@
 #include "WindForceGenerator.h"
 #include "Ground.h"
 #include "ParticleSystem.h"
+#include "SpringForceGenerator.h"
+#include "AnchoredSpringFG.h"
+#include "BuoyancyBounceGenerator.h"
 
 std::string display_text = "This is a test";
 
@@ -54,6 +57,9 @@ PaintParticleGenerator* PaintGenerator;
 
 GravityForceGenerator* GravityDownGenerator;
 WindForceGenerator* WindUpGenerator;
+
+SpringForceGenerator* SpringUpGenerator;
+AnchoredSpringFG* AnchoredSpringUpGenerator;
 
 ParticleSystem* WaterSystem;
 
@@ -149,6 +155,9 @@ void initPhysics(bool interactive)
 	WaterGenerator = new WaterParticleGenerator(generatorPosWater,particleModelWater,4);
 	WaterGenerator->addWindForce(WindUpGenerator);
 	PaintGenerator = new PaintParticleGenerator(generatorPosExplosion, particleModelExplosion, 6);
+	
+	//SpringUpGenerator = new SpringForceGenerator();
+	//AnchoredSpringUpGenerator = new AnchoredSpringFG(500.0, 0.5, _GroundDown->getPos());
 
 	//WaterSystem = new ParticleSystem();
 	//WaterSystem->addParticleGenerator(WaterGenerator);

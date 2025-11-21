@@ -23,6 +23,9 @@
     <ClCompile Include="Axes.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="Defense.cpp" />
+    <ClCompile Include="SpringForceGenerator.cpp" />
+    <ClCompile Include="AnchoredSpringFG.cpp" />
+    <ClCompile Include="BuoyancyBounceGenerator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core.hpp" />
@@ -49,6 +52,9 @@
     <ClInclude Include="Axes.h" />
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="Defense.h" />
+    <ClInclude Include="SpringForceGenerator.h" />
+    <ClInclude Include="AnchoredSpringFG.h" />
+    <ClInclude Include="BuoyancyBounceGenerator.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Render">

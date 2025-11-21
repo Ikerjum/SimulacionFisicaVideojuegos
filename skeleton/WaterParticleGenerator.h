@@ -3,6 +3,7 @@
 #include "GravityForceGenerator.h"
 #include "WindForceGenerator.h"
 #include "ExplosionForceGenerator.h"
+#include "AnchoredSpringFG.h"
 #include <random>
 #include <iostream>
 

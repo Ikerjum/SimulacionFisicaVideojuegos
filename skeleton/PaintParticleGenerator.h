@@ -16,7 +16,7 @@ private:
 public:
     PaintParticleGenerator(Vector3 pos, Particula* model, int ParticlesPerFrame);
     Particula* generateP() override;
-    Particula* generateObstacle();
+    Particula* generateDefense();
     void update(double t) override;
     void ApplyForces(Particula* newParticle, double t);
     void triggerExplosion(Vector3 pos, Vector4 color);
