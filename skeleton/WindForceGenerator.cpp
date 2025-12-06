@@ -1,8 +1,5 @@
 #include "WindForceGenerator.h"
 #include "checkML.h"
-#ifdef _DEBUG
-#define new DBG_NEW
-#endif
 
 Vector3 
 WindForceGenerator::putForce(Particula* p)

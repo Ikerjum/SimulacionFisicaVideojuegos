@@ -1,9 +1,5 @@
 #include "Projectile.h"
 #include "checkML.h"
-
-#ifdef _DEBUG
-#define new DBG_NEW
-#endif
 #include "Particula.h"
 Projectile::Projectile(Vector3 initialPos, Vector3 initialDir, ProjectileType projectileType, IntegratorType integratortype, PxReal tam) :
 	Particula(initialDir, initialPos, Vector3(0.0f, -9.8f, 0.0f), 20.0f, Vector4(0.0f, 0.0f, 0.0f, 1.0f), tam, 200.0f)

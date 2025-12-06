@@ -1,9 +1,5 @@
 #include "BuoyancyBounceGenerator.h"
 #include "checkML.h"
-
-#ifdef _DEBUG
-#define new DBG_NEW
-#endif
 BuoyancyForceGenerator::BuoyancyForceGenerator(float h, float V, float d)
 {
 	_height = h;

@@ -14,9 +14,9 @@
 #include <stdlib.h>
 #include <crtdbg.h>
 
-//#if defined(_MSC_VER) 
-//#define new DBG_NEW
-//#endif
+#if defined(_MSC_VER) 
+#define new DBG_NEW
+#endif
 
 #if defined(_MSC_VER) && !defined(DBG_NEW)
 #define DBG_NEW new (_NORMAL_BLOCK, __FILE__, __LINE__)

@@ -1,10 +1,7 @@
-#include <ctype.h>
-
 #include <PxPhysicsAPI.h>
 #include "checkML.h"
-#ifdef _DEBUG
-#define new DBG_NEW
-#endif
+#include <ctype.h>
+
 #include <vector>
 #include <chrono>
 #include <thread>
@@ -474,6 +471,7 @@ int main(int, const char*const*)
 {
 #ifdef _DEBUG
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+	_CrtSetBreakAlloc(491);
 	_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE | _CRTDBG_MODE_DEBUG);
 	_CrtSetReportFile(_CRT_WARN, _CRTDBG_FILE_STDERR);
 #endif

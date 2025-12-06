@@ -1,9 +1,5 @@
 #include "WaterParticleGenerator.h"
 #include "checkML.h"
-
-#ifdef _DEBUG
-#define new DBG_NEW
-#endif
 WaterParticleGenerator::WaterParticleGenerator(Vector3 pos, Particula* model, int ParticlesPerFrame) : ParticleGenerator(pos,model,ParticlesPerFrame)
 {
     std::random_device rd;

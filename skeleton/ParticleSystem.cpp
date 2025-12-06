@@ -1,9 +1,5 @@
 #include "ParticleSystem.h"
 #include "checkML.h"
-
-#ifdef _DEBUG
-#define new DBG_NEW
-#endif
 #include "WaterParticleGenerator.h"
 ParticleSystem::ParticleSystem() {
 }

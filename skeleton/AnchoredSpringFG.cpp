@@ -1,9 +1,5 @@
 #include "AnchoredSpringFG.h"
 #include "checkML.h"
-
-#ifdef _DEBUG
-#define new DBG_NEW
-#endif
 AnchoredSpringFG::AnchoredSpringFG(double k, double resting, const Vector3& anchor_pos) :
 	SpringForceGenerator(k,resting,nullptr)
 {

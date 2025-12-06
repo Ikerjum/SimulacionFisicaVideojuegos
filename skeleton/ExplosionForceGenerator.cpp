@@ -1,8 +1,5 @@
 #include "ExplosionForceGenerator.h"
 #include "checkML.h"
-#ifdef _DEBUG
-#define new DBG_NEW
-#endif
 #include <cmath>
 
 Vector3 ExplosionForceGenerator::putForce(Particula* p)
