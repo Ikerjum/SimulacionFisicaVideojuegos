@@ -13,7 +13,6 @@ public:
 
     Particula();
     Particula(Vector3 vel, Vector3 pos, Vector3 acc, float mass, Vector4 color, PxReal tam, float timeOfLife);
-    // Constructor de copia de datos simple (opcional, pero útil)
     Particula(const Particula& other);
     Particula& operator=(const Particula& other);
 
@@ -23,6 +22,7 @@ public:
     void integrate_EulerSemiImplicit(double t);
     void integrate_Verlet(double t);
 
+    //SETTERS
     void setPos(Vector3 pos) { _pos.p = pos; }
     void setOldPos(Vector3 pos) { _oldPos = pos; }
     void setVel(Vector3 vel) { _vel = vel; }
@@ -35,16 +35,17 @@ public:
     }
     void setTimeOfLife(float time) { _timeOfLife = time; }
 
-    PxTransform getPos() { return _pos; }
-    Vector3 getOldPos() { return _oldPos; }
-    Vector3 getVel() { return _vel; }
-    Vector3 getAcc() { return _acc; }
-    float getMass() { return _mass; }
-    PxReal getTam() { return _tam; }
-    Vector4 getColor() { return _color; }
+    //GETTERS
+    PxTransform getPos() const { return _pos; }
+    Vector3 getOldPos() const { return _oldPos; }
+    Vector3 getVel() const { return _vel; }
+    Vector3 getAcc() const { return _acc; }
+    float getMass() const { return _mass; }
+    PxReal getTam() const { return _tam; }
+    Vector4 getColor() const { return _color; }
     float getTimeOfLife() const { return _timeOfLife; }
 
-    RenderItem* getRenderItem() { return _renderItem; }
+    RenderItem* getRenderItem() const { return _renderItem; }
 
     Particula* clone(PxReal tam = 0) const;
 

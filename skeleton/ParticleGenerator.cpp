@@ -26,12 +26,7 @@ ParticleGenerator::~ParticleGenerator()
 	}
 	_generatorParticlesL.clear();
 
-	for (ForceGenerator* FG : _forceGenerators) {
-		if (FG != nullptr) {
-			delete FG;
-			FG = nullptr;
-		}
-	}
+	//FUERZAS GLOBALES,  LAS ADICIONALES SE BORRAN EN SUS CLASES HEREDADAS
 	_forceGenerators.clear();
 
 	if (_modelP) delete _modelP;
@@ -45,6 +40,11 @@ void ParticleGenerator::setModel(Particula* modelP)
 
 void ParticleGenerator::setPos(Vector3 pos) {
 	_pos.p = pos;
+}
+
+void ParticleGenerator::addForceGenerator(ForceGenerator* newForceGenerator)
+{
+	_forceGenerators.push_back(newForceGenerator);
 }
 
 void ParticleGenerator::ApplyForces(Particula* newParticle, double t) {

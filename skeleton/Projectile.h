@@ -27,12 +27,12 @@ public:
 	Projectile(Vector3 initialPos,Vector3 initialDir, ProjectileType projectileType, IntegratorType integratortype, PxReal tam);
 	~Projectile();
 	void update(double t);
+
+	void addForceGenerator(ForceGenerator* newForceGenerator);
 	void ApplyForces(double t);
-	void resetPhysics(Vector3 initialPos, Vector3 initialVel, ProjectileType projectileType, IntegratorType integratortype);
+
+	void resetProperties(Vector3 initialPos, Vector3 initialVel, ProjectileType projectileType, IntegratorType integratortype);
 
 	Vector4 getProjectileColor() { return getColor(); }
-	
-	void addWindForce(WindForceGenerator* externalForceGenerator);
-	WindForceGenerator* getWindForce() { return _windForceGenerator; }
 };
 

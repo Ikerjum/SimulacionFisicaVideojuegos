@@ -1,15 +1,12 @@
 #include "PaintParticleGenerator.h"
 #include "checkML.h"
 PaintParticleGenerator::PaintParticleGenerator(Vector3 pos, Particula* model, int ParticlesPerFrame) :
-	ParticleGenerator(pos,model,ParticlesPerFrame), _explosionForceGenerator()
+	ParticleGenerator(pos,model,ParticlesPerFrame), _explosionForceGenerator(nullptr)
 {
     std::random_device rd;
     _mt.seed(rd());
 
-    //GENERADORES DE FUERZAS, LO HACEMOS SOLO UNA VEZ EN LA CONSTRUCTORA
-    _forceGenerators.push_back(new GravityForceGenerator(Vector3(0, -9.8, 0))); //Aplicamos la gravedad al generador de fuerzas
-    //POSICION,FUERZA,TIEMPO DE VIDA,RADIO DE ALCANCE
-    //Al ser el radio muy pequeño, habran algunas particulas afectadas por la explosion pero otras solo seran afectadas por la gravedad
+    //GENERADORES DE FUERZAS ADICIONALES, LO HACEMOS SOLO UNA VEZ EN LA CONSTRUCTORA
     _explosionForceGenerator = new ExplosionForceGenerator(Vector3(0, 0, 0), 80000.0, 2.0f, 30.0f);
     _forceGenerators.push_back(_explosionForceGenerator);
 }
@@ -19,6 +16,10 @@ PaintParticleGenerator::~PaintParticleGenerator()
     for (Particula* DP : _DefenseParticles) {
         delete DP;
         DP = nullptr;
+    }
+    if (_explosionForceGenerator) {
+        delete _explosionForceGenerator;
+        _explosionForceGenerator = nullptr;
     }
 }
 

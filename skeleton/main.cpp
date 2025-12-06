@@ -16,6 +16,7 @@
 #include "Particula.h"
 #include "Projectile.h"
 #include "WaterParticleGenerator.h"
+#include "WindForceGenerator.h"
 #include "ExplosionParticleGenerator.h"
 #include "PaintParticleGenerator.h"
 #include "WindForceGenerator.h"
@@ -46,17 +47,20 @@ PxScene*				gScene      = NULL;
 ContactReportCallback gContactReportCallback;
 
 std::vector<Particula*> particulas(10,nullptr);
-std::vector<Projectile*> proyectiles(10,nullptr);
+std::vector<Projectile*> proyectiles(1,nullptr);
 
 Axes* _axes = nullptr;
 Ground* _GroundDown = nullptr;
 Ground* _GroundUp = nullptr;
+
+std::vector<ForceGenerator*> _forceGeneratorsGlobal;
 
 Particula* particleModelWater = nullptr;
 WaterParticleGenerator* WaterGenerator = nullptr;
 
 Particula* particleModelExplosion = nullptr;
 ExplosionParticleGenerator* ExplosionGenerator = nullptr;
+
 
 PaintParticleGenerator* PaintGenerator = nullptr;
 
@@ -155,10 +159,11 @@ void initPhysics(bool interactive)
 
 	//GENERADORES
 	WindUpGenerator = new WindForceGenerator(Vector3(0.0f, 6000.0f, 0.0f),false);
-	//GravityDownGenerator = new GravityForceGenerator(Vector3(0.0f, -9.8f, 0.0f));
+	_forceGeneratorsGlobal.push_back(WindUpGenerator);
+	GravityDownGenerator = new GravityForceGenerator(Vector3(0.0f, -9.8f, 0.0f));
+	_forceGeneratorsGlobal.push_back(GravityDownGenerator);
 
 	WaterGenerator = new WaterParticleGenerator(generatorPosWater,particleModelWater,4);
-	WaterGenerator->addWindForce(WindUpGenerator);
 	PaintGenerator = new PaintParticleGenerator(generatorPosExplosion, particleModelExplosion, 6);
 	
 	//SpringUpGenerator = new SpringForceGenerator();
@@ -269,14 +274,11 @@ void cleanupPhysics(bool interactive)
 		PaintGenerator = nullptr;
 	}
 
-	if (GravityDownGenerator) {
-		delete GravityDownGenerator;
-		GravityDownGenerator = nullptr;
+	for (ForceGenerator* FG : _forceGeneratorsGlobal) {
+		delete FG;
+		FG = nullptr;
 	}
-	if (WindUpGenerator) {
-		delete WindUpGenerator;
-		WindUpGenerator = nullptr;
-	}
+
 	if (SpringUpGenerator) {
 		delete SpringUpGenerator;
 		SpringUpGenerator = nullptr;
@@ -306,7 +308,9 @@ void ShootProjectile(Projectile::ProjectileType type, Projectile::IntegratorType
 	for (int i = 0; i < proyectiles.size(); ++i) {
 		if (proyectiles[i] == nullptr) {
 			proyectiles[i] = new Projectile(posCam, dirCam, type, integrator,tam);
-			proyectiles[i]->addWindForce(WindUpGenerator);
+			for (ForceGenerator* FG : _forceGeneratorsGlobal) {
+				proyectiles[i]->addForceGenerator(FG);
+			}
 			return;
 		}
 	}
@@ -343,7 +347,7 @@ void ShootProjectile(Projectile::ProjectileType type, Projectile::IntegratorType
 
 	//En caso de encontrar el proyectil, volvemos a aplicar sus fisicas
 	if (indexToReuse != -1) {
-		proyectiles[indexToReuse]->resetPhysics(posCam, dirCam, type, integrator);
+		proyectiles[indexToReuse]->resetProperties(posCam, dirCam, type, integrator);
 	}
 }
 
@@ -371,22 +375,13 @@ void ManageWindForce()
 	bool newState = !WindUpGenerator->isActive();
 	WindUpGenerator->setActive(newState);
 
-	//Cambiamos el estado activo del viento para la lluvia
-	if (WaterGenerator && WaterGenerator->getWindForce())
-		WaterGenerator->getWindForce()->setActive(newState);
-
-	//Axtualizamos la posicion del generador al activar las fuerzas del viento para mostrar las particulas hacia arriba
 	if (WaterGenerator) {
-		if (WaterGenerator->getWindForce()->isActive())
+		if (WindUpGenerator->isActive()) {
 			WaterGenerator->setPos(Vector3(WaterGenerator->getPos().p.x, _GroundDown->getPos().y, WaterGenerator->getPos().p.z));
-		else
+		}
+		else {
 			WaterGenerator->setPos(Vector3(WaterGenerator->getPos().p.x, _GroundUp->getPos().y, WaterGenerator->getPos().p.z));
-	}
-
-	//Cambiamos el estado activo del viento para los proyectiles
-	for (int i = 0; i < proyectiles.size(); ++i) {
-		if (proyectiles[i] != nullptr && proyectiles[i]->getWindForce())
-			proyectiles[i]->getWindForce()->setActive(newState);
+		}
 	}
 }
 

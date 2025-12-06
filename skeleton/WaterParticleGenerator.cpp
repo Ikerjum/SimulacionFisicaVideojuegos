@@ -6,9 +6,8 @@ WaterParticleGenerator::WaterParticleGenerator(Vector3 pos, Particula* model, in
     _mt.seed(rd());
 
     //GENERADORES DE FUERZAS, LO HACEMOS SOLO UNA VEZ EN LA CONSTRUCTORA
-    //_forceGenerators.push_back(new GravityForceGenerator(Vector3(0, -9.8, 0))); //Aplicamos la gravedad al generador de fuerzas
-    _forceGenerators.push_back(new AnchoredSpringFG(1, 10, Vector3(0,50,0))); //Añadimos rebote en el suelo
-    //_forceGenerators.push_back(new WindForceGenerator(Vector3(100.0, 0, 0.0),0.5f,0.02f));
+    _forceGenerators.push_back(new GravityForceGenerator(Vector3(0, -9.8, 0))); //Aplicamos la gravedad al generador de fuerzas
+    _forceGenerators.push_back(new WindForceGenerator(Vector3(100.0, 0, 0.0),0.5f,0.02f));
     //_explosionForceGenerator = new ExplosionForceGenerator(Vector3(0, 0, 0), 100000.0, 50.0f, 50.0f);
     //_forceGenerators.push_back(_explosionForceGenerator);
 }
@@ -118,7 +117,7 @@ void WaterParticleGenerator::update(double t)
 //    }
 //}
 
-void WaterParticleGenerator::addWindForce(WindForceGenerator* externalForceGenerator) {
-    _windForceGenerator = new WindForceGenerator(externalForceGenerator->getWindVel(), externalForceGenerator->isActive());
-    _forceGenerators.push_back(_windForceGenerator);
-}
+//void WaterParticleGenerator::addWindForce(WindForceGenerator* externalForceGenerator) {
+//    _windForceGenerator = new WindForceGenerator(externalForceGenerator->getWindVel(), externalForceGenerator->isActive());
+//    _forceGenerators.push_back(_windForceGenerator);
+//}
