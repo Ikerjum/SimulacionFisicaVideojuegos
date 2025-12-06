@@ -55,6 +55,7 @@
     <ClInclude Include="SpringForceGenerator.h" />
     <ClInclude Include="AnchoredSpringFG.h" />
     <ClInclude Include="BuoyancyBounceGenerator.h" />
+    <ClInclude Include="checkML.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Render">

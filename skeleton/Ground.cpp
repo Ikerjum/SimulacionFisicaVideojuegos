@@ -1,5 +1,8 @@
 #include "Ground.h"
-
+#include "checkML.h"
+#ifdef _DEBUG
+#define new DBG_NEW
+#endif
 
 using namespace physx;
 

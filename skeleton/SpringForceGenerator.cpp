@@ -1,5 +1,9 @@
 #include "SpringForceGenerator.h"
+#include "checkML.h"
 
+#ifdef _DEBUG
+#define new DBG_NEW
+#endif
 SpringForceGenerator::SpringForceGenerator(double k, double resting_length, Particula* other)
 {
 	_k = k;

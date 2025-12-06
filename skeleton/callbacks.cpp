@@ -1,5 +1,8 @@
 #include "callbacks.hpp"
-
+#include "checkML.h"
+#ifdef _DEBUG
+#define new DBG_NEW
+#endif
 extern void onCollision(physx::PxActor* actor1, physx::PxActor* actor2);
 
 physx::PxFilterFlags contactReportFilterShader(physx::PxFilterObjectAttributes attributes0, physx::PxFilterData filterData0,

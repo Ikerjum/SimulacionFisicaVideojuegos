@@ -1,4 +1,8 @@
 #include "Axes.h"
+#include "checkML.h"
+#ifdef _DEBUG
+#define new DBG_NEW
+#endif
 #include <PxPhysicsAPI.h>
 
 using namespace physx;

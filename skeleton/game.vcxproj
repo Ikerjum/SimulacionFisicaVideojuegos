@@ -280,6 +280,7 @@
     <ClInclude Include="Axes.h" />
     <ClInclude Include="BuoyancyBounceGenerator.h" />
     <ClInclude Include="callbacks.hpp" />
+    <ClInclude Include="checkML.h" />
     <ClInclude Include="core.hpp" />
     <ClInclude Include="Defense.h" />
     <ClInclude Include="ExplosionForceGenerator.h" />

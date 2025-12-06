@@ -1,8 +1,12 @@
 ﻿#include "Particula.h"
+#include "checkML.h"
+
+#ifdef _DEBUG
+#define new DBG_NEW
+#endif
 #include <PxPhysicsAPI.h>
 #include <iostream>
 #include "Defense.h"
-
 using namespace physx;
 
 Particula::Particula() : _vel(Vector3(0, 0, 0)), _pos(Vector3(0, 0, 0)), _oldPos(Vector3(_pos.p - _vel)), _acc(Vector3(0, 0, 0)), _mass(1.0f),

@@ -1,9 +1,13 @@
-#include <vector>
+#include "RenderUtils.hpp"
+#include "checkML.h"
 
+#ifdef _DEBUG
+#define new DBG_NEW
+#endif
+#include <vector>
 #include "PxPhysicsAPI.h"
 
 #include "core.hpp"
-#include "RenderUtils.hpp"
 
 
 using namespace physx;

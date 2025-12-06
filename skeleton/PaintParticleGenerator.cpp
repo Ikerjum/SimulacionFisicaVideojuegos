@@ -1,5 +1,9 @@
 #include "PaintParticleGenerator.h"
+#include "checkML.h"
 
+#ifdef _DEBUG
+#define new DBG_NEW
+#endif
 PaintParticleGenerator::PaintParticleGenerator(Vector3 pos, Particula* model, int ParticlesPerFrame) :
 	ParticleGenerator(pos,model,ParticlesPerFrame), _explosionForceGenerator()
 {
