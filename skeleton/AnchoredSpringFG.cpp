@@ -5,9 +5,3 @@ AnchoredSpringFG::AnchoredSpringFG(double k, double resting, const Vector3& anch
 {
 	_other = new Particula(Vector3(0, 0, 0), Vector3(0, 0, 0), Vector3(0, 0, 0), 1.0f, Vector4(1.0, 1.0, 1.0, 1.0), 2.0, 5.0);
 }
-
-AnchoredSpringFG::~AnchoredSpringFG()
-{
-	delete _other;
-	_other = nullptr;
-}

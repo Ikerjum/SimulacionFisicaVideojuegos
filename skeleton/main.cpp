@@ -45,23 +45,28 @@ PxDefaultCpuDispatcher*	gDispatcher = NULL;
 PxScene*				gScene      = NULL;
 ContactReportCallback gContactReportCallback;
 
-std::vector<Particula*> particulas(10);
-std::vector<Projectile*> proyectiles(10);
+std::vector<Particula*> particulas(10,nullptr);
+std::vector<Projectile*> proyectiles(10,nullptr);
 
-Axes* _axes;
+Axes* _axes = nullptr;
 Ground* _GroundDown = nullptr;
 Ground* _GroundUp = nullptr;
-WaterParticleGenerator* WaterGenerator;
-ExplosionParticleGenerator* ExplosionGenerator;
-PaintParticleGenerator* PaintGenerator;
 
-GravityForceGenerator* GravityDownGenerator;
-WindForceGenerator* WindUpGenerator;
+Particula* particleModelWater = nullptr;
+WaterParticleGenerator* WaterGenerator = nullptr;
 
-SpringForceGenerator* SpringUpGenerator;
-AnchoredSpringFG* AnchoredSpringUpGenerator;
+Particula* particleModelExplosion = nullptr;
+ExplosionParticleGenerator* ExplosionGenerator = nullptr;
 
-ParticleSystem* WaterSystem;
+PaintParticleGenerator* PaintGenerator = nullptr;
+
+GravityForceGenerator* GravityDownGenerator = nullptr;
+WindForceGenerator* WindUpGenerator = nullptr;
+
+SpringForceGenerator* SpringUpGenerator = nullptr;
+AnchoredSpringFG* AnchoredSpringUpGenerator = nullptr;
+
+ParticleSystem* WaterSystem = nullptr;
 
 static constexpr PxReal TAM_PROJECTILE = 3;
 
@@ -135,7 +140,7 @@ void initPhysics(bool interactive)
 	float timeOfLifeModelWater = 5.0f;
 	float massModelWater = 20.0f;
 	Vector3 generatorPosWater = Vector3(0.0f, _GroundUp->getPos().y, 0.0f);
-	Particula* particleModelWater = new Particula(velModelWater, generatorPosWater, accModelWater, massModelWater, colorModelWater, tamModelWater, timeOfLifeModelWater);
+	particleModelWater = new Particula(velModelWater, generatorPosWater, accModelWater, massModelWater, colorModelWater, tamModelWater, timeOfLifeModelWater);
 
 	//MODELO DE LA PARTICULA DE PINTURA
 	Vector3 velModelExplosion = Vector3(0.0f, 0.0f, 0.0f);
@@ -145,7 +150,7 @@ void initPhysics(bool interactive)
 	float timeOfLifeModelExplosion = 100.0f;
 	float massModelExplosion = 100.0f;
 	Vector3 generatorPosExplosion = Vector3(0.0f, 0.0f, 0.0f);
-	Particula* particleModelExplosion = new Particula(velModelExplosion, generatorPosExplosion, accModelExplosion, massModelExplosion, colorModelExplosion, tamModelExplosion, timeOfLifeModelExplosion);
+	particleModelExplosion = new Particula(velModelExplosion, generatorPosExplosion, accModelExplosion, massModelExplosion, colorModelExplosion, tamModelExplosion, timeOfLifeModelExplosion);
 
 
 	//GENERADORES
@@ -219,19 +224,33 @@ void cleanupPhysics(bool interactive)
 {
 	PX_UNUSED(interactive);
 
-	if (_axes) delete _axes;
-	_axes = nullptr;
-	if (_GroundDown) delete _GroundDown;
-	_GroundDown = nullptr;
-	if (_GroundUp) delete _GroundUp;
-	_GroundUp = nullptr;
+	//std::vector<Particula*> particulas(10, nullptr);
+	//std::vector<Projectile*> proyectiles(10, nullptr);
 
-	//for (int i = 0; i < particulas.size(); ++i) {
-	//	if (particulas[i] != nullptr) {
-	//		delete proyectiles[i]; //Llamara a la destructora de particula
-	//		proyectiles[i] = nullptr;
-	//	}
-	//}
+	//Axes* _axes = nullptr;
+	//Ground* _GroundDown = nullptr;
+	//Ground* _GroundUp = nullptr;
+	
+	//ParticleSystem* WaterSystem = nullptr;
+	//WaterParticleGenerator* WaterGenerator = nullptr;
+
+	//ExplosionParticleGenerator* ExplosionGenerator = nullptr;
+
+	//PaintParticleGenerator* PaintGenerator = nullptr;
+
+	//GravityForceGenerator* GravityDownGenerator = nullptr;
+	//WindForceGenerator* WindUpGenerator = nullptr;
+
+	//SpringForceGenerator* SpringUpGenerator = nullptr;
+	//AnchoredSpringFG* AnchoredSpringUpGenerator = nullptr;
+
+
+	for (int i = 0; i < particulas.size(); ++i) {
+		if (particulas[i] != nullptr) {
+			delete proyectiles[i]; //Llamara a la destructora de particula
+			proyectiles[i] = nullptr;
+		}
+	}
 
 	for (int i = 0; i < proyectiles.size(); ++i) {
 		if (proyectiles[i] != nullptr) {
@@ -240,17 +259,53 @@ void cleanupPhysics(bool interactive)
 		}
 	}
 
-	if (WaterSystem) delete WaterSystem;
-	WaterSystem = nullptr;
-	if (WaterGenerator) delete WaterGenerator;
-	WaterGenerator = nullptr;
-	//if (ExplosionGenerator) delete ExplosionGenerator;
-	//ExplosionGenerator = nullptr;
-	if (PaintGenerator) delete PaintGenerator;
-	PaintGenerator = nullptr;
+	if (_axes) {
+		delete _axes;
+		_axes = nullptr;
+	}
+	if (_GroundDown) {
+		delete _GroundDown;
+		_GroundDown = nullptr;
+	}
+	if (_GroundUp) {
+		delete _GroundUp;
+		_GroundUp = nullptr;
+	}
 
-	if (WindUpGenerator) delete WindUpGenerator;
-	WindUpGenerator = nullptr;
+	if (WaterSystem) {
+		delete WaterSystem;
+		WaterSystem = nullptr;
+	}
+	if (WaterGenerator) {
+		delete WaterGenerator;
+		WaterGenerator = nullptr;
+	}
+
+	if (ExplosionGenerator) {
+		delete ExplosionGenerator;
+		ExplosionGenerator = nullptr;
+	}
+	if (PaintGenerator) {
+		delete PaintGenerator;
+		PaintGenerator = nullptr;
+	}
+
+	if (GravityDownGenerator) {
+		delete GravityDownGenerator;
+		GravityDownGenerator = nullptr;
+	}
+	if (WindUpGenerator) {
+		delete WindUpGenerator;
+		WindUpGenerator = nullptr;
+	}
+	if (SpringUpGenerator) {
+		delete SpringUpGenerator;
+		SpringUpGenerator = nullptr;
+	}
+	if (AnchoredSpringUpGenerator) {
+		delete AnchoredSpringUpGenerator;
+		AnchoredSpringUpGenerator = nullptr;
+	}
 
 
 	// Rigid Body ++++++++++++++++++++++++++++++++++++++++++
@@ -471,7 +526,7 @@ int main(int, const char*const*)
 {
 #ifdef _DEBUG
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-	_CrtSetBreakAlloc(491);
+	//_CrtSetBreakAlloc(569);
 	_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE | _CRTDBG_MODE_DEBUG);
 	_CrtSetReportFile(_CRT_WARN, _CRTDBG_FILE_STDERR);
 #endif

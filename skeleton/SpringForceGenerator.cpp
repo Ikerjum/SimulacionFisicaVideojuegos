@@ -19,3 +19,16 @@ Vector3 SpringForceGenerator::putForce(Particula* particle)
 
 	return force;
 }
+
+inline void SpringForceGenerator::setK(double k)
+{
+	_k = k;
+}
+
+SpringForceGenerator::~SpringForceGenerator()
+{
+	if (_other) {
+		delete _other;
+		_other = nullptr;
+	}
+}

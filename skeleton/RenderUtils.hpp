@@ -45,7 +45,7 @@ public:
 		if (references == 0)
 		{
 			DeregisterRenderItem(this);
-			shape->release();
+			if (shape) shape->release();
 			delete this;
 		}
 	}

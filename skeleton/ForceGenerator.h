@@ -18,7 +18,7 @@ public:
 	ForceGenerator(Vector3 acc, Vector3 vel) : _ForceAcceleration(acc), _ForceVelocity(vel) {
 		_isActive = true;
 	}; //Para el viento
-	~ForceGenerator() {};
+	virtual ~ForceGenerator() {};
 	virtual Vector3 putForce(Particula* p) = 0; //Aplicamos la fuerza a la particula dada
 	virtual void update(double dt) {} //Actualizamos las fuerzas, como la explosion
 

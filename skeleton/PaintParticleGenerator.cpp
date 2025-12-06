@@ -14,6 +14,10 @@ PaintParticleGenerator::PaintParticleGenerator(Vector3 pos, Particula* model, in
     _forceGenerators.push_back(_explosionForceGenerator);
 }
 
+PaintParticleGenerator::~PaintParticleGenerator()
+{
+}
+
 Particula* PaintParticleGenerator::generateP()
 {
     PxReal tamP = 0.3;

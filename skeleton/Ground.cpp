@@ -1,5 +1,6 @@
 #include "Ground.h"
 #include "checkML.h"
+#include <memory>
 
 using namespace physx;
 
@@ -18,12 +19,14 @@ Ground::Ground(PxPhysics* gPhysics, PxScene* gScene, Vector3 pos) : _pos(pos)
     PxTransform* transformBoxPath1 = new PxTransform(pos + Vector3(60.f,0.f,0.f));
     _path1 = new RenderItem(shapeBoxPath1, transformBoxPath1, Vector4(0.0f, 0.2f, 0.2f, 1.0f));
     RegisterRenderItem(_path1);
+    delete transformBoxPath1;
     
     PxBoxGeometry boxGeomPath2(PxVec3(10.0f, 0.3f, 100.0f));
     PxShape* shapeBoxPath2 = CreateShape(boxGeomPath2);
     PxTransform* transformBoxPath2 = new PxTransform(pos + Vector3(-60.f,0.f,0.f));
     _path2 = new RenderItem(shapeBoxPath2, transformBoxPath2, Vector4(0.0f, 0.2f, 0.2f, 1.0f));
     RegisterRenderItem(_path2);
+    delete transformBoxPath2;
 }
 
 Ground::~Ground() {
@@ -31,6 +34,7 @@ Ground::~Ground() {
         _groundRigid->release();
         _groundRigid = nullptr;
     }
+    
     if (_groundItem) {
         _groundItem->release();
         _groundItem = nullptr;

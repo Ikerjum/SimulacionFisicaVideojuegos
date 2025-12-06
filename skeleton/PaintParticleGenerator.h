@@ -15,6 +15,7 @@ private:
     Vector4 _paintColor;
 public:
     PaintParticleGenerator(Vector3 pos, Particula* model, int ParticlesPerFrame);
+    ~PaintParticleGenerator();
     Particula* generateP() override;
     Particula* generateDefense();
     void update(double t) override;
