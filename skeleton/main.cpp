@@ -224,31 +224,10 @@ void cleanupPhysics(bool interactive)
 {
 	PX_UNUSED(interactive);
 
-	//std::vector<Particula*> particulas(10, nullptr);
-	//std::vector<Projectile*> proyectiles(10, nullptr);
-
-	//Axes* _axes = nullptr;
-	//Ground* _GroundDown = nullptr;
-	//Ground* _GroundUp = nullptr;
-	
-	//ParticleSystem* WaterSystem = nullptr;
-	//WaterParticleGenerator* WaterGenerator = nullptr;
-
-	//ExplosionParticleGenerator* ExplosionGenerator = nullptr;
-
-	//PaintParticleGenerator* PaintGenerator = nullptr;
-
-	//GravityForceGenerator* GravityDownGenerator = nullptr;
-	//WindForceGenerator* WindUpGenerator = nullptr;
-
-	//SpringForceGenerator* SpringUpGenerator = nullptr;
-	//AnchoredSpringFG* AnchoredSpringUpGenerator = nullptr;
-
-
 	for (int i = 0; i < particulas.size(); ++i) {
 		if (particulas[i] != nullptr) {
-			delete proyectiles[i]; //Llamara a la destructora de particula
-			proyectiles[i] = nullptr;
+			delete particulas[i]; //Llamara a la destructora de particula
+			particulas[i] = nullptr;
 		}
 	}
 
@@ -526,7 +505,7 @@ int main(int, const char*const*)
 {
 #ifdef _DEBUG
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-	//_CrtSetBreakAlloc(569);
+	//_CrtSetBreakAlloc(116);
 	_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE | _CRTDBG_MODE_DEBUG);
 	_CrtSetReportFile(_CRT_WARN, _CRTDBG_FILE_STDERR);
 #endif

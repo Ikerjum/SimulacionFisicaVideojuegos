@@ -17,7 +17,8 @@ public:
     ~WaterParticleGenerator();
     Particula* generateP() override;
     void update(double t) override;
-    void ApplyForces(Particula* newParticle, double t);
+    
+    //void ApplyForces(Particula* newParticle, double t);
 
     void addWindForce(WindForceGenerator* externalForceGenerator);
     WindForceGenerator* getWindForce() { return _windForceGenerator; }

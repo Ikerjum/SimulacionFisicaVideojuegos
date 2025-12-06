@@ -16,7 +16,9 @@ public:
     Particula* generateP() override;
     Particula* generatePInOnePosition(Vector3 pos);
     void update(double t) override;
+    
     void ApplyForces(Particula* newParticle, double t);
+
     void triggerExplosion(Vector3 pos);
 };
 

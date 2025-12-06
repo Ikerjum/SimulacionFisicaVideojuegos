@@ -90,9 +90,10 @@ void Particula::integrate_EulerSemiImplicit(double t)
 void Particula::integrate_Verlet(double t)
 {
     Vector3 temp = _pos.p;
-    _pos.p = _pos.p + (_pos.p - _oldPos) * pow(DAMPING, t) + _acc * (t * t);
-    _vel = (_pos.p - _oldPos) / (2.0 * t);
-    _oldPos = temp;
+    Vector3 nextPos = _pos.p + (_pos.p - _oldPos) * DAMPING + _acc * (t * t);
+    _vel = (nextPos - _oldPos) / (2.0 * t);
+    _oldPos = _pos.p;
+    _pos.p = nextPos;
     update(t);
 }
 

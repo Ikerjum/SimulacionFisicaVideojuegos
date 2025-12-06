@@ -16,6 +16,10 @@ PaintParticleGenerator::PaintParticleGenerator(Vector3 pos, Particula* model, in
 
 PaintParticleGenerator::~PaintParticleGenerator()
 {
+    for (Particula* DP : _DefenseParticles) {
+        delete DP;
+        DP = nullptr;
+    }
 }
 
 Particula* PaintParticleGenerator::generateP()
@@ -100,15 +104,15 @@ void PaintParticleGenerator::update(double t)
     
 }
 
-void PaintParticleGenerator::ApplyForces(Particula* newParticle, double t)
-{
-    newParticle->setAcc(Vector3(0, 0, 0));
-    float massParticle = newParticle->getMass();
-    for (int i = 0; i < _forceGenerators.size(); ++i) {
-        Vector3 newForce = _forceGenerators[i]->putForce(newParticle);
-        if (massParticle != 0.0f) newParticle->setAcc(newParticle->getAcc() + newForce / massParticle);
-    }
-}
+//void PaintParticleGenerator::ApplyForces(Particula* newParticle, double t)
+//{
+//    newParticle->setAcc(Vector3(0, 0, 0));
+//    float massParticle = newParticle->getMass();
+//    for (int i = 0; i < _forceGenerators.size(); ++i) {
+//        Vector3 newForce = _forceGenerators[i]->putForce(newParticle);
+//        if (massParticle != 0.0f) newParticle->setAcc(newParticle->getAcc() + newForce / massParticle);
+//    }
+//}
 
 void PaintParticleGenerator::triggerExplosion(Vector3 pos, Vector4 color)
 {
@@ -119,7 +123,7 @@ void PaintParticleGenerator::triggerExplosion(Vector3 pos, Vector4 color)
         Particula* newParticle = generateDefense();
         if (newParticle) {
             newParticle->setPos(pos);
-            _obstacleParticles.push_back(newParticle);
+            _DefenseParticles.push_back(newParticle);
         }
 
         _explosionForceGenerator->activate(pos);
@@ -128,13 +132,13 @@ void PaintParticleGenerator::triggerExplosion(Vector3 pos, Vector4 color)
 
 void PaintParticleGenerator::unpaint()
 {
-    if (_obstacleParticles.empty()) return;
+    if (_DefenseParticles.empty()) return;
 
-    for (int i = 0; i < _obstacleParticles.size(); ) {
-        Particula* p = _obstacleParticles[i];
+    for (int i = 0; i < _DefenseParticles.size(); ) {
+        Particula* p = _DefenseParticles[i];
         delete p;
         p = nullptr;
-        _obstacleParticles[i] = _obstacleParticles.back();
-        _obstacleParticles.pop_back();
+        _DefenseParticles[i] = _DefenseParticles.back();
+        _DefenseParticles.pop_back();
     }
 }

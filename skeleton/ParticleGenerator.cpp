@@ -46,3 +46,12 @@ void ParticleGenerator::setModel(Particula* modelP)
 void ParticleGenerator::setPos(Vector3 pos) {
 	_pos.p = pos;
 }
+
+void ParticleGenerator::ApplyForces(Particula* newParticle, double t) {
+	newParticle->setAcc(Vector3(0, 0, 0));
+	float massParticle = newParticle->getMass();
+	for (int i = 0; i < _forceGenerators.size(); ++i) {
+		Vector3 newForce = _forceGenerators[i]->putForce(newParticle);
+		if (massParticle != 0.0f) newParticle->setAcc(newParticle->getAcc() + newForce / massParticle);
+	}
+}

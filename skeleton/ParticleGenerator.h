@@ -29,6 +29,8 @@ public:
 	void setPos(Vector3 pos);
 	PxTransform getPos() const { return _pos; }
 
+	virtual void ApplyForces(Particula* newParticle, double t);
+
 protected:
 	PxTransform _pos;
 	Particula* _modelP;

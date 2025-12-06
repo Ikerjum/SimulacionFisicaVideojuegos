@@ -11,7 +11,7 @@ class PaintParticleGenerator :
 {
 private:
     ExplosionForceGenerator* _explosionForceGenerator;
-    std::vector<Particula*> _obstacleParticles; //Cambio de nombre pendiente
+    std::vector<Particula*> _DefenseParticles; //Cambio de nombre pendiente
     Vector4 _paintColor;
 public:
     PaintParticleGenerator(Vector3 pos, Particula* model, int ParticlesPerFrame);
@@ -19,9 +19,10 @@ public:
     Particula* generateP() override;
     Particula* generateDefense();
     void update(double t) override;
-    void ApplyForces(Particula* newParticle, double t);
     void triggerExplosion(Vector3 pos, Vector4 color);
     void unpaint();
+
+    //void ApplyForces(Particula* newParticle, double t);
 
     void setColor(Vector4 newColor) { _paintColor = newColor; }
     Vector4 getColor() const { return _paintColor; }
