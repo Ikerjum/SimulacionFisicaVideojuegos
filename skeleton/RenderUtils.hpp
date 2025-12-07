@@ -12,27 +12,27 @@ class RenderItem
 {
 public:
 	RenderItem(physx::PxShape* _shape, const physx::PxTransform* _trans, const Vector4& _color) :
-		shape(_shape), transform(_trans), actor(NULL), color(_color), references(1)
+		shape(_shape), transform(_trans), actor(NULL), color(_color), references(1), ownsShape(true)
 	{
-		shape->acquireReference();
+		if (shape) shape->acquireReference();
 		RegisterRenderItem(this);
 	}
 
 	RenderItem(physx::PxShape* _shape, const Vector4& _color) :
-		shape(_shape), transform(NULL), actor(NULL), color(_color), references(1)
+		shape(_shape), transform(NULL), actor(NULL), color(_color), references(1), ownsShape(true)
 	{
-		shape->acquireReference();
+		if (shape) shape->acquireReference();
 		RegisterRenderItem(this);
 	}
 
 	RenderItem(physx::PxShape* _shape, const physx::PxRigidActor* _actor, const Vector4& _color) :
-		shape(_shape), transform(NULL), actor(_actor), color(_color), references(1)
+		shape(nullptr), transform(NULL), actor(_actor), color(_color), references(1), ownsShape(false)
 	{
-		shape->acquireReference();
+		//shape->acquireReference();
 		RegisterRenderItem(this);
 	}
 
-	RenderItem() : shape(NULL), transform(NULL), references(1) {}
+	RenderItem() : shape(NULL), transform(NULL), references(1), ownsShape(false) {}
 
 	void addReference()
 	{
@@ -41,11 +41,14 @@ public:
 
 	void release()
 	{
+		if (references == 0) return;
 		--references;
 		if (references == 0)
 		{
 			DeregisterRenderItem(this);
-			if (shape) shape->release();
+			if (shape && ownsShape) {
+				shape->release();
+			}
 			delete this;
 		}
 	}
@@ -57,6 +60,7 @@ public:
 	Vector4 color;
 
 	unsigned references;
+	bool ownsShape;
 };
 
 double GetLastTime();

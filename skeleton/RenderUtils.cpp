@@ -103,20 +103,61 @@ void renderCallback()
 	startRender(sCamera->getEye(), sCamera->getDir());
 
 	//fprintf(stderr, "Num Render Items: %d\n", static_cast<int>(gRenderItems.size()));
+	//for (auto it = gRenderItems.begin(); it != gRenderItems.end(); ++it)
+	//{
+	//	const RenderItem* obj = (*it);
+	//	auto objTransform = obj->transform;
+	//	if (!objTransform)
+	//	{
+	//		auto actor = obj->actor;
+	//		if (actor)
+	//		{
+	//			renderShape(*obj->shape, actor->getGlobalPose(), obj->color);
+	//			continue;
+	//		}
+	//	}
+	//	renderShape(*obj->shape, objTransform ? *objTransform : physx::PxTransform(PxIdentity), obj->color);
+	//}
+
 	for (auto it = gRenderItems.begin(); it != gRenderItems.end(); ++it)
 	{
 		const RenderItem* obj = (*it);
+		if (!obj) continue;
+
 		auto objTransform = obj->transform;
-		if (!objTransform)
+
+		// 1. Si viene con transform explícito shape render normal
+		if (objTransform && obj->shape)
 		{
-			auto actor = obj->actor;
-			if (actor)
-			{
-				renderShape(*obj->shape, actor->getGlobalPose(), obj->color);
-				continue;
-			}
+			renderShape(*obj->shape, *objTransform, obj->color);
+			continue;
 		}
-		renderShape(*obj->shape, objTransform ? *objTransform : physx::PxTransform(PxIdentity), obj->color);
+
+		// 2. Si tiene actor renderiza TODAS sus shapes (forma correcta ahora)
+		if (obj->actor)
+		{
+			const physx::PxRigidActor* actor = obj->actor;
+
+			PxU32 nbShapes = actor->getNbShapes();
+			if (nbShapes > 0)
+			{
+				std::vector<physx::PxShape*> shapes(nbShapes);
+				actor->getShapes(shapes.data(), nbShapes);
+
+				for (PxU32 i = 0; i < nbShapes; ++i)
+				{
+					if (shapes[i])
+						renderShape(*shapes[i], actor->getGlobalPose(), obj->color);
+				}
+			}
+			continue;
+		}
+
+		// 3. Último caso: RenderItem autónomo con shape
+		if (obj->shape)
+		{
+			renderShape(*obj->shape, physx::PxTransform(PxIdentity), obj->color);
+		}
 	}
 
 	//PxScene* scene;
@@ -128,6 +169,7 @@ void renderCallback()
 	//	scene->getActors(PxActorTypeFlag::eRIGID_DYNAMIC | PxActorTypeFlag::eRIGID_STATIC, reinterpret_cast<PxActor**>(&actors[0]), nbActors);
 	//	renderActors(&actors[0], static_cast<PxU32>(actors.size()), true, Vector4(1.0f, 0.0f, 0.0f, 1.0f));
 	//}
+
 
 	finishRender();
 }
@@ -162,13 +204,20 @@ void renderLoop()
 
 void RegisterRenderItem(const RenderItem* _item)
 {
-	gRenderItems.push_back(_item);
+	if (!_item) return;
+	auto it = find(gRenderItems.begin(), gRenderItems.end(), _item);
+	if (it == gRenderItems.end()) {
+		gRenderItems.push_back(_item);
+	}
 }
 
 void DeregisterRenderItem(const RenderItem* _item)
 {
+	if (!_item) return;
 	auto it = find(gRenderItems.begin(), gRenderItems.end(), _item);
-	gRenderItems.erase(it);
+	if (it != gRenderItems.end()) {
+		gRenderItems.erase(it);
+	}
 }
 
 double GetLastTime()

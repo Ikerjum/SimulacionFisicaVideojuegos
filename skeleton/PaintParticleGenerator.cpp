@@ -128,7 +128,7 @@ void PaintParticleGenerator::triggerExplosion(Vector3 pos, Vector4 color, std::v
         _modelP->setColor(color);
         setPos(pos); //Ponemos el generador en la posicion pasada por referencia que es la posicion del proyectil
 
-        Defense* newDefense = new Defense(pos,Vector3(0.f,0.f,0.f),color,2.0f);
+        Defense* newDefense = new Defense(pos,Vector3(0.f,0.f,0.f),color,6.0f);
         if (newDefense) {
             newDefense->setPos(pos);
             for (ForceGenerator* FG : forceGeneratorsGlobal) {

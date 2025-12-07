@@ -1,50 +1,48 @@
 #include "Ground.h"
 #include "checkML.h"
 #include <memory>
+#include <assert.h>
 
 using namespace physx;
 
-Ground::Ground(PxPhysics* gPhysics, PxScene* gScene, Vector3 pos) : _pos(pos)
+Ground::Ground(PxPhysics* gPhysics, PxScene* gScene, Vector3 pos) : _pos(pos), _gScene(gScene)
 {
-    _groundRigid = gPhysics->createRigidStatic(PxTransform(pos));
-    PxShape* shape = CreateShape(PxBoxGeometry(100, 0.1, 100));
-    _groundRigid->attachShape(*shape);
-    gScene->addActor(*_groundRigid);
+    //CREATE SEA
+    CreatePath(gPhysics, gScene, pos, Vector3(100.0f, 2.0f, 100.0f), Vector3(0.0f,0.0f,0.0f), Vector4(0.1f, 0.1f, 0.8f, 1.0f));
+    //CREATE PATHS
+    CreatePath(gPhysics, gScene ,pos, Vector3(10.0f, 3.0f ,100.0f), Vector3(30.0f, 10.0f, 0.0f), Vector4(0.1f, 0.2f, 0.2f, 1.0f));
+    CreatePath(gPhysics, gScene, pos, Vector3(10.0f, 3.0f ,100.0f), Vector3(-30.0f, 10.0f, 0.0f), Vector4(0.1f, 0.2f, 0.2f, 1.0f));
+}
 
-    _groundItem = new RenderItem(shape, _groundRigid, { 0.1,0.1,0.1,1 });
-    RegisterRenderItem(_groundItem);
+void Ground::CreatePath(physx::PxPhysics* gPhysics, physx::PxScene* gScene, Vector3& pos, Vector3& scale, Vector3& offset, Vector4& color)
+{
+    PxBoxGeometry boxGeom(scale);
+    PxShape* shape = CreateShape(boxGeom);
+    physx::PxRigidStatic* actor = gPhysics->createRigidStatic(PxTransform(pos + offset));
+    actor->attachShape(*shape);
+    gScene->addActor(*actor);
+    RenderItem* item = new RenderItem(shape, actor, color);
+    //RegisterRenderItem(item);
 
-    PxBoxGeometry boxGeomPath1(PxVec3(10.0f, 0.3f, 100.0f));
-    PxShape* shapeBoxPath1 = CreateShape(boxGeomPath1);
-    PxTransform* transformBoxPath1 = new PxTransform(pos + Vector3(60.f,0.f,0.f));
-    _path1 = new RenderItem(shapeBoxPath1, transformBoxPath1, Vector4(0.0f, 0.2f, 0.2f, 1.0f));
-    RegisterRenderItem(_path1);
-    delete transformBoxPath1;
-    
-    PxBoxGeometry boxGeomPath2(PxVec3(10.0f, 0.3f, 100.0f));
-    PxShape* shapeBoxPath2 = CreateShape(boxGeomPath2);
-    PxTransform* transformBoxPath2 = new PxTransform(pos + Vector3(-60.f,0.f,0.f));
-    _path2 = new RenderItem(shapeBoxPath2, transformBoxPath2, Vector4(0.0f, 0.2f, 0.2f, 1.0f));
-    RegisterRenderItem(_path2);
-    delete transformBoxPath2;
+    assert(actor != nullptr);
+    assert(shape != nullptr);
+
+    _actors.push_back(actor);
+    _renderItems.push_back(item);
 }
 
 Ground::~Ground() {
-    if (_groundRigid) {
-        _groundRigid->release();
-        _groundRigid = nullptr;
+
+    for (RenderItem* item : _renderItems) {
+        item->release();
+        item = nullptr;
     }
-    
-    if (_groundItem) {
-        _groundItem->release();
-        _groundItem = nullptr;
+    _renderItems.clear();
+
+    for (physx::PxRigidStatic* actor : _actors) {
+        _gScene->removeActor(*actor);
+        actor->release();
+        actor = nullptr;
     }
-    if (_path1) {
-        _path1->release();
-        _path1 = nullptr;
-    }
-    if (_path2) {
-        _path2->release();
-        _path2 = nullptr;
-    }
+    _actors.clear();
 }

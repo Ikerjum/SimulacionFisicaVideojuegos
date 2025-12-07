@@ -3,17 +3,18 @@
 #include "core.hpp"
 #include "RenderUtils.hpp"
 #include <PxPhysicsAPI.h>
+#include <vector>
 
 class Ground
 {
 private:
-	physx::PxRigidStatic* _groundRigid;
-	RenderItem* _groundItem;
-	RenderItem* _path1;
-	RenderItem* _path2;
+	std::vector<physx::PxRigidStatic*> _actors;
+	std::vector<RenderItem*> _renderItems;
 	Vector3 _pos;
+	physx::PxScene* _gScene;
 public:
 	Ground(physx::PxPhysics* gPhysics, physx::PxScene* gScene, Vector3 pos);
+	void CreatePath(physx::PxPhysics* gPhysics, physx::PxScene* gScene, Vector3& pos, Vector3& scale, Vector3& offset, Vector4& color);
 	~Ground();
 
 	Vector3 getPos() const { return _pos; }
