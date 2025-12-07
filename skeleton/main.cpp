@@ -164,6 +164,9 @@ void initPhysics(bool interactive)
 	_forceGeneratorsGlobal.push_back(GravityDownGenerator);
 
 	WaterGenerator = new WaterParticleGenerator(generatorPosWater,particleModelWater,4);
+	WaterGenerator->addForceGenerator(GravityDownGenerator);
+	WaterGenerator->addForceGenerator(WindUpGenerator);
+
 	PaintGenerator = new PaintParticleGenerator(generatorPosExplosion, particleModelExplosion, 6);
 	
 	//SpringUpGenerator = new SpringForceGenerator();
@@ -175,7 +178,7 @@ void initPhysics(bool interactive)
 
 void PaintInScene(Projectile* projectile) {
 	if (PaintGenerator && projectile) {
-		PaintGenerator->triggerExplosion(projectile->getPos().p, projectile->getProjectileColor());
+		PaintGenerator->triggerExplosion(projectile->getPos().p, projectile->getProjectileColor(),_forceGeneratorsGlobal);
 	}
 }
 
@@ -243,6 +246,11 @@ void cleanupPhysics(bool interactive)
 		}
 	}
 
+	for (ForceGenerator* FG : _forceGeneratorsGlobal) {
+		delete FG;
+		FG = nullptr;
+	}
+
 	if (_axes) {
 		delete _axes;
 		_axes = nullptr;
@@ -272,11 +280,6 @@ void cleanupPhysics(bool interactive)
 	if (PaintGenerator) {
 		delete PaintGenerator;
 		PaintGenerator = nullptr;
-	}
-
-	for (ForceGenerator* FG : _forceGeneratorsGlobal) {
-		delete FG;
-		FG = nullptr;
 	}
 
 	if (SpringUpGenerator) {
@@ -358,7 +361,7 @@ void PaintInScene()
 		bool encontrado = false;
 		while (i < proyectiles.size() && !encontrado) {
 			if (proyectiles[i] != nullptr) {
-				PaintGenerator->triggerExplosion(proyectiles[i]->getPos().p, proyectiles[i]->getProjectileColor());
+				PaintGenerator->triggerExplosion(proyectiles[i]->getPos().p, proyectiles[i]->getProjectileColor(),_forceGeneratorsGlobal);
 				delete proyectiles[i];
 				proyectiles[i] = nullptr;
 				encontrado = true;

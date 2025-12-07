@@ -4,6 +4,7 @@
 #include "WindForceGenerator.h"
 #include "ExplosionForceGenerator.h"
 #include "AnchoredSpringFG.h"
+#include "BuoyancyBounceGenerator.h"
 #include <random>
 #include <iostream>
 
@@ -11,7 +12,7 @@ class WaterParticleGenerator :
     public ParticleGenerator
 {
 private:
-    WindForceGenerator* _windForceGenerator;
+    BuoyancyForceGenerator* _bounceGenerator;
 public:
     WaterParticleGenerator(Vector3 pos, Particula* model, int ParticlesPerFrame);
     ~WaterParticleGenerator();

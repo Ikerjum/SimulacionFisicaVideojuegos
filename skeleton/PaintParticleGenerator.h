@@ -3,6 +3,7 @@
 #include "WindForceGenerator.h"
 #include "ExplosionForceGenerator.h"
 #include "GravityForceGenerator.h"
+#include "Defense.h"
 #include <random>
 #include <iostream>
 
@@ -11,7 +12,7 @@ class PaintParticleGenerator :
 {
 private:
     ExplosionForceGenerator* _explosionForceGenerator;
-    std::vector<Particula*> _DefenseParticles; //Cambio de nombre pendiente
+    std::vector<Defense*> _defenders;
     Vector4 _paintColor;
 public:
     PaintParticleGenerator(Vector3 pos, Particula* model, int ParticlesPerFrame);
@@ -19,7 +20,7 @@ public:
     Particula* generateP() override;
     Particula* generateDefense();
     void update(double t) override;
-    void triggerExplosion(Vector3 pos, Vector4 color);
+    void triggerExplosion(Vector3 pos, Vector4 color, std::vector<ForceGenerator*> forceGenerators);
     void unpaint();
 
     //void ApplyForces(Particula* newParticle, double t);

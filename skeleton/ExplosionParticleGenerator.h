@@ -13,6 +13,7 @@ private:
     ExplosionForceGenerator* _explosionForceGenerator = nullptr;
 public:
     ExplosionParticleGenerator(Vector3 pos, Particula* model, int ParticlesPerFrame);
+    ~ExplosionParticleGenerator();
     Particula* generateP() override;
     Particula* generatePInOnePosition(Vector3 pos);
     void update(double t) override;

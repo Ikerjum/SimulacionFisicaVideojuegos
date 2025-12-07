@@ -1,16 +1,17 @@
 #include "BuoyancyBounceGenerator.h"
 #include "checkML.h"
-BuoyancyForceGenerator::BuoyancyForceGenerator(float h, float V, float d)
+BuoyancyForceGenerator::BuoyancyForceGenerator(float h, float V, float d, float waterHeight)
 {
 	_height = h;
-	_volume = V;
-	_liquid_density = d;
+	_volume = V; //Unico valor modificable para que baje mas o baje menos
+	_liquid_density = d; //1000 para el agua
+	_waterHeight = waterHeight;
 }
 
 Vector3 BuoyancyForceGenerator::putForce(Particula* particle)
 {
 	float h = particle->getPos().p.y;
-	float h0 = _liquid_particle->getPos().p.y;
+	float h0 = _waterHeight;
 
 	Vector3 force(0, 0, 0);
 	float immersed = 0.0;
@@ -23,8 +24,23 @@ Vector3 BuoyancyForceGenerator::putForce(Particula* particle)
 	else {
 		immersed = (h0 - h) / _height + 0.5;
 	}
-	force.y = _liquid_density * _volume * immersed * 9.8;
+
+	float buoyancy = _liquid_density * _volume * immersed * _gravity;
 	
+	// Resistencia (drag)
+	float resistanceForce = -particle->getVel().y * 2.5f;
+
+	float targetHeight = h0 + (_height * 0.25f);  // altura de equilibrio
+	float displacement = h - targetHeight;
+
+	float k = 20.0f;   // rigidez del muelle
+	float c = 4.0f;    // amortiguacion
+
+	float springForce = -k * displacement;
+	float springDamping = -c * particle->getVel().y;
+
+	force.y = buoyancy + resistanceForce + springForce + springDamping;
+
 	return force;
 }
 

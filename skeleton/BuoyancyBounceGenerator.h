@@ -5,7 +5,7 @@
 
 class BuoyancyForceGenerator : public ForceGenerator {
 public:
-	BuoyancyForceGenerator(float h, float V, float d);
+	BuoyancyForceGenerator(float h, float V, float d, float waterHeight);
 	Vector3 putForce(Particula* particle) override;
 	virtual ~BuoyancyForceGenerator();
 protected:
@@ -14,5 +14,5 @@ protected:
 	float _liquid_density;
 	float _gravity = 9.8;
 
-	Particula* _liquid_particle;
+	float _waterHeight;
 };

@@ -1,5 +1,6 @@
 #include "PaintParticleGenerator.h"
 #include "checkML.h"
+
 PaintParticleGenerator::PaintParticleGenerator(Vector3 pos, Particula* model, int ParticlesPerFrame) :
 	ParticleGenerator(pos,model,ParticlesPerFrame), _explosionForceGenerator(nullptr)
 {
@@ -13,9 +14,9 @@ PaintParticleGenerator::PaintParticleGenerator(Vector3 pos, Particula* model, in
 
 PaintParticleGenerator::~PaintParticleGenerator()
 {
-    for (Particula* DP : _DefenseParticles) {
-        delete DP;
-        DP = nullptr;
+    for (Defense* DF : _defenders) {
+        delete DF;
+        DF = nullptr;
     }
     if (_explosionForceGenerator) {
         delete _explosionForceGenerator;
@@ -88,6 +89,12 @@ void PaintParticleGenerator::update(double t)
         }
     }
 
+    if (!_defenders.empty()) {
+        for (Defense* DF : _defenders) {
+            DF->update(t);
+        }
+    }
+
     if (!_explosionForceGenerator->getIsActive()) return;
 
     for (int i = 0; i < _particlesPerFrame; ++i) {
@@ -115,16 +122,19 @@ void PaintParticleGenerator::update(double t)
 //    }
 //}
 
-void PaintParticleGenerator::triggerExplosion(Vector3 pos, Vector4 color)
+void PaintParticleGenerator::triggerExplosion(Vector3 pos, Vector4 color, std::vector<ForceGenerator*> forceGeneratorsGlobal)
 {
     if (_explosionForceGenerator && !_explosionForceGenerator->getIsActive()) {
         _modelP->setColor(color);
         setPos(pos); //Ponemos el generador en la posicion pasada por referencia que es la posicion del proyectil
 
-        Particula* newParticle = generateDefense();
-        if (newParticle) {
-            newParticle->setPos(pos);
-            _DefenseParticles.push_back(newParticle);
+        Defense* newDefense = new Defense(pos,Vector3(0.f,0.f,0.f),color,2.0f);
+        if (newDefense) {
+            newDefense->setPos(pos);
+            for (ForceGenerator* FG : forceGeneratorsGlobal) {
+                newDefense->addForceGenerator(FG);
+            }
+            _defenders.push_back(newDefense);
         }
 
         _explosionForceGenerator->activate(pos);
@@ -133,13 +143,13 @@ void PaintParticleGenerator::triggerExplosion(Vector3 pos, Vector4 color)
 
 void PaintParticleGenerator::unpaint()
 {
-    if (_DefenseParticles.empty()) return;
+    if (_defenders.empty()) return;
 
-    for (int i = 0; i < _DefenseParticles.size(); ) {
-        Particula* p = _DefenseParticles[i];
+    for (int i = 0; i < _defenders.size(); ) {
+        Defense* p = _defenders[i];
         delete p;
         p = nullptr;
-        _DefenseParticles[i] = _DefenseParticles.back();
-        _DefenseParticles.pop_back();
+        _defenders[i] = _defenders.back();
+        _defenders.pop_back();
     }
 }
