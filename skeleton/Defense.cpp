@@ -8,7 +8,7 @@
 using namespace physx;
 
 Defense::Defense(Vector3 initialPos, Vector3 initialDir, Vector4 color, PxReal tam, PxPhysics* gPhysics, PxScene* gScene) :
-	Particula(initialDir, initialPos, Vector3(0.0f, -9.8f, 0.0f), 20.0f, color, tam, 200.0f), _countToShoot(0.0), _momentOfShoot(1.0), _gPhysics(gPhysics), _gScene(gScene)
+	Particula(initialDir, initialPos, Vector3(0.0f, -9.8f, 0.0f), 20.0f, color, tam, 200.0f), _countToShoot(0.0), _momentOfShoot(0.5), _gPhysics(gPhysics), _gScene(gScene)
 {
 	PxBoxGeometry boxGeom(Vector3(tam * 0.75,tam,tam * 0.75));
 	PxShape* shapeBox = CreateShape(boxGeom);
