@@ -7,7 +7,7 @@
 
 using namespace physx;
 
-Defense::Defense(Vector3 initialPos, Vector3 initialDir, Vector4 color, PxReal tam, PxPhysics* gPhysics, PxScene* gScene) :
+Defense::Defense(Vector3 initialPos, Vector3 initialDir, Vector4 color, PxReal tam, PxPhysics* gPhysics, PxScene* gScene, WindForceGenerator* windForce) :
 	Particula(initialDir, initialPos, Vector3(0.0f, -9.8f, 0.0f), 20.0f, color, tam, 200.0f), _countToShoot(0.0), _momentOfShoot(0.5), _gPhysics(gPhysics), _gScene(gScene)
 {
 	PxBoxGeometry boxGeom(Vector3(tam * 0.75,tam,tam * 0.75));
@@ -151,7 +151,14 @@ void Defense::GenerateBullet(double t)
 	_countToShoot += t;
 	if (_countToShoot >= _momentOfShoot) {
 		_countToShoot = 0;
-		_bullets.push_back(new Bullet(_gPhysics, _gScene, _headTransform.p, Vector3(1.0f, 1.0f, 1.0f), Vector3(50.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), _color));
+		Bullet* newBullet = new Bullet(_gPhysics, _gScene, _headTransform.p, Vector3(1.0f, 1.0f, 1.0f), Vector3(100.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), _color);
+		for (ForceGenerator* fg : _forceGenerators) {
+			// Filtra solo las de tipo GravityForceGenerator
+			//if (dynamic_cast<GravityForceGenerator*>(fg) != nullptr) {
+				newBullet->addForceGenerator(fg);
+			//}
+		}
+		_bullets.push_back(newBullet);
 	}
 }
 
@@ -159,6 +166,14 @@ void Defense::GenerateBullet(double t)
 
 void Defense::addForceGenerator(ForceGenerator* newForceGenerator) {
 	_forceGenerators.push_back(newForceGenerator);
+}
+
+void Defense::initializeForceBounce()
+{
+	if (!_buoyancyForce) {
+		_buoyancyForce = new BuoyancyForceGenerator(0.1f, 0.2f, 1000.0f, 2.5f);
+		_forceGenerators.push_back(_buoyancyForce);
+	}
 }
 
 void Defense::ApplyForces(double t) {

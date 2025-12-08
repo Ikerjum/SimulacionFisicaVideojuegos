@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Particula.h"
+#include "DynamicParticle.h"
 #include "ForceGenerator.h"
 
 class ExplosionForceGenerator : public ForceGenerator {
@@ -33,6 +34,9 @@ public:
 		}
 	}
 	Vector3 putForce(Particula* p) override;
+	Vector3 putForce(DynamicParticle* p) override;
 
 	bool getIsActive() const { return _active; }
+
+	ForceGenerator* clone() const;
 };

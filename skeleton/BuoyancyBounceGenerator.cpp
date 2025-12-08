@@ -44,6 +44,47 @@ Vector3 BuoyancyForceGenerator::putForce(Particula* particle)
 	return force;
 }
 
+Vector3 BuoyancyForceGenerator::putForce(DynamicParticle* particle)
+{
+	float h = particle->getPos().p.y;
+	float h0 = _waterHeight;
+
+	Vector3 force(0, 0, 0);
+	float immersed = 0.0;
+	if (h - h0 > _height * 0.5) {
+		immersed = 0.0;
+	}
+	else if (h0 - h > _height * 0.5) {
+		immersed = 1.0;
+	}
+	else {
+		immersed = (h0 - h) / _height + 0.5;
+	}
+
+	float buoyancy = _liquid_density * _volume * immersed * _gravity;
+
+	// Resistencia (drag)
+	float resistanceForce = -particle->getVel().y * 2.5f;
+
+	float targetHeight = h0 + (_height * 0.25f);  // altura de equilibrio
+	float displacement = h - targetHeight;
+
+	float k = 10.5f;   // rigidez del muelle
+	float c = 1.0f;    // amortiguacion
+
+	float springForce = -k * displacement;
+	float springDamping = -c * particle->getVel().y;
+
+	force.y = buoyancy + resistanceForce + springForce + springDamping;
+
+	return force;
+}
+
 BuoyancyForceGenerator::~BuoyancyForceGenerator()
 {
+}
+
+ForceGenerator* 
+BuoyancyForceGenerator::clone() const {
+	return new BuoyancyForceGenerator(*this);
 }

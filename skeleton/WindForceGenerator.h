@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Particula.h"
+#include "DynamicParticle.h"
 #include "ForceGenerator.h"
 
 class WindForceGenerator : public ForceGenerator {
@@ -15,6 +16,9 @@ public:
 		setActive(active); //Por defecto no tenemos viento
 	}
 	Vector3 putForce(Particula* p) override;
+	Vector3 putForce(DynamicParticle* p) override;
+
+	ForceGenerator* clone() const;
 
 	void setWindVel(Vector3 windVel) { _windVel = windVel; }
 	Vector3 getWindVel() const { return _windVel; }

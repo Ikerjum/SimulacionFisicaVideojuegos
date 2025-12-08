@@ -3,7 +3,9 @@
 #include "RenderUtils.hpp"
 #include "Particula.h"
 #include "ForceGenerator.h"
+#include "GravityForceGenerator.h"
 #include "BuoyancyBounceGenerator.h"
+#include "WindForceGenerator.h"
 #include <vector>
 #include <array>
 #include <list>
@@ -15,6 +17,7 @@ private:
     std::vector<Particula*> _defenseParts;
     std::vector<ForceGenerator*> _forceGenerators;
     BuoyancyForceGenerator* _buoyancyForce;
+    WindForceGenerator* _windForceGenerator;
 
     RenderItem* _body;
     PxTransform _bodyTransform;
@@ -39,7 +42,8 @@ private:
     Vector4 _color;
 
 public:
-    Defense(Vector3 initialPos, Vector3 initialDir, Vector4 color, PxReal tam, physx::PxPhysics* gPhysics, physx::PxScene* gScene);
+    Defense(Vector3 initialPos, Vector3 initialDir, Vector4 color, PxReal tam, physx::PxPhysics* gPhysics, physx::PxScene* gScene,
+    WindForceGenerator* windForce);
     ~Defense();
 
     void CreateLittlePart(physx::PxReal tam, Vector3& initialPos, Vector4& color, Vector3& offset);
@@ -50,5 +54,6 @@ public:
     void updatePartOfDefense();
 
     void addForceGenerator(ForceGenerator* newForceGenerator);
+    void initializeForceBounce();
     void ApplyForces(double t);
 };

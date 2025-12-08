@@ -27,6 +27,8 @@
     <ClCompile Include="AnchoredSpringFG.cpp" />
     <ClCompile Include="BuoyancyBounceGenerator.cpp" />
     <ClCompile Include="Bullet.cpp" />
+    <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="DynamicParticle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core.hpp" />
@@ -58,6 +60,9 @@
     <ClInclude Include="BuoyancyBounceGenerator.h" />
     <ClInclude Include="checkML.h" />
     <ClInclude Include="Bullet.h" />
+    <ClInclude Include="Enemy.h" />
+    <ClInclude Include="EnemyManager.h" />
+    <ClInclude Include="DynamicParticle.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Render">

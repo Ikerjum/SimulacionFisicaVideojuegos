@@ -1,34 +1,28 @@
 #include "Bullet.h"
+#include <iostream>
 
 Bullet::Bullet(PxPhysics* gPhysics, PxScene* gScene, Vector3& pos, Vector3& tam, Vector3& linearVelocity, Vector3& angularVelocity, Vector4& color) :
-	_item(nullptr), _gPhysics(gPhysics), _gScene(gScene), _timeOfLife(5.0)
+	DynamicParticle(Vector3(0,0,0),pos,Vector3(0,0,0),5.f,color,tam.y,5.0f,tam,linearVelocity,angularVelocity,gScene,gPhysics,DynamicParticle::SPHERE)
 {
-	_actor = gPhysics->createRigidDynamic(PxTransform(pos));
-	_actor->setLinearVelocity(linearVelocity);
-	_actor->setAngularVelocity(angularVelocity);
-	_shape = CreateShape(PxBoxGeometry(tam));
-	_actor->attachShape(*_shape);
-	PxRigidBodyExt::updateMassAndInertia(*_actor, 0.15);
-	gScene->addActor(*_actor);
-
-	_item = new RenderItem(_shape, _actor, color);
-}
-
-Bullet::~Bullet()
-{
-	if (_item) {
-		_item->release();
-		_item = nullptr;
-	}
-	if (_actor) {
-		_gScene->removeActor(*_actor);
-		_actor->release();
-		_actor = nullptr;
-	}
 }
 
 void Bullet::updateBullet(double t)
 {
-	_timeOfLife -= t;
+	ApplyForcesDynamic(t);
+	integrate_Verlet(t);
+}
+
+
+void Bullet::addForceGenerator(ForceGenerator* newForceGenerator) {
+	_forceGenerators.push_back(newForceGenerator);
+}
+
+void Bullet::ApplyForcesDynamic(double t)
+{
+	_actor->clearForce();
+	for (auto& fg : _forceGenerators) {
+		Vector3 f = fg->putForce(this); // fg debe usar datos reales si target tiene actor
+		_actor->addForce(PxVec3(f.x, f.y, f.z), PxForceMode::eFORCE);
+	}
 }
 

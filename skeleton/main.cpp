@@ -122,7 +122,7 @@ void initPhysics(bool interactive)
 
 	// For Solid Rigids +++++++++++++++++++++++++++++++++++++
 	PxSceneDesc sceneDesc(gPhysics->getTolerancesScale());
-	sceneDesc.gravity = PxVec3(0.0f, -9.8f, 0.0f);
+	sceneDesc.gravity = PxVec3(0.0f, 0.0f, 0.0f); //Añadimos a mano la gravedad tambien para los objetos rigidos
 	gDispatcher = PxDefaultCpuDispatcherCreate(2);
 	sceneDesc.cpuDispatcher = gDispatcher;
 	sceneDesc.filterShader = contactReportFilterShader;
@@ -158,7 +158,7 @@ void initPhysics(bool interactive)
 
 
 	//GENERADORES
-	WindUpGenerator = new WindForceGenerator(Vector3(0.0f, 6000.0f, 0.0f),false);
+	WindUpGenerator = new WindForceGenerator(Vector3(0.0f, 3000.0f, 0.0f),false);
 	_forceGeneratorsGlobal.push_back(WindUpGenerator);
 	GravityDownGenerator = new GravityForceGenerator(Vector3(0.0f, -9.8f, 0.0f));
 	_forceGeneratorsGlobal.push_back(GravityDownGenerator);

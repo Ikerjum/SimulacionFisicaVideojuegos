@@ -1,7 +1,7 @@
 #include "PaintParticleGenerator.h"
 #include "checkML.h"
 
-PaintParticleGenerator::PaintParticleGenerator(Vector3 pos, Particula* model, int ParticlesPerFrame, PxPhysics* gPhysics, PxScene* gScene) :
+PaintParticleGenerator::PaintParticleGenerator(Vector3 pos, Particula* model, int ParticlesPerFrame, PxPhysics* gPhysics, PxScene* gScene, WindForceGenerator* windForce) :
 	ParticleGenerator(pos,model,ParticlesPerFrame), _explosionForceGenerator(nullptr)
 {
     std::random_device rd;
@@ -133,7 +133,8 @@ void PaintParticleGenerator::triggerExplosion(Vector3 pos, Vector4 color, std::v
         _modelP->setColor(color);
         setPos(pos); //Ponemos el generador en la posicion pasada por referencia que es la posicion del proyectil
 
-        Defense* newDefense = new Defense(pos,Vector3(0.f,0.f,0.f),color,6.0f,_gPhysics,_gScene);
+        Defense* newDefense = new Defense(pos,Vector3(0.f,0.f,0.f),color,6.0f,_gPhysics,_gScene,_windForceGenerator);
+        newDefense->initializeForceBounce();
         if (newDefense) {
             newDefense->setPos(pos);
             for (ForceGenerator* FG : forceGeneratorsGlobal) {

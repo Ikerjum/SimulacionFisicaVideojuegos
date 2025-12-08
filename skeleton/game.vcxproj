@@ -259,6 +259,8 @@
     <ClCompile Include="BuoyancyBounceGenerator.cpp" />
     <ClCompile Include="callbacks.cpp" />
     <ClCompile Include="Defense.cpp" />
+    <ClCompile Include="DynamicParticle.cpp" />
+    <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="ExplosionForceGenerator.cpp" />
     <ClCompile Include="ExplosionParticleGenerator.cpp" />
     <ClCompile Include="GravityForceGenerator.cpp" />
@@ -285,6 +287,9 @@
     <ClInclude Include="checkML.h" />
     <ClInclude Include="core.hpp" />
     <ClInclude Include="Defense.h" />
+    <ClInclude Include="DynamicParticle.h" />
+    <ClInclude Include="Enemy.h" />
+    <ClInclude Include="EnemyManager.h" />
     <ClInclude Include="ExplosionForceGenerator.h" />
     <ClInclude Include="ExplosionParticleGenerator.h" />
     <ClInclude Include="ForceGenerator.h" />
