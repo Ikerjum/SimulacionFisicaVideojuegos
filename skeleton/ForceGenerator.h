@@ -5,19 +5,33 @@
 #include "core.hpp"
 
 class ForceGenerator {
+public:
+	enum typeGenerator {
+		DEFAULT,
+		GRAVITY,
+		WIND,
+		EXPLOSION,
+		BUOYANCY,
+		SPRING,
+		OTHER
+	};
 private:
 	Vector3 _ForceAcceleration;
 	Vector3 _ForceVelocity;
 	bool _isActive;
+	typeGenerator _typeGenerator;
 public:
 	ForceGenerator() : _ForceAcceleration(), _ForceVelocity() { 
 		_isActive = true; //Por defecto un generador de fuerzas esta activado
+		setType(ForceGenerator::DEFAULT);
 	};
 	ForceGenerator(Vector3 acc) : _ForceAcceleration(acc), _ForceVelocity() {
 		_isActive = true;
+		setType(ForceGenerator::DEFAULT);
 	};
 	ForceGenerator(Vector3 acc, Vector3 vel) : _ForceAcceleration(acc), _ForceVelocity(vel) {
 		_isActive = true;
+		setType(ForceGenerator::DEFAULT);
 	}; //Para el viento
 
 	virtual ~ForceGenerator() {};
@@ -35,4 +49,8 @@ public:
 	bool isActive() const { return _isActive; }
 	void setActive(bool active) { _isActive = active; }
 	void toggleActive() { _isActive = !_isActive; }
+
+	//GETTER DEL TIPO DE GENERADOR
+	virtual void setType(typeGenerator type) { _typeGenerator = type; }
+	typeGenerator getType() const { return _typeGenerator; }
 };

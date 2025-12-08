@@ -10,11 +10,7 @@ private:
 	float _k2;
 	Vector3 _windVel;
 public:
-	WindForceGenerator(Vector3 windVel, bool active = false, float k1 = 0.1f, float k2 = 0.0f) 
-		: ForceGenerator(Vector3(0, 0, 0), windVel), _windVel(windVel), _k1(k1), _k2(k2) 
-	{ 
-		setActive(active); //Por defecto no tenemos viento
-	}
+	WindForceGenerator(Vector3 windVel, bool active = false, float k1 = 0.1f, float k2 = 0.0f);
 	Vector3 putForce(Particula* p) override;
 	Vector3 putForce(DynamicParticle* p) override;
 

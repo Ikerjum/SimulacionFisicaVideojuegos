@@ -1,7 +1,13 @@
 #include "GravityForceGenerator.h"
 #include "checkML.h"
 
-Vector3 
+GravityForceGenerator::GravityForceGenerator(Vector3 acc) : ForceGenerator(acc)
+{
+	setActive(true); //Por defecto tenemos gravedad siempre
+	setType(ForceGenerator::GRAVITY);
+}
+
+Vector3
 GravityForceGenerator::putForce(Particula* p)
 {
 	if (p == nullptr || p->getMass() == 0 || !isActive())

@@ -17,10 +17,8 @@ private:
 
     PxPhysics* _gPhysics;
     PxScene* _gScene;
-
-    WindForceGenerator* _windForceGenerator;
 public:
-    PaintParticleGenerator(Vector3 pos, Particula* model, int ParticlesPerFrame, PxPhysics* _gPhysics, PxScene* _gScene, WindForceGenerator* windForce);
+    PaintParticleGenerator(Vector3 pos, Particula* model, int ParticlesPerFrame, PxPhysics* _gPhysics, PxScene* _gScene);
     ~PaintParticleGenerator();
     Particula* generateP() override;
     Particula* generateDefense();

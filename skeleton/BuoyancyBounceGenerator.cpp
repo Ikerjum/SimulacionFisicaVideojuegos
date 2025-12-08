@@ -2,6 +2,9 @@
 #include "checkML.h"
 BuoyancyForceGenerator::BuoyancyForceGenerator(float h, float V, float d, float waterHeight)
 {
+	setActive(true);
+	setType(ForceGenerator::BUOYANCY);
+
 	_height = h;
 	_volume = V; //Unico valor modificable para que baje mas o baje menos
 	_liquid_density = d; //1000 para el agua

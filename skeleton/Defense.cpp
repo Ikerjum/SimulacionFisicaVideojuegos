@@ -7,7 +7,7 @@
 
 using namespace physx;
 
-Defense::Defense(Vector3 initialPos, Vector3 initialDir, Vector4 color, PxReal tam, PxPhysics* gPhysics, PxScene* gScene, WindForceGenerator* windForce) :
+Defense::Defense(Vector3 initialPos, Vector3 initialDir, Vector4 color, PxReal tam, PxPhysics* gPhysics, PxScene* gScene) :
 	Particula(initialDir, initialPos, Vector3(0.0f, -9.8f, 0.0f), 20.0f, color, tam, 200.0f), _countToShoot(0.0), _momentOfShoot(0.5), _gPhysics(gPhysics), _gScene(gScene)
 {
 	PxBoxGeometry boxGeom(Vector3(tam * 0.75,tam,tam * 0.75));
@@ -153,10 +153,9 @@ void Defense::GenerateBullet(double t)
 		_countToShoot = 0;
 		Bullet* newBullet = new Bullet(_gPhysics, _gScene, _headTransform.p, Vector3(1.0f, 1.0f, 1.0f), Vector3(100.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), _color);
 		for (ForceGenerator* fg : _forceGenerators) {
-			// Filtra solo las de tipo GravityForceGenerator
-			//if (dynamic_cast<GravityForceGenerator*>(fg) != nullptr) {
+			if (fg->getType() == ForceGenerator::GRAVITY) {
 				newBullet->addForceGenerator(fg);
-			//}
+			}
 		}
 		_bullets.push_back(newBullet);
 	}

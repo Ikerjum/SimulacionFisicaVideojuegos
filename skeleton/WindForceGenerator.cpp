@@ -1,7 +1,14 @@
 #include "WindForceGenerator.h"
 #include "checkML.h"
 
-Vector3 
+WindForceGenerator::WindForceGenerator(Vector3 windVel, bool active, float k1, float k2)
+	: ForceGenerator(Vector3(0, 0, 0), windVel), _windVel(windVel), _k1(k1), _k2(k2)
+{
+	setActive(active);
+	setType(ForceGenerator::WIND);
+}
+
+Vector3
 WindForceGenerator::putForce(Particula* p)
 {
 	if (p == nullptr || p->getMass() == 0 || !isActive()) 

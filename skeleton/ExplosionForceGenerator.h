@@ -13,26 +13,10 @@ private:
 	double _time; //tiempo transcurrido desde que ha empezado la explosion
 	bool _active;
 public:
-	ExplosionForceGenerator(Vector3 center, float K, float tau, float R) 
-		: ForceGenerator(), _center(center), _K(K), _tau(tau), _R(R), _time(0.0f), _active(false) 
-	{
-		setActive(true); //Por defecto siempre empezamos con el generador de explosiones activado
-	}
-	void activate(Vector3 newCenter) {
-		_center = newCenter;
-		_time = 0.0f;
-		_active = true;
-	}
-	void deactivate() { _active = false; }
-	void update(double dt) override { 
-		if (_active) {
-			_time += dt; 
-			if (_time > _tau) {
-				deactivate();
-				_time = 0.0f;
-			}
-		}
-	}
+	ExplosionForceGenerator(Vector3 center, float K, float tau, float R);
+	void activate(Vector3 newCenter);
+	void deactivate();
+	void update(double dt) override;
 	Vector3 putForce(Particula* p) override;
 	Vector3 putForce(DynamicParticle* p) override;
 

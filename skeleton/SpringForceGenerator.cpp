@@ -2,6 +2,9 @@
 #include "checkML.h"
 SpringForceGenerator::SpringForceGenerator(double k, double resting_length, Particula* other)
 {
+	setActive(true);
+	setType(ForceGenerator::SPRING);
+
 	_k = k;
 	_resting_length = resting_length;
 	_other = other;

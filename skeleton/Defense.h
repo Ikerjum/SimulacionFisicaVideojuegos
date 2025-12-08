@@ -42,8 +42,7 @@ private:
     Vector4 _color;
 
 public:
-    Defense(Vector3 initialPos, Vector3 initialDir, Vector4 color, PxReal tam, physx::PxPhysics* gPhysics, physx::PxScene* gScene,
-    WindForceGenerator* windForce);
+    Defense(Vector3 initialPos, Vector3 initialDir, Vector4 color, PxReal tam, physx::PxPhysics* gPhysics, physx::PxScene* gScene);
     ~Defense();
 
     void CreateLittlePart(physx::PxReal tam, Vector3& initialPos, Vector4& color, Vector3& offset);
