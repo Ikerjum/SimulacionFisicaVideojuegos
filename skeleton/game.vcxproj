@@ -255,6 +255,7 @@
   <ItemGroup>
     <ClCompile Include="AnchoredSpringFG.cpp" />
     <ClCompile Include="Axes.cpp" />
+    <ClCompile Include="Bullet.cpp" />
     <ClCompile Include="BuoyancyBounceGenerator.cpp" />
     <ClCompile Include="callbacks.cpp" />
     <ClCompile Include="Defense.cpp" />
@@ -278,6 +279,7 @@
   <ItemGroup>
     <ClInclude Include="AnchoredSpringFG.h" />
     <ClInclude Include="Axes.h" />
+    <ClInclude Include="Bullet.h" />
     <ClInclude Include="BuoyancyBounceGenerator.h" />
     <ClInclude Include="callbacks.hpp" />
     <ClInclude Include="checkML.h" />

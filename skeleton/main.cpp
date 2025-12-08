@@ -167,7 +167,7 @@ void initPhysics(bool interactive)
 	WaterGenerator->addForceGenerator(GravityDownGenerator);
 	WaterGenerator->addForceGenerator(WindUpGenerator);
 
-	PaintGenerator = new PaintParticleGenerator(generatorPosExplosion, particleModelExplosion, 6);
+	PaintGenerator = new PaintParticleGenerator(generatorPosExplosion, particleModelExplosion, 6,gPhysics,gScene);
 	
 	//SpringUpGenerator = new SpringForceGenerator();
 	//AnchoredSpringUpGenerator = new AnchoredSpringFG(500.0, 0.5, _GroundDown->getPos());

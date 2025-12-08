@@ -6,6 +6,8 @@
 #include "BuoyancyBounceGenerator.h"
 #include <vector>
 #include <array>
+#include <list>
+#include "Bullet.h"
 
 class Defense : public Particula
 {
@@ -26,13 +28,25 @@ private:
     std::vector<PxTransform> _littlePartsTransform;
     std::vector<Vector3> _littlePartsOffset;
 
+    double _countToShoot;
+    double _momentOfShoot;
+
+    std::list<Bullet*> _bullets;
+
+    physx::PxPhysics* _gPhysics;
+    physx::PxScene* _gScene;
+
+    Vector4 _color;
+
 public:
-    Defense(Vector3 initialPos, Vector3 initialDir, Vector4 color, PxReal tam);
+    Defense(Vector3 initialPos, Vector3 initialDir, Vector4 color, PxReal tam, physx::PxPhysics* gPhysics, physx::PxScene* gScene);
     ~Defense();
 
     void CreateLittlePart(physx::PxReal tam, Vector3& initialPos, Vector4& color, Vector3& offset);
 
     void update(double t);
+    void updateBullets(double t);
+    void GenerateBullet(double t);
     void updatePartOfDefense();
 
     void addForceGenerator(ForceGenerator* newForceGenerator);

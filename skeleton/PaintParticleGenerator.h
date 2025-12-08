@@ -14,8 +14,11 @@ private:
     ExplosionForceGenerator* _explosionForceGenerator;
     std::vector<Defense*> _defenders;
     Vector4 _paintColor;
+
+    PxPhysics* _gPhysics;
+    PxScene* _gScene;
 public:
-    PaintParticleGenerator(Vector3 pos, Particula* model, int ParticlesPerFrame);
+    PaintParticleGenerator(Vector3 pos, Particula* model, int ParticlesPerFrame, PxPhysics* _gPhysics, PxScene* _gScene);
     ~PaintParticleGenerator();
     Particula* generateP() override;
     Particula* generateDefense();

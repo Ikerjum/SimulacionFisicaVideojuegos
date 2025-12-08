@@ -26,6 +26,7 @@
     <ClCompile Include="SpringForceGenerator.cpp" />
     <ClCompile Include="AnchoredSpringFG.cpp" />
     <ClCompile Include="BuoyancyBounceGenerator.cpp" />
+    <ClCompile Include="Bullet.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core.hpp" />
@@ -56,6 +57,7 @@
     <ClInclude Include="AnchoredSpringFG.h" />
     <ClInclude Include="BuoyancyBounceGenerator.h" />
     <ClInclude Include="checkML.h" />
+    <ClInclude Include="Bullet.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Render">

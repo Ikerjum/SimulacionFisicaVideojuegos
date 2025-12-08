@@ -3,9 +3,12 @@
 #include <PxPhysicsAPI.h>
 #include "core.hpp"
 #include "RenderUtils.hpp"
+#include <iostream>
 
-Defense::Defense(Vector3 initialPos, Vector3 initialDir, Vector4 color, PxReal tam) :
-	Particula(initialDir, initialPos, Vector3(0.0f, -9.8f, 0.0f), 20.0f, color, tam, 200.0f)
+using namespace physx;
+
+Defense::Defense(Vector3 initialPos, Vector3 initialDir, Vector4 color, PxReal tam, PxPhysics* gPhysics, PxScene* gScene) :
+	Particula(initialDir, initialPos, Vector3(0.0f, -9.8f, 0.0f), 20.0f, color, tam, 200.0f), _countToShoot(0.0), _momentOfShoot(1.0), _gPhysics(gPhysics), _gScene(gScene)
 {
 	PxBoxGeometry boxGeom(Vector3(tam * 0.75,tam,tam * 0.75));
 	PxShape* shapeBox = CreateShape(boxGeom);
@@ -35,6 +38,8 @@ Defense::Defense(Vector3 initialPos, Vector3 initialDir, Vector4 color, PxReal t
 
 	_buoyancyForce = new BuoyancyForceGenerator(0.1f, 0.2f, 1000.0f, 2.5f);
 	_forceGenerators.push_back(_buoyancyForce);
+
+	_color = color;
 }
 
 void Defense::CreateLittlePart(physx::PxReal tam, Vector3& initialPos, Vector4& color, Vector3& offset)
@@ -63,6 +68,7 @@ Defense::~Defense() {
 		delete _head;
 		_head = nullptr;
 	}
+
 	for (int i = 0; i < _littlePartsItem.size(); ++i) {
 		DeregisterRenderItem(_littlePartsItem[i]);
 		delete _littlePartsItem[i];
@@ -71,6 +77,19 @@ Defense::~Defense() {
 	_littlePartsItem.clear();
 	_littlePartsTransform.clear();
 	_littlePartsOffset.clear();
+
+	for (Bullet* bullet : _bullets) {
+		delete bullet;
+		bullet = nullptr;
+	}
+	_bullets.clear();
+
+	//for (std::list<Bullet*>::iterator it = _bullets.begin(); it != _bullets.end(); ++it) {
+	//	delete (*it);
+	//	*it = nullptr;
+	//	_bullets.erase(it);
+	//}
+	//_bullets.clear();
 }
 
 void Defense::updatePartOfDefense()
@@ -96,15 +115,44 @@ void Defense::updatePartOfDefense()
 			}
 		}
 	}
-
 }
 
 void
 Defense::update(double t) {
 	if (!_body || !_head || _littlePartsItem.empty()) return;
+	//Movimiento
 	ApplyForces(t);
 	integrate_Verlet(t);
 	updatePartOfDefense();
+	//Balas
+	GenerateBullet(t);
+	updateBullets(t);
+	
+}
+
+void Defense::updateBullets(double t)
+{
+	for (auto it = _bullets.begin(); it != _bullets.end(); ) {
+
+		(*it)->updateBullet(t);	
+
+		if ((*it)->getTimeOfLife() <= 0) {
+			delete (*it);
+			it = _bullets.erase(it);
+		}
+		else {
+			++it;
+		}
+	}
+}
+
+void Defense::GenerateBullet(double t)
+{
+	_countToShoot += t;
+	if (_countToShoot >= _momentOfShoot) {
+		_countToShoot = 0;
+		_bullets.push_back(new Bullet(_gPhysics, _gScene, _headTransform.p, Vector3(1.0f, 1.0f, 1.0f), Vector3(50.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), _color));
+	}
 }
 
 
