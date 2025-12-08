@@ -122,7 +122,7 @@ void initPhysics(bool interactive)
 
 	// For Solid Rigids +++++++++++++++++++++++++++++++++++++
 	PxSceneDesc sceneDesc(gPhysics->getTolerancesScale());
-	sceneDesc.gravity = PxVec3(0.0f, 0.0f, 0.0f);
+	sceneDesc.gravity = PxVec3(0.0f, -9.8f, 0.0f);
 	gDispatcher = PxDefaultCpuDispatcherCreate(2);
 	sceneDesc.cpuDispatcher = gDispatcher;
 	sceneDesc.filterShader = contactReportFilterShader;
@@ -163,7 +163,7 @@ void initPhysics(bool interactive)
 	GravityDownGenerator = new GravityForceGenerator(Vector3(0.0f, -9.8f, 0.0f));
 	_forceGeneratorsGlobal.push_back(GravityDownGenerator);
 
-	WaterGenerator = new WaterParticleGenerator(generatorPosWater,particleModelWater,4);
+	WaterGenerator = new WaterParticleGenerator(generatorPosWater,particleModelWater,2);
 	WaterGenerator->addForceGenerator(GravityDownGenerator);
 	WaterGenerator->addForceGenerator(WindUpGenerator);
 
@@ -178,7 +178,7 @@ void initPhysics(bool interactive)
 
 void PaintInScene(Projectile* projectile) {
 	if (PaintGenerator && projectile) {
-		PaintGenerator->triggerExplosion(projectile->getPos().p, projectile->getProjectileColor(),_forceGeneratorsGlobal);
+		PaintGenerator->triggerExplosion(projectile->getPos().p - Vector3(0.0f, 0.5f, 0.0f), projectile->getProjectileColor(), _forceGeneratorsGlobal);
 	}
 }
 

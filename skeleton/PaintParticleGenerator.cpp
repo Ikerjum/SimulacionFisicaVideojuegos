@@ -91,7 +91,9 @@ void PaintParticleGenerator::update(double t)
 
     if (!_defenders.empty()) {
         for (Defense* DF : _defenders) {
-            DF->update(t);
+            if (DF) {
+                DF->update(t);
+            }
         }
     }
 
@@ -144,12 +146,9 @@ void PaintParticleGenerator::triggerExplosion(Vector3 pos, Vector4 color, std::v
 void PaintParticleGenerator::unpaint()
 {
     if (_defenders.empty()) return;
-
-    for (int i = 0; i < _defenders.size(); ) {
-        Defense* p = _defenders[i];
-        delete p;
-        p = nullptr;
-        _defenders[i] = _defenders.back();
-        _defenders.pop_back();
+    for (Defense* defense : _defenders) {
+        delete defense;
+        defense = nullptr;
     }
+    _defenders.clear();
 }

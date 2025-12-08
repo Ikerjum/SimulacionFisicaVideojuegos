@@ -8,8 +8,10 @@ WaterParticleGenerator::WaterParticleGenerator(Vector3 pos, Particula* model, in
     //GENERADORES DE FUERZAS, LO HACEMOS SOLO UNA VEZ EN LA CONSTRUCTORA
     //_forceGenerators.push_back(new GravityForceGenerator(Vector3(0, -9.8, 0))); //Aplicamos la gravedad al generador de fuerzas
     //_forceGenerators.push_back(new WindForceGenerator(Vector3(100.0, 0, 0.0),0.5f,0.02f));
-    _bounceGenerator = new BuoyancyForceGenerator(0.1f, 0.02f, 1000.0f, 0.0f);
-    _forceGenerators.push_back(_bounceGenerator);
+    
+    //_bounceGenerator = new BuoyancyForceGenerator(0.1f, 1.0f, 1000.0f, 0.0f);
+    //_forceGenerators.push_back(_bounceGenerator);
+    
     //_explosionForceGenerator = new ExplosionForceGenerator(Vector3(0, 0, 0), 100000.0, 50.0f, 50.0f);
     //_forceGenerators.push_back(_explosionForceGenerator);
 }
@@ -22,10 +24,10 @@ WaterParticleGenerator::~WaterParticleGenerator()
     //}
     _forceGenerators.clear();
 
-    if (_bounceGenerator) {
-        delete _bounceGenerator;
-        _bounceGenerator = nullptr;
-    }
+    //if (_bounceGenerator) {
+    //    delete _bounceGenerator;
+    //    _bounceGenerator = nullptr;
+    //}
 }
 
 Particula* WaterParticleGenerator::generateP()

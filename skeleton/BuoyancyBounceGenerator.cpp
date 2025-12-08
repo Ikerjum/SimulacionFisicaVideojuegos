@@ -33,8 +33,8 @@ Vector3 BuoyancyForceGenerator::putForce(Particula* particle)
 	float targetHeight = h0 + (_height * 0.25f);  // altura de equilibrio
 	float displacement = h - targetHeight;
 
-	float k = 20.0f;   // rigidez del muelle
-	float c = 4.0f;    // amortiguacion
+	float k = 10.5f;   // rigidez del muelle
+	float c = 1.0f;    // amortiguacion
 
 	float springForce = -k * displacement;
 	float springDamping = -c * particle->getVel().y;
