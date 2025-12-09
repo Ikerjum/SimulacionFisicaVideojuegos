@@ -48,6 +48,7 @@ public:
     void CreateLittlePart(physx::PxReal tam, Vector3& initialPos, Vector4& color, Vector3& offset);
 
     void update(double t);
+    void CheckWindForce();
     void updateBullets(double t);
     void GenerateBullet(double t);
     void updatePartOfDefense();

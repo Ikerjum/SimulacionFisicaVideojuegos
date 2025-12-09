@@ -19,7 +19,6 @@
 #include "WindForceGenerator.h"
 #include "ExplosionParticleGenerator.h"
 #include "PaintParticleGenerator.h"
-#include "WindForceGenerator.h"
 #include "Ground.h"
 #include "ParticleSystem.h"
 #include "SpringForceGenerator.h"
@@ -66,6 +65,8 @@ PaintParticleGenerator* PaintGenerator = nullptr;
 
 GravityForceGenerator* GravityDownGenerator = nullptr;
 WindForceGenerator* WindUpGenerator = nullptr;
+Vector3 WindUpVelocityOriginal;
+PxReal WindUpVelocityHorizontal;
 
 SpringForceGenerator* SpringUpGenerator = nullptr;
 AnchoredSpringFG* AnchoredSpringUpGenerator = nullptr;
@@ -158,8 +159,11 @@ void initPhysics(bool interactive)
 
 
 	//GENERADORES
-	WindUpGenerator = new WindForceGenerator(Vector3(0.0f, 3000.0f, 0.0f),false);
+	WindUpVelocityOriginal = Vector3(0.0f, 4000.0f, 0.0f);
+	WindUpVelocityHorizontal = 500.0f;
+	WindUpGenerator = new WindForceGenerator(WindUpVelocityOriginal,false);
 	_forceGeneratorsGlobal.push_back(WindUpGenerator);
+
 	GravityDownGenerator = new GravityForceGenerator(Vector3(0.0f, -9.8f, 0.0f));
 	_forceGeneratorsGlobal.push_back(GravityDownGenerator);
 
@@ -179,6 +183,60 @@ void initPhysics(bool interactive)
 void PaintInScene(Projectile* projectile) {
 	if (PaintGenerator && projectile) {
 		PaintGenerator->triggerExplosion(projectile->getPos().p - Vector3(0.0f, 0.5f, 0.0f), projectile->getProjectileColor(), _forceGeneratorsGlobal);
+	}
+}
+
+void SpecialKeysDown(int key, int x, int y) {
+	if (WindUpGenerator) {
+		switch (key) {
+		case GLUT_KEY_UP:
+			if (WindUpGenerator->isActive()) {
+				WindUpGenerator->setWindVel(
+					Vector3(WindUpVelocityOriginal.x, WindUpVelocityOriginal.y, WindUpVelocityOriginal.z - WindUpVelocityHorizontal));
+			}
+			break;
+		case GLUT_KEY_DOWN:
+			if (WindUpGenerator->isActive()) {
+				WindUpGenerator->setWindVel(
+					Vector3(WindUpVelocityOriginal.x, WindUpVelocityOriginal.y, WindUpVelocityOriginal.z + WindUpVelocityHorizontal));
+			}
+			break;
+		case GLUT_KEY_LEFT:
+			if (WindUpGenerator->isActive()) {
+				WindUpGenerator->setWindVel(
+					Vector3(WindUpVelocityOriginal.x - WindUpVelocityHorizontal, WindUpVelocityOriginal.y, WindUpVelocityOriginal.z));
+			}
+			break;
+		case GLUT_KEY_RIGHT:
+			if (WindUpGenerator->isActive()) {
+				WindUpGenerator->setWindVel(
+					Vector3(WindUpVelocityOriginal.x + WindUpVelocityHorizontal, WindUpVelocityOriginal.y, WindUpVelocityOriginal.z));
+			}
+			break;
+		default:
+			break;
+		}
+	}
+}
+
+void SpecialKeysUp(int key, int x, int y) {
+	if (WindUpGenerator) {
+		switch (key) {
+		case GLUT_KEY_UP:
+			WindUpGenerator->setWindVel(Vector3(WindUpVelocityOriginal.x, WindUpVelocityOriginal.y, WindUpVelocityOriginal.z));
+			break;
+		case GLUT_KEY_DOWN:
+			WindUpGenerator->setWindVel(Vector3(WindUpVelocityOriginal.x, WindUpVelocityOriginal.y, WindUpVelocityOriginal.z));
+			break;
+		case GLUT_KEY_LEFT:
+			WindUpGenerator->setWindVel(Vector3(WindUpVelocityOriginal.x, WindUpVelocityOriginal.y, WindUpVelocityOriginal.z));
+			break;
+		case GLUT_KEY_RIGHT:
+			WindUpGenerator->setWindVel(Vector3(WindUpVelocityOriginal.x, WindUpVelocityOriginal.y, WindUpVelocityOriginal.z));
+			break;
+		default:
+			break;
+		}
 	}
 }
 
@@ -222,6 +280,9 @@ void stepPhysics(bool interactive, double t)
 	WaterGenerator->update(t);
 	//ExplosionGenerator->update(t);
 	PaintGenerator->update(t);
+
+	glutSpecialFunc(SpecialKeysDown);
+	glutSpecialUpFunc(SpecialKeysUp);
 
 	std::this_thread::sleep_for(std::chrono::microseconds(10));
 }
@@ -384,6 +445,7 @@ void ManageWindForce()
 		}
 		else {
 			WaterGenerator->setPos(Vector3(WaterGenerator->getPos().p.x, _GroundUp->getPos().y, WaterGenerator->getPos().p.z));
+			WindUpGenerator->setForceVelocity(Vector3(WindUpVelocityOriginal.x, WindUpVelocityOriginal.y, WindUpVelocityOriginal.z));
 		}
 	}
 }

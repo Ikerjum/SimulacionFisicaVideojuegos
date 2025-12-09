@@ -127,7 +127,17 @@ Defense::update(double t) {
 	//Balas
 	GenerateBullet(t);
 	updateBullets(t);
+	CheckWindForce();
 	
+}
+
+void Defense::CheckWindForce()
+{
+	for (ForceGenerator* windForce : _forceGenerators) {
+		if (windForce->getType() == ForceGenerator::WIND && !windForce->isActive()) {
+			setPos(Vector3(getOldPos().x, getPos().p.y, getOldPos().z));
+		}
+	}
 }
 
 void Defense::updateBullets(double t)
