@@ -66,6 +66,7 @@ PaintParticleGenerator* PaintGenerator = nullptr;
 GravityForceGenerator* GravityDownGenerator = nullptr;
 WindForceGenerator* WindUpGenerator = nullptr;
 Vector3 WindUpVelocityOriginal;
+Vector3 WindUpVelocityActual;
 PxReal WindUpVelocityHorizontal;
 
 SpringForceGenerator* SpringUpGenerator = nullptr;
@@ -160,8 +161,9 @@ void initPhysics(bool interactive)
 
 	//GENERADORES
 	WindUpVelocityOriginal = Vector3(0.0f, 4000.0f, 0.0f);
-	WindUpVelocityHorizontal = 500.0f;
-	WindUpGenerator = new WindForceGenerator(WindUpVelocityOriginal,false);
+	WindUpVelocityActual = Vector3(0.0f, 0.0f, 0.0f);
+	WindUpVelocityHorizontal = 2000.0f;
+	WindUpGenerator = new WindForceGenerator(WindUpVelocityActual,true);
 	_forceGeneratorsGlobal.push_back(WindUpGenerator);
 
 	GravityDownGenerator = new GravityForceGenerator(Vector3(0.0f, -9.8f, 0.0f));
@@ -192,25 +194,25 @@ void SpecialKeysDown(int key, int x, int y) {
 		case GLUT_KEY_UP:
 			if (WindUpGenerator->isActive()) {
 				WindUpGenerator->setWindVel(
-					Vector3(WindUpVelocityOriginal.x, WindUpVelocityOriginal.y, WindUpVelocityOriginal.z - WindUpVelocityHorizontal));
+					Vector3(WindUpVelocityActual.x, WindUpVelocityActual.y, WindUpVelocityActual.z - WindUpVelocityHorizontal));
 			}
 			break;
 		case GLUT_KEY_DOWN:
 			if (WindUpGenerator->isActive()) {
 				WindUpGenerator->setWindVel(
-					Vector3(WindUpVelocityOriginal.x, WindUpVelocityOriginal.y, WindUpVelocityOriginal.z + WindUpVelocityHorizontal));
+					Vector3(WindUpVelocityActual.x, WindUpVelocityActual.y, WindUpVelocityActual.z + WindUpVelocityHorizontal));
 			}
 			break;
 		case GLUT_KEY_LEFT:
 			if (WindUpGenerator->isActive()) {
 				WindUpGenerator->setWindVel(
-					Vector3(WindUpVelocityOriginal.x - WindUpVelocityHorizontal, WindUpVelocityOriginal.y, WindUpVelocityOriginal.z));
+					Vector3(WindUpVelocityActual.x - WindUpVelocityHorizontal, WindUpVelocityActual.y, WindUpVelocityActual.z));
 			}
 			break;
 		case GLUT_KEY_RIGHT:
 			if (WindUpGenerator->isActive()) {
 				WindUpGenerator->setWindVel(
-					Vector3(WindUpVelocityOriginal.x + WindUpVelocityHorizontal, WindUpVelocityOriginal.y, WindUpVelocityOriginal.z));
+					Vector3(WindUpVelocityActual.x + WindUpVelocityHorizontal, WindUpVelocityActual.y, WindUpVelocityActual.z));
 			}
 			break;
 		default:
@@ -223,16 +225,16 @@ void SpecialKeysUp(int key, int x, int y) {
 	if (WindUpGenerator) {
 		switch (key) {
 		case GLUT_KEY_UP:
-			WindUpGenerator->setWindVel(Vector3(WindUpVelocityOriginal.x, WindUpVelocityOriginal.y, WindUpVelocityOriginal.z));
+			WindUpGenerator->setWindVel(Vector3(WindUpVelocityActual.x, WindUpVelocityActual.y, WindUpVelocityActual.z));
 			break;
 		case GLUT_KEY_DOWN:
-			WindUpGenerator->setWindVel(Vector3(WindUpVelocityOriginal.x, WindUpVelocityOriginal.y, WindUpVelocityOriginal.z));
+			WindUpGenerator->setWindVel(Vector3(WindUpVelocityActual.x, WindUpVelocityActual.y, WindUpVelocityActual.z));
 			break;
 		case GLUT_KEY_LEFT:
-			WindUpGenerator->setWindVel(Vector3(WindUpVelocityOriginal.x, WindUpVelocityOriginal.y, WindUpVelocityOriginal.z));
+			WindUpGenerator->setWindVel(Vector3(WindUpVelocityActual.x, WindUpVelocityActual.y, WindUpVelocityActual.z));
 			break;
 		case GLUT_KEY_RIGHT:
-			WindUpGenerator->setWindVel(Vector3(WindUpVelocityOriginal.x, WindUpVelocityOriginal.y, WindUpVelocityOriginal.z));
+			WindUpGenerator->setWindVel(Vector3(WindUpVelocityActual.x, WindUpVelocityActual.y, WindUpVelocityActual.z));
 			break;
 		default:
 			break;
@@ -436,17 +438,17 @@ void ManageWindForce()
 {
 	if (!WindUpGenerator) return;
 
-	bool newState = !WindUpGenerator->isActive();
-	WindUpGenerator->setActive(newState);
-
-	if (WaterGenerator) {
-		if (WindUpGenerator->isActive()) {
-			WaterGenerator->setPos(Vector3(WaterGenerator->getPos().p.x, _GroundDown->getPos().y, WaterGenerator->getPos().p.z));
-		}
-		else {
-			WaterGenerator->setPos(Vector3(WaterGenerator->getPos().p.x, _GroundUp->getPos().y, WaterGenerator->getPos().p.z));
-			WindUpGenerator->setForceVelocity(Vector3(WindUpVelocityOriginal.x, WindUpVelocityOriginal.y, WindUpVelocityOriginal.z));
-		}
+	//bool newState = !WindUpGenerator->isActive();
+	//WindUpGenerator->setActive(newState);
+	if (WindUpGenerator->getWindVel() == Vector3(0.0f, 0.0f, 0.0f)) {
+		WindUpVelocityActual = WindUpVelocityOriginal;
+		WindUpGenerator->setWindVel(WindUpVelocityActual);
+		WaterGenerator->setPos(Vector3(WaterGenerator->getPos().p.x, _GroundDown->getPos().y, WaterGenerator->getPos().p.z));
+	}
+	else {
+		WindUpVelocityActual = Vector3(0.0f, 0.0f, 0.0f);
+		WindUpGenerator->setWindVel(WindUpVelocityActual);
+		WaterGenerator->setPos(Vector3(WaterGenerator->getPos().p.x, _GroundUp->getPos().y, WaterGenerator->getPos().p.z));
 	}
 }
 
