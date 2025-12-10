@@ -1,5 +1,5 @@
 #pragma once
-#include "Particula.h"
+#include "Particle.h"
 #include <random>
 #include <vector>
 #include <list>
@@ -13,31 +13,31 @@ class ParticleGenerator
 public:
 
 	//APLICAMOS LA PARTICULA MODELO EN LA CONSTRUCTORA Y LA POSICION DEL GENERADOR
-	ParticleGenerator(Vector3 pos, Particula* modelP, int ParticlesPerFrame);
+	ParticleGenerator(Vector3 pos, Particle* modelP, int ParticlesPerFrame);
 	virtual ~ParticleGenerator();
 
 	//GENERAR PARTICULA (VIRTUAL)
-	virtual Particula* generateP() = 0;
+	virtual Particle* generateP() = 0;
 	//UPDATE DE PARTICULAS (VIRTUAL)
 	virtual void update(double t) = 0;
 	
 	//PARTICULA MODELO
-	void setModel(Particula* modelP);
-	Particula* getModel() const { return _modelP; }
+	void setModel(Particle* modelP);
+	Particle* getModel() const { return _modelP; }
 	
 	//POSICION DEL GENERADOR
 	void setPos(Vector3 pos);
 	PxTransform getPos() const { return _pos; }
 
 	void addForceGenerator(ForceGenerator* newForceGenerator);
-	virtual void ApplyForces(Particula* newParticle, double t);
+	virtual void ApplyForces(Particle* newParticle, double t);
 
 protected:
 	PxTransform _pos;
-	Particula* _modelP;
+	Particle* _modelP;
 	int _particlesPerFrame;
-	std::vector<Particula*> _generatorParticlesV;
-	std::list<Particula*> _generatorParticlesL;
+	std::vector<Particle*> _generatorParticlesV;
+	std::list<Particle*> _generatorParticlesL;
 	std::mt19937 _mt;
 	std::uniform_real_distribution<double> _u;
 	std::normal_distribution<double> _n;

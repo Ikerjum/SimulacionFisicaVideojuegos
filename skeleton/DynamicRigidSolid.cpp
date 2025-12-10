@@ -1,0 +1,59 @@
+#include "DynamicRigidSolid.h"
+#include "checkML.h"
+#include <PxPhysicsAPI.h>
+#include <iostream>
+using namespace physx;
+
+DynamicRigidSolid::DynamicRigidSolid(PxScene* gScene, PxPhysics* gPhysics)
+    : _mass(1.0f), _color(0, 0, 0, 0), _tam(1), _timeOfLife(5.0f),_dimensions(Vector3(1.0f,1.0f,1.0f)),
+    _linearVelocity(Vector3(0.0f,0.0f,0.0f)), _angularVelocity(Vector3(0.0f,0.0f,0.0f)),  _gScene(gScene), _gPhysics(gPhysics),
+    _renderItem(nullptr), _shape(nullptr), _actor(nullptr)
+{
+}
+
+DynamicRigidSolid::DynamicRigidSolid(Vector3 vel, Vector3 pos, Vector3 acc, float mass, Vector4 color, PxReal tam, float timeOfLife, Vector3 dimensions, 
+    Vector3 linearVelocity, Vector3 angularVelocity, PxScene* gScene, PxPhysics* gPhysics, Form form)
+    : _mass(mass), _color(color), _tam(tam), _timeOfLife(timeOfLife), _dimensions(dimensions),
+    _linearVelocity(linearVelocity), _angularVelocity(angularVelocity), _gScene(gScene), _gPhysics(gPhysics)
+{
+
+    if (form == DynamicRigidSolid::BOX) {
+        _actor = gPhysics->createRigidDynamic(PxTransform(pos));
+        _actor->setLinearVelocity(linearVelocity);
+        _actor->setAngularVelocity(angularVelocity);
+        _actor->setMass(mass);
+        _shape = CreateShape(PxBoxGeometry(dimensions));
+        _actor->attachShape(*_shape);
+        PxRigidBodyExt::updateMassAndInertia(*_actor, 0.15);
+        gScene->addActor(*_actor);
+    }
+    else if (form == DynamicRigidSolid::SPHERE) {
+        _actor = gPhysics->createRigidDynamic(PxTransform(pos));
+        _actor->setLinearVelocity(linearVelocity);
+        _actor->setAngularVelocity(angularVelocity);
+        _shape = CreateShape(PxSphereGeometry(tam));
+        _actor->attachShape(*_shape);
+        PxRigidBodyExt::updateMassAndInertia(*_actor, 0.15);
+        gScene->addActor(*_actor);
+    }
+
+    _renderItem = new RenderItem(_shape, _actor, color);
+}
+
+DynamicRigidSolid::~DynamicRigidSolid()
+{
+    if (_renderItem) {
+        _renderItem->release();
+        _renderItem = nullptr;
+    }
+    if (_actor) {
+        _gScene->removeActor(*_actor);
+        _actor->release();
+        _actor = nullptr;
+    }
+}
+
+void DynamicRigidSolid::update(double t) {
+    _timeOfLife -= static_cast<float>(t);
+    if (_timeOfLife < 0.0f) _timeOfLife = 0.0f;
+}

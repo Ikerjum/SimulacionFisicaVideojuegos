@@ -1,5 +1,5 @@
 #pragma once
-#include "Particula.h"
+#include "Particle.h"
 #include "core.hpp"
 #include "RenderUtils.hpp"
 #include "ForceGenerator.h"
@@ -8,7 +8,7 @@
 
 using namespace physx;
 
-class Projectile : public Particula 
+class Projectile : public Particle 
 {
 public:
 	enum ProjectileType { CANNON_BULLET, TANK_BULLET, PISTOL, LASER_PISTOL, EXPLOSIVE_MINE,

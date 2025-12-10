@@ -1,6 +1,6 @@
 #include "ExplosionParticleGenerator.h"
 #include "checkML.h"
-ExplosionParticleGenerator::ExplosionParticleGenerator(Vector3 pos, Particula* model, int ParticlesPerFrame) : ParticleGenerator(pos, model, ParticlesPerFrame)
+ExplosionParticleGenerator::ExplosionParticleGenerator(Vector3 pos, Particle* model, int ParticlesPerFrame) : ParticleGenerator(pos, model, ParticlesPerFrame)
 {
     std::random_device rd;
     _mt.seed(rd());
@@ -19,9 +19,9 @@ ExplosionParticleGenerator::~ExplosionParticleGenerator()
     }
 }
 
-Particula* ExplosionParticleGenerator::generateP()
+Particle* ExplosionParticleGenerator::generateP()
 {
-    Particula* newP = _modelP->clone();
+    Particle* newP = _modelP->clone();
 
     //VARIACION DE POSICION
     Vector3 basePos = _modelP->getPos().p;
@@ -40,9 +40,9 @@ Particula* ExplosionParticleGenerator::generateP()
     return newP;
 }
 
-Particula* ExplosionParticleGenerator::generatePInOnePosition(Vector3 pos)
+Particle* ExplosionParticleGenerator::generatePInOnePosition(Vector3 pos)
 {
-    Particula* newP = _modelP->clone();
+    Particle* newP = _modelP->clone();
 
     //VARIACION DE POSICION
     Vector3 basePos = pos;
@@ -64,7 +64,7 @@ Particula* ExplosionParticleGenerator::generatePInOnePosition(Vector3 pos)
 void ExplosionParticleGenerator::update(double t)
 {
     for (int i = 0; i < _particlesPerFrame; ++i) {
-        Particula* newParticle = generateP();
+        Particle* newParticle = generateP();
 
         if (newParticle) {
             newParticle->setAcc(Vector3(0.0f, 0.0f, 0.0f));
@@ -76,7 +76,7 @@ void ExplosionParticleGenerator::update(double t)
     }
 
     for (int i = 0; i < _generatorParticlesV.size(); ) {
-        Particula* p = _generatorParticlesV[i];
+        Particle* p = _generatorParticlesV[i];
 
         ApplyForces(p, t); //Aplicamos fuerzas antes de integrar y recalculamos en cada frame
         p->integrate_Verlet(t);
@@ -93,7 +93,7 @@ void ExplosionParticleGenerator::update(double t)
     }
 }
 
-void ExplosionParticleGenerator::ApplyForces(Particula* newParticle, double t)
+void ExplosionParticleGenerator::ApplyForces(Particle* newParticle, double t)
 {
     //Se ejecuta el ApplyForces de la clase de la que heredamos desde ParticleGenerator
 

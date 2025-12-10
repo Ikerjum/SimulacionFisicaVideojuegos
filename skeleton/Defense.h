@@ -1,7 +1,7 @@
 #pragma once
 #include "core.hpp"
 #include "RenderUtils.hpp"
-#include "Particula.h"
+#include "Particle.h"
 #include "ForceGenerator.h"
 #include "GravityForceGenerator.h"
 #include "BuoyancyBounceGenerator.h"
@@ -11,10 +11,10 @@
 #include <list>
 #include "Bullet.h"
 
-class Defense : public Particula
+class Defense : public Particle
 {
 private:
-    std::vector<Particula*> _defenseParts;
+    std::vector<Particle*> _defenseParts;
     std::vector<ForceGenerator*> _forceGenerators;
     BuoyancyForceGenerator* _buoyancyForce;
     WindForceGenerator* _windForceGenerator;

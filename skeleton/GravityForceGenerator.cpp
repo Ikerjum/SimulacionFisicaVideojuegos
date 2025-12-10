@@ -8,7 +8,7 @@ GravityForceGenerator::GravityForceGenerator(Vector3 acc) : ForceGenerator(acc)
 }
 
 Vector3
-GravityForceGenerator::putForce(Particula* p)
+GravityForceGenerator::putForce(Particle* p)
 {
 	if (p == nullptr || p->getMass() == 0 || !isActive())
 		return Vector3(0, 0, 0);
@@ -18,7 +18,7 @@ GravityForceGenerator::putForce(Particula* p)
 	// a = F / m; Esto es para modificar la aceleracion
 }
 
-Vector3 GravityForceGenerator::putForce(DynamicParticle* p)
+Vector3 GravityForceGenerator::putForce(DynamicRigidSolid* p)
 {
 	if (p == nullptr || p->getMass() == 0 || !isActive())
 		return Vector3(0, 0, 0);

@@ -259,8 +259,9 @@
     <ClCompile Include="BuoyancyBounceGenerator.cpp" />
     <ClCompile Include="callbacks.cpp" />
     <ClCompile Include="Defense.cpp" />
-    <ClCompile Include="DynamicParticle.cpp" />
+    <ClCompile Include="DynamicRigidSolid.cpp" />
     <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="EnemyGenerator.cpp" />
     <ClCompile Include="ExplosionForceGenerator.cpp" />
     <ClCompile Include="ExplosionParticleGenerator.cpp" />
     <ClCompile Include="GravityForceGenerator.cpp" />
@@ -269,7 +270,7 @@
     <ClCompile Include="PaintParticleGenerator.cpp" />
     <ClCompile Include="ParticleGenerator.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
-    <ClCompile Include="Particula.cpp" />
+    <ClCompile Include="Particle.cpp" />
     <ClCompile Include="Projectile.cpp" />
     <ClCompile Include="RenderUtils.cpp" />
     <ClCompile Include="Render\Camera.cpp" />
@@ -287,8 +288,9 @@
     <ClInclude Include="checkML.h" />
     <ClInclude Include="core.hpp" />
     <ClInclude Include="Defense.h" />
-    <ClInclude Include="DynamicParticle.h" />
+    <ClInclude Include="DynamicRigidSolid.h" />
     <ClInclude Include="Enemy.h" />
+    <ClInclude Include="EnemyGenerator.h" />
     <ClInclude Include="EnemyManager.h" />
     <ClInclude Include="ExplosionForceGenerator.h" />
     <ClInclude Include="ExplosionParticleGenerator.h" />
@@ -298,7 +300,7 @@
     <ClInclude Include="PaintParticleGenerator.h" />
     <ClInclude Include="ParticleGenerator.h" />
     <ClInclude Include="ParticleSystem.h" />
-    <ClInclude Include="Particula.h" />
+    <ClInclude Include="Particle.h" />
     <ClInclude Include="Projectile.h" />
     <ClInclude Include="RenderUtils.hpp" />
     <ClInclude Include="Render\Camera.h" />

@@ -1,17 +1,17 @@
-﻿#include "Particula.h"
+﻿#include "Particle.h"
 #include "checkML.h"
 #include <PxPhysicsAPI.h>
 #include <iostream>
 using namespace physx;
 
-Particula::Particula()
+Particle::Particle()
     : _vel(0, 0, 0), _pos(Vector3(0, 0, 0)), _oldPos(_pos.p - _vel),
     _acc(0, 0, 0), _mass(1.0f), _color(0, 0, 0, 0), _tam(1), _timeOfLife(5.0f),
     _renderItem(nullptr), _shape(nullptr)
 {
 }
 
-Particula::Particula(Vector3 vel, Vector3 pos, Vector3 acc, float mass, Vector4 color, PxReal tam, float timeOfLife)
+Particle::Particle(Vector3 vel, Vector3 pos, Vector3 acc, float mass, Vector4 color, PxReal tam, float timeOfLife)
     : _vel(vel), _pos(pos), _oldPos(pos - vel * OLD_POS_CONSTANT), _acc(acc),
     _mass(mass), _color(color), _tam(tam), _timeOfLife(timeOfLife)
 {
@@ -19,7 +19,7 @@ Particula::Particula(Vector3 vel, Vector3 pos, Vector3 acc, float mass, Vector4 
     _renderItem = new RenderItem(_shape, &_pos, _color); // Se registra al construir
 }
 
-Particula::Particula(const Particula& other)
+Particle::Particle(const Particle& other)
 {
     _vel = other._vel;
     _pos = other._pos;
@@ -34,7 +34,7 @@ Particula::Particula(const Particula& other)
     _renderItem = nullptr;
 }
 
-Particula& Particula::operator=(const Particula& other)
+Particle& Particle::operator=(const Particle& other)
 {
     if (this != &other)
     {
@@ -57,7 +57,7 @@ Particula& Particula::operator=(const Particula& other)
     return *this;
 }
 
-Particula::~Particula()
+Particle::~Particle()
 {
     if (_renderItem) {
         _renderItem->release(); // Libera shape y se desregistra
@@ -66,12 +66,12 @@ Particula::~Particula()
     _shape = nullptr; // liberado en release
 }
 
-void Particula::update(double t) {
+void Particle::update(double t) {
     _timeOfLife -= static_cast<float>(t);
     if (_timeOfLife < 0.0f) _timeOfLife = 0.0f;
 }
 
-void Particula::integrate_EulerExplicit(double t)
+void Particle::integrate_EulerExplicit(double t)
 {
     _pos.p = _pos.p + (_vel * t);
     _vel = _vel + (_acc * t);
@@ -79,7 +79,7 @@ void Particula::integrate_EulerExplicit(double t)
     update(t);
 }
 
-void Particula::integrate_EulerSemiImplicit(double t)
+void Particle::integrate_EulerSemiImplicit(double t)
 {
     _vel = _vel + (_acc * t);
     _vel = _vel * pow(DAMPING, t);
@@ -87,7 +87,7 @@ void Particula::integrate_EulerSemiImplicit(double t)
     update(t);
 }
 
-void Particula::integrate_Verlet(double t)
+void Particle::integrate_Verlet(double t)
 {
     Vector3 temp = _pos.p;
     Vector3 nextPos = _pos.p + (_pos.p - _oldPos) * DAMPING + _acc * (t * t);
@@ -97,9 +97,9 @@ void Particula::integrate_Verlet(double t)
     update(t);
 }
 
-Particula* Particula::clone(PxReal tam) const
+Particle* Particle::clone(PxReal tam) const
 {
-    Particula* p = new Particula(*this);
+    Particle* p = new Particle(*this);
 
     if (tam == 0) {
         p->_shape = CreateShape(PxSphereGeometry(p->_tam));

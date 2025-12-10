@@ -1,6 +1,6 @@
 #include "WaterParticleGenerator.h"
 #include "checkML.h"
-WaterParticleGenerator::WaterParticleGenerator(Vector3 pos, Particula* model, int ParticlesPerFrame) : ParticleGenerator(pos,model,ParticlesPerFrame)
+WaterParticleGenerator::WaterParticleGenerator(Vector3 pos, Particle* model, int ParticlesPerFrame) : ParticleGenerator(pos,model,ParticlesPerFrame)
 {
     std::random_device rd;
     _mt.seed(rd());
@@ -30,14 +30,14 @@ WaterParticleGenerator::~WaterParticleGenerator()
     //}
 }
 
-Particula* WaterParticleGenerator::generateP()
+Particle* WaterParticleGenerator::generateP()
 {
 
     //SE PUEDEN REDEFINIR LAS CONSTANTES PARA ESTE GENERADOR DE PARTICULAS
     //_u = std::uniform_real_distribution<double>(-1.0, 1.0);
     //_n = std::normal_distribution<double>(-1.0, 1.0);
 
-    Particula* newP = _modelP->clone();
+    Particle* newP = _modelP->clone();
 
     //VARIACION DE POSICION
     Vector3 basePos = getPos().p;
@@ -69,7 +69,7 @@ Particula* WaterParticleGenerator::generateP()
     //
     //newP->setVel(newVel);
     //Adaptacion de la posicion antigua para verlet LO HACEMOS EN EL UPDATE
-    /*newP->setOldPos(newP->getPos().p - newVel * Particula::OLD_POS_CONSTANT);*/
+    /*newP->setOldPos(newP->getPos().p - newVel * Particle::OLD_POS_CONSTANT);*/
 
     float offset = _n(_mt);
 
@@ -88,7 +88,7 @@ Particula* WaterParticleGenerator::generateP()
 void WaterParticleGenerator::update(double t)
 {
     for (int i = 0; i < _particlesPerFrame; ++i) {
-        Particula* newParticle = generateP();
+        Particle* newParticle = generateP();
 
         if (newParticle) {
             newParticle->setAcc(Vector3(0.0f, 0.0f, 0.0f));
@@ -100,7 +100,7 @@ void WaterParticleGenerator::update(double t)
     }
 
     for (int i = 0; i < _generatorParticlesV.size(); ) {
-        Particula* p = _generatorParticlesV[i];
+        Particle* p = _generatorParticlesV[i];
 
         ApplyForces(p, t); //Aplicamos fuerzas antes de integrar y recalculamos en cada frame
         p->integrate_Verlet(t);
@@ -117,7 +117,7 @@ void WaterParticleGenerator::update(double t)
     }
 }
 
-//void WaterParticleGenerator::ApplyForces(Particula* newParticle, double t)
+//void WaterParticleGenerator::ApplyForces(Particle* newParticle, double t)
 //{
 //    newParticle->setAcc(Vector3(0, 0, 0));
 //    float massParticle = newParticle->getMass();

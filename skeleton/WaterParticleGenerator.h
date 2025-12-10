@@ -14,11 +14,11 @@ class WaterParticleGenerator :
 private:
     BuoyancyForceGenerator* _bounceGenerator;
 public:
-    WaterParticleGenerator(Vector3 pos, Particula* model, int ParticlesPerFrame);
+    WaterParticleGenerator(Vector3 pos, Particle* model, int ParticlesPerFrame);
     ~WaterParticleGenerator();
-    Particula* generateP() override;
+    Particle* generateP() override;
     void update(double t) override;
     
-    //void ApplyForces(Particula* newParticle, double t);
+    //void ApplyForces(Particle* newParticle, double t);
 };
 

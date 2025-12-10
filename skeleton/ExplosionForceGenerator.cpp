@@ -32,7 +32,7 @@ void ExplosionForceGenerator::update(double dt)
     }
 }
 
-Vector3 ExplosionForceGenerator::putForce(Particula* p)
+Vector3 ExplosionForceGenerator::putForce(Particle* p)
 {
     if (p == nullptr || p->getMass() == 0 || !isActive() || !_active) return Vector3(0, 0, 0);
     Vector3 pos = p->getPos().p;
@@ -50,7 +50,7 @@ Vector3 ExplosionForceGenerator::putForce(Particula* p)
     return explosionForce;
 }
 
-Vector3 ExplosionForceGenerator::putForce(DynamicParticle* p)
+Vector3 ExplosionForceGenerator::putForce(DynamicRigidSolid* p)
 {
     if (p == nullptr || p->getMass() == 0 || !isActive() || !_active) return Vector3(0, 0, 0);
     Vector3 pos = p->getPos().p;

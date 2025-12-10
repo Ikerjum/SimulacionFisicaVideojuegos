@@ -10,7 +10,7 @@
     <ClCompile Include="RenderUtils.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="callbacks.cpp" />
-    <ClCompile Include="Particula.cpp" />
+    <ClCompile Include="Particle.cpp" />
     <ClCompile Include="Projectile.cpp" />
     <ClCompile Include="ParticleGenerator.cpp" />
     <ClCompile Include="WaterParticleGenerator.cpp" />
@@ -28,7 +28,8 @@
     <ClCompile Include="BuoyancyBounceGenerator.cpp" />
     <ClCompile Include="Bullet.cpp" />
     <ClCompile Include="Enemy.cpp" />
-    <ClCompile Include="DynamicParticle.cpp" />
+    <ClCompile Include="DynamicRigidSolid.cpp" />
+    <ClCompile Include="EnemyGenerator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core.hpp" />
@@ -41,7 +42,7 @@
     <ClInclude Include="RenderUtils.hpp" />
     <ClInclude Include="callbacks.hpp" />
     <ClInclude Include="Vector3D.h" />
-    <ClInclude Include="Particula.h" />
+    <ClInclude Include="Particle.h" />
     <ClInclude Include="Projectile.h" />
     <ClInclude Include="ParticleGenerator.h" />
     <ClInclude Include="WaterParticleGenerator.h" />
@@ -62,7 +63,8 @@
     <ClInclude Include="Bullet.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="EnemyManager.h" />
-    <ClInclude Include="DynamicParticle.h" />
+    <ClInclude Include="DynamicRigidSolid.h" />
+    <ClInclude Include="EnemyGenerator.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Render">

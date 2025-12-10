@@ -18,15 +18,15 @@ private:
     PxPhysics* _gPhysics;
     PxScene* _gScene;
 public:
-    PaintParticleGenerator(Vector3 pos, Particula* model, int ParticlesPerFrame, PxPhysics* _gPhysics, PxScene* _gScene);
+    PaintParticleGenerator(Vector3 pos, Particle* model, int ParticlesPerFrame, PxPhysics* _gPhysics, PxScene* _gScene);
     ~PaintParticleGenerator();
-    Particula* generateP() override;
-    Particula* generateDefense();
+    Particle* generateP() override;
+    Particle* generateDefense();
     void update(double t) override;
     void triggerExplosion(Vector3 pos, Vector4 color, std::vector<ForceGenerator*> forceGenerators);
     void unpaint();
 
-    //void ApplyForces(Particula* newParticle, double t);
+    //void ApplyForces(Particle* newParticle, double t);
 
     void setColor(Vector4 newColor) { _paintColor = newColor; }
     Vector4 getColor() const { return _paintColor; }

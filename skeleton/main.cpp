@@ -13,7 +13,7 @@
 #include <iostream>
 #include "Vector3D.h"
 #include "Axes.h"
-#include "Particula.h"
+#include "Particle.h"
 #include "Projectile.h"
 #include "WaterParticleGenerator.h"
 #include "WindForceGenerator.h"
@@ -45,7 +45,7 @@ PxDefaultCpuDispatcher*	gDispatcher = NULL;
 PxScene*				gScene      = NULL;
 ContactReportCallback gContactReportCallback;
 
-std::vector<Particula*> particulas(10,nullptr);
+std::vector<Particle*> particulas(10,nullptr);
 std::vector<Projectile*> proyectiles(1,nullptr);
 
 Axes* _axes = nullptr;
@@ -54,10 +54,10 @@ Ground* _GroundUp = nullptr;
 
 std::vector<ForceGenerator*> _forceGeneratorsGlobal;
 
-Particula* particleModelWater = nullptr;
+Particle* particleModelWater = nullptr;
 WaterParticleGenerator* WaterGenerator = nullptr;
 
-Particula* particleModelExplosion = nullptr;
+Particle* particleModelExplosion = nullptr;
 ExplosionParticleGenerator* ExplosionGenerator = nullptr;
 
 
@@ -85,7 +85,7 @@ void CreateParticle()
 	Vector4 color = Vector4(0.0f, 0.0f, 0.0f, 0.0f);
 	PxReal tamParticle = 2;
 	float timeOfLifeParticle = 10.0f;
-	particulas[0] = new Particula(velParticle,posParticle,accParticle,massParticle,color,tamParticle,timeOfLifeParticle);
+	particulas[0] = new Particle(velParticle,posParticle,accParticle,massParticle,color,tamParticle,timeOfLifeParticle);
 }
 
 void CreateParticles() {
@@ -100,9 +100,9 @@ void CreateParticles() {
 		Vector4 color3 = Vector4(0.0f, 0.0f, 1.0f, 1.0f);
 		PxReal tamParticle = 2;
 		float timeOfLifeParticle = 10.0f;
-		particulas[0] = new Particula(velParticle, posParticle, accParticle, massParticle ,color1, tamParticle, timeOfLifeParticle );
-		particulas[1] = new Particula(velParticle, posParticle, accParticle, massParticle ,color2, tamParticle, timeOfLifeParticle );
-		particulas[2] = new Particula(velParticle, posParticle, accParticle, massParticle ,color3, tamParticle, timeOfLifeParticle );
+		particulas[0] = new Particle(velParticle, posParticle, accParticle, massParticle ,color1, tamParticle, timeOfLifeParticle );
+		particulas[1] = new Particle(velParticle, posParticle, accParticle, massParticle ,color2, tamParticle, timeOfLifeParticle );
+		particulas[2] = new Particle(velParticle, posParticle, accParticle, massParticle ,color3, tamParticle, timeOfLifeParticle );
 	}
 }
 
@@ -145,7 +145,7 @@ void initPhysics(bool interactive)
 	float timeOfLifeModelWater = 5.0f;
 	float massModelWater = 20.0f;
 	Vector3 generatorPosWater = Vector3(0.0f, _GroundUp->getPos().y, 0.0f);
-	particleModelWater = new Particula(velModelWater, generatorPosWater, accModelWater, massModelWater, colorModelWater, tamModelWater, timeOfLifeModelWater);
+	particleModelWater = new Particle(velModelWater, generatorPosWater, accModelWater, massModelWater, colorModelWater, tamModelWater, timeOfLifeModelWater);
 
 	//MODELO DE LA PARTICULA DE PINTURA
 	Vector3 velModelExplosion = Vector3(0.0f, 0.0f, 0.0f);
@@ -155,7 +155,7 @@ void initPhysics(bool interactive)
 	float timeOfLifeModelExplosion = 100.0f;
 	float massModelExplosion = 100.0f;
 	Vector3 generatorPosExplosion = Vector3(0.0f, 0.0f, 0.0f);
-	particleModelExplosion = new Particula(velModelExplosion, generatorPosExplosion, accModelExplosion, massModelExplosion, colorModelExplosion, tamModelExplosion, timeOfLifeModelExplosion);
+	particleModelExplosion = new Particle(velModelExplosion, generatorPosExplosion, accModelExplosion, massModelExplosion, colorModelExplosion, tamModelExplosion, timeOfLifeModelExplosion);
 
 
 	//GENERADORES
@@ -167,7 +167,7 @@ void initPhysics(bool interactive)
 	GravityDownGenerator = new GravityForceGenerator(Vector3(0.0f, -9.8f, 0.0f));
 	_forceGeneratorsGlobal.push_back(GravityDownGenerator);
 
-	WaterGenerator = new WaterParticleGenerator(generatorPosWater,particleModelWater,2);
+	WaterGenerator = new WaterParticleGenerator(generatorPosWater,particleModelWater,1);
 	WaterGenerator->addForceGenerator(GravityDownGenerator);
 	WaterGenerator->addForceGenerator(WindUpGenerator);
 
@@ -516,7 +516,7 @@ void keyPress(unsigned char key, const PxTransform& camera)
 	//case 'Y':
 	//	//for (int i = 0; i < particulas.size(); ++i) {
 	//	//	if (particulas[i] == nullptr) {
-	//	//		particulas[i] = new Particula(velParticle,posCam, accParticle, massParticle, color, timeOfLifeParticle);
+	//	//		particulas[i] = new Particle(velParticle,posCam, accParticle, massParticle, color, timeOfLifeParticle);
 	//	//		rePosBullet = false;
 	//	//		break;
 	//	//	}

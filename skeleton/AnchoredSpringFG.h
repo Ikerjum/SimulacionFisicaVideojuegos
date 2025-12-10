@@ -1,7 +1,7 @@
 #pragma once
 #include "SpringForceGenerator.h"
 #include "core.hpp"
-#include "Particula.h"
+#include "Particle.h"
 
 class AnchoredSpringFG : public SpringForceGenerator {
 public:

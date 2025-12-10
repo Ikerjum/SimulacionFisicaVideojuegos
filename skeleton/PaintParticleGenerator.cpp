@@ -1,7 +1,7 @@
 #include "PaintParticleGenerator.h"
 #include "checkML.h"
 
-PaintParticleGenerator::PaintParticleGenerator(Vector3 pos, Particula* model, int ParticlesPerFrame, PxPhysics* gPhysics, PxScene* gScene) :
+PaintParticleGenerator::PaintParticleGenerator(Vector3 pos, Particle* model, int ParticlesPerFrame, PxPhysics* gPhysics, PxScene* gScene) :
 	ParticleGenerator(pos,model,ParticlesPerFrame), _explosionForceGenerator(nullptr)
 {
     std::random_device rd;
@@ -27,10 +27,10 @@ PaintParticleGenerator::~PaintParticleGenerator()
     }
 }
 
-Particula* PaintParticleGenerator::generateP()
+Particle* PaintParticleGenerator::generateP()
 {
     PxReal tamP = 0.3;
-    Particula* newP = _modelP->clone(tamP);
+    Particle* newP = _modelP->clone(tamP);
 
     //VARIACION DE POSICION
     Vector3 basePos = getPos().p; //Ponemos la posicion base en el proyectil, es decir en la zona donde reposicionamos el generador de particulas
@@ -49,10 +49,10 @@ Particula* PaintParticleGenerator::generateP()
     return newP;
 }
 
-Particula* PaintParticleGenerator::generateDefense()
+Particle* PaintParticleGenerator::generateDefense()
 {
     PxReal tamP = 2.0;
-    Particula* newP = _modelP->clone(tamP);
+    Particle* newP = _modelP->clone(tamP);
 
     ////VARIACION DE POSICION
     //Vector3 basePos = getPos().p; //Ponemos la posicion base en el proyectil, es decir en la zona donde reposicionamos el generador de particulas
@@ -77,7 +77,7 @@ void PaintParticleGenerator::update(double t)
 
     if (!_generatorParticlesV.empty()) {
         for (int i = 0; i < _generatorParticlesV.size(); ) {
-            Particula* p = _generatorParticlesV[i];
+            Particle* p = _generatorParticlesV[i];
             ApplyForces(p, t); //Aplicamos fuerzas antes de integrar y recalculamos en cada frame
             p->integrate_Verlet(t);
             if (p->getTimeOfLife() <= 0.0f) {
@@ -103,7 +103,7 @@ void PaintParticleGenerator::update(double t)
     if (!_explosionForceGenerator->getIsActive()) return;
 
     for (int i = 0; i < _particlesPerFrame; ++i) {
-        Particula* newParticle = generateP();
+        Particle* newParticle = generateP();
         if (newParticle) {
             newParticle->setAcc(Vector3(0.0f, 0.0f, 0.0f));
             newParticle->setOldPos(newParticle->getPos().p - newParticle->getVel() * float(t));
@@ -117,7 +117,7 @@ void PaintParticleGenerator::update(double t)
     
 }
 
-//void PaintParticleGenerator::ApplyForces(Particula* newParticle, double t)
+//void PaintParticleGenerator::ApplyForces(Particle* newParticle, double t)
 //{
 //    newParticle->setAcc(Vector3(0, 0, 0));
 //    float massParticle = newParticle->getMass();

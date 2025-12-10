@@ -1,6 +1,6 @@
 #include "SpringForceGenerator.h"
 #include "checkML.h"
-SpringForceGenerator::SpringForceGenerator(double k, double resting_length, Particula* other)
+SpringForceGenerator::SpringForceGenerator(double k, double resting_length, Particle* other)
 {
 	setActive(true);
 	setType(ForceGenerator::SPRING);
@@ -10,7 +10,7 @@ SpringForceGenerator::SpringForceGenerator(double k, double resting_length, Part
 	_other = other;
 }
 
-Vector3 SpringForceGenerator::putForce(Particula* particle)
+Vector3 SpringForceGenerator::putForce(Particle* particle)
 {
 	Vector3 relative_pos_vector = _other->getPos().p - particle->getPos().p;
 	Vector3 force;
@@ -23,7 +23,7 @@ Vector3 SpringForceGenerator::putForce(Particula* particle)
 	return force;
 }
 
-Vector3 SpringForceGenerator::putForce(DynamicParticle* particle)
+Vector3 SpringForceGenerator::putForce(DynamicRigidSolid* particle)
 {
 	Vector3 relative_pos_vector = _other->getPos().p - particle->getPos().p;
 	Vector3 force;

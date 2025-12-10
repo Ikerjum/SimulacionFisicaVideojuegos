@@ -1,14 +1,14 @@
 #pragma once
 #include "core.hpp"
 #include "RenderUtils.hpp"
-#include "Particula.h"
-#include "DynamicParticle.h"
+#include "Particle.h"
+#include "DynamicRigidSolid.h"
 #include "ForceGenerator.h"
 #include "BuoyancyBounceGenerator.h"
 #include <vector>
 #include <array>
 
-class Bullet : public DynamicParticle {
+class Bullet : public DynamicRigidSolid {
 private:
 
 	std::vector<ForceGenerator*> _forceGenerators;

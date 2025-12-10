@@ -1,8 +1,8 @@
 #include "Projectile.h"
 #include "checkML.h"
-#include "Particula.h"
+#include "Particle.h"
 Projectile::Projectile(Vector3 initialPos, Vector3 initialDir, ProjectileType projectileType, IntegratorType integratortype, PxReal tam) :
-	Particula(initialDir, initialPos, Vector3(0.0f, -9.8f, 0.0f), 20.0f, Vector4(0.0f, 0.0f, 0.0f, 1.0f), tam, 200.0f)
+	Particle(initialDir, initialPos, Vector3(0.0f, -9.8f, 0.0f), 20.0f, Vector4(0.0f, 0.0f, 0.0f, 1.0f), tam, 200.0f)
 {
 	_projectileType = projectileType;
 	_integratortype = integratortype;
@@ -12,7 +12,7 @@ Projectile::Projectile(Vector3 initialPos, Vector3 initialDir, ProjectileType pr
 
 	Vector3 dirParticle = initialDir;
 	setVel(dirParticle * 100.f);
-	setOldPos(initialPos - getVel() * Particula::OLD_POS_CONSTANT);
+	setOldPos(initialPos - getVel() * Particle::OLD_POS_CONSTANT);
 	setTimeOfLife(100.0f);
 
 	switch (_projectileType) {
@@ -72,7 +72,7 @@ void Projectile::resetProperties(Vector3 initialPos, Vector3 initialDir, Project
 
 	Vector3 dirParticle = initialDir;
 	setVel(dirParticle * 100.f);
-	setOldPos(initialPos - getVel() * Particula::OLD_POS_CONSTANT);
+	setOldPos(initialPos - getVel() * Particle::OLD_POS_CONSTANT);
 	setTimeOfLife(100.0f);
 
 	switch (_projectileType) {

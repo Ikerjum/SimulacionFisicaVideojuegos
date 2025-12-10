@@ -1,7 +1,7 @@
 #include "ParticleGenerator.h"
 #include "checkML.h"
 
-ParticleGenerator::ParticleGenerator(Vector3 pos, Particula* modelP, int ParticlesPerFrame) :
+ParticleGenerator::ParticleGenerator(Vector3 pos, Particle* modelP, int ParticlesPerFrame) :
 	_pos(PxTransform(pos)), _modelP(modelP), _particlesPerFrame(ParticlesPerFrame),
 	_generatorParticlesV(), _generatorParticlesL(),
 	_u(-1.0, 1.0), _n(0.0, 1.0) //Valores por defecto de la distribucion uniforme y la normal
@@ -10,7 +10,7 @@ ParticleGenerator::ParticleGenerator(Vector3 pos, Particula* modelP, int Particl
 
 ParticleGenerator::~ParticleGenerator()
 {
-	for (Particula* pV : _generatorParticlesV) {
+	for (Particle* pV : _generatorParticlesV) {
 		if (pV != nullptr) {
 			delete pV;
 			pV = nullptr;
@@ -18,7 +18,7 @@ ParticleGenerator::~ParticleGenerator()
 	}
 	_generatorParticlesV.clear();
 
-	for (Particula* pL : _generatorParticlesL) {
+	for (Particle* pL : _generatorParticlesL) {
 		if (pL != nullptr) {
 			delete pL;
 			pL = nullptr;
@@ -32,7 +32,7 @@ ParticleGenerator::~ParticleGenerator()
 	if (_modelP) delete _modelP;
 }
 
-void ParticleGenerator::setModel(Particula* modelP)
+void ParticleGenerator::setModel(Particle* modelP)
 {
 	if (_modelP) delete _modelP;
 	_modelP = modelP;
@@ -47,7 +47,7 @@ void ParticleGenerator::addForceGenerator(ForceGenerator* newForceGenerator)
 	_forceGenerators.push_back(newForceGenerator);
 }
 
-void ParticleGenerator::ApplyForces(Particula* newParticle, double t) {
+void ParticleGenerator::ApplyForces(Particle* newParticle, double t) {
 	newParticle->setAcc(Vector3(0, 0, 0));
 	float massParticle = newParticle->getMass();
 	for (int i = 0; i < _forceGenerators.size(); ++i) {

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Particula.h"
-#include "DynamicParticle.h"
+#include "Particle.h"
+#include "DynamicRigidSolid.h"
 #include "core.hpp"
 
 class ForceGenerator {
@@ -35,8 +35,8 @@ public:
 	}; //Para el viento
 
 	virtual ~ForceGenerator() {};
-	virtual Vector3 putForce(Particula* p) = 0; //Aplicamos la fuerza a la particula dada
-	virtual Vector3 putForce(DynamicParticle* p) = 0;
+	virtual Vector3 putForce(Particle* p) = 0; //Aplicamos la fuerza a la particula dada
+	virtual Vector3 putForce(DynamicRigidSolid* p) = 0;
 	virtual void update(double dt) {} //Actualizamos las fuerzas, como la explosion
 
 	//GETTERS/SETTERS DE ACELERACION Y VELOCIDAD

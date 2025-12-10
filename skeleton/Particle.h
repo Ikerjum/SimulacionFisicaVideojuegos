@@ -5,18 +5,18 @@
 using namespace physx;
 
 
-class Particula
+class Particle
 {
 public:
     static constexpr double DAMPING = 0.999; //Para el damping global en todas las particulas
     static constexpr float OLD_POS_CONSTANT = 0.01f; //Para calcular la anterior posicion de verlet
 
-    Particula();
-    Particula(Vector3 vel, Vector3 pos, Vector3 acc, float mass, Vector4 color, PxReal tam, float timeOfLife);
-    Particula(const Particula& other);
-    Particula& operator=(const Particula& other);
+    Particle();
+    Particle(Vector3 vel, Vector3 pos, Vector3 acc, float mass, Vector4 color, PxReal tam, float timeOfLife);
+    Particle(const Particle& other);
+    Particle& operator=(const Particle& other);
 
-    ~Particula();
+    ~Particle();
     void update(double t);
     void integrate_EulerExplicit(double t);
     void integrate_EulerSemiImplicit(double t);
@@ -47,7 +47,7 @@ public:
 
     RenderItem* getRenderItem() const { return _renderItem; }
 
-    Particula* clone(PxReal tam = 0) const;
+    Particle* clone(PxReal tam = 0) const;
 
 private:
     PxTransform _pos;

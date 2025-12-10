@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Particula.h"
-#include "DynamicParticle.h"
+#include "Particle.h"
+#include "DynamicRigidSolid.h"
 #include "ForceGenerator.h"
 
 class WindForceGenerator : public ForceGenerator {
@@ -11,8 +11,8 @@ private:
 	Vector3 _windVel;
 public:
 	WindForceGenerator(Vector3 windVel, bool active = false, float k1 = 0.1f, float k2 = 0.0f);
-	Vector3 putForce(Particula* p) override;
-	Vector3 putForce(DynamicParticle* p) override;
+	Vector3 putForce(Particle* p) override;
+	Vector3 putForce(DynamicRigidSolid* p) override;
 
 	ForceGenerator* clone() const;
 
