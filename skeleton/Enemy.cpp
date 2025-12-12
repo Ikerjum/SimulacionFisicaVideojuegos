@@ -1,7 +1,7 @@
 #include "Enemy.h"
 
 Enemy::Enemy(PxPhysics* gPhysics, PxScene* gScene, Vector3& pos, Vector3& tam, Vector3& linearVelocity, Vector3& angularVelocity, Vector4& color) :
-	DynamicRigidSolid(DynamicRigidSolid(Vector3(0, 0, 0), pos, Vector3(0, 0, 0), 5.f, color, tam.y, 5.0f, tam, linearVelocity, angularVelocity, gScene, gPhysics, DynamicRigidSolid::BOX))
+	DynamicRigidSolid(Vector3(0, 0, 0), pos, Vector3(0, 0, 0), 5.f, color, tam.y, 5.0f, tam, linearVelocity, angularVelocity, gScene, gPhysics, DynamicRigidSolid::SPHERE)
 {
 }
 

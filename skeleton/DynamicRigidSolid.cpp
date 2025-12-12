@@ -18,24 +18,38 @@ DynamicRigidSolid::DynamicRigidSolid(Vector3 vel, Vector3 pos, Vector3 acc, floa
 {
 
     if (form == DynamicRigidSolid::BOX) {
+        _shape = CreateShape(PxBoxGeometry(dimensions));
         _actor = gPhysics->createRigidDynamic(PxTransform(pos));
+        _actor->attachShape(*_shape);
         _actor->setLinearVelocity(linearVelocity);
         _actor->setAngularVelocity(angularVelocity);
-        _actor->setMass(mass);
-        _shape = CreateShape(PxBoxGeometry(dimensions));
-        _actor->attachShape(*_shape);
+        //_actor->setMass(mass);
         PxRigidBodyExt::updateMassAndInertia(*_actor, 0.15);
         gScene->addActor(*_actor);
     }
     else if (form == DynamicRigidSolid::SPHERE) {
+        _shape = CreateShape(PxSphereGeometry(tam));
         _actor = gPhysics->createRigidDynamic(PxTransform(pos));
+        _actor->attachShape(*_shape);
         _actor->setLinearVelocity(linearVelocity);
         _actor->setAngularVelocity(angularVelocity);
-        _shape = CreateShape(PxSphereGeometry(tam));
-        _actor->attachShape(*_shape);
         PxRigidBodyExt::updateMassAndInertia(*_actor, 0.15);
         gScene->addActor(*_actor);
     }
+
+    //PxSphereGeometry sphereGeom(tam);
+    //PxShape* shapeHead = CreateShape(sphereGeom);
+    //_offsetHead = Vector3(0.0f, 15.0f, 0.0f);
+    //_headTransform = PxTransform(initialPos + _offsetHead);
+    //_head = new RenderItem(shapeHead, &_headTransform, color);
+
+    //PxBoxGeometry boxGeom(scale);
+    //PxShape* shape = CreateShape(boxGeom);
+    //physx::PxRigidStatic* actor = gPhysics->createRigidStatic(PxTransform(pos + offset));
+    //actor->attachShape(*shape);
+    //gScene->addActor(*actor);
+    //RenderItem* item = new RenderItem(shape, actor, color);
+    ////RegisterRenderItem(item);
 
     _renderItem = new RenderItem(_shape, _actor, color);
 }

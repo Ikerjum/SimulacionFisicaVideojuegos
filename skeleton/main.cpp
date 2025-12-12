@@ -24,6 +24,7 @@
 #include "SpringForceGenerator.h"
 #include "AnchoredSpringFG.h"
 #include "BuoyancyBounceGenerator.h"
+#include "EnemyGenerator.h"
 
 std::string display_text = "This is a test";
 
@@ -73,6 +74,8 @@ SpringForceGenerator* SpringUpGenerator = nullptr;
 AnchoredSpringFG* AnchoredSpringUpGenerator = nullptr;
 
 ParticleSystem* WaterSystem = nullptr;
+
+EnemyGenerator* EnemySystem = nullptr;
 
 static constexpr PxReal TAM_PROJECTILE = 3;
 
@@ -180,6 +183,9 @@ void initPhysics(bool interactive)
 
 	//WaterSystem = new ParticleSystem();
 	//WaterSystem->addParticleGenerator(WaterGenerator);
+
+	EnemySystem = new EnemyGenerator(Vector3(50.0f, 15.0f, -190.0f), Vector3(50.0f, 15.0f, 190.0f),gPhysics,gScene);
+	EnemySystem->addForceGenerator(GravityDownGenerator);
 }
 
 void PaintInScene(Projectile* projectile) {
@@ -282,6 +288,8 @@ void stepPhysics(bool interactive, double t)
 	WaterGenerator->update(t);
 	//ExplosionGenerator->update(t);
 	PaintGenerator->update(t);
+	
+	EnemySystem->updateEnemyGenerator(t);
 
 	glutSpecialFunc(SpecialKeysDown);
 	glutSpecialUpFunc(SpecialKeysUp);
@@ -352,6 +360,11 @@ void cleanupPhysics(bool interactive)
 	if (AnchoredSpringUpGenerator) {
 		delete AnchoredSpringUpGenerator;
 		AnchoredSpringUpGenerator = nullptr;
+	}
+
+	if (EnemySystem) {
+		delete EnemySystem;
+		EnemySystem = nullptr;
 	}
 
 
