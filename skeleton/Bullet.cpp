@@ -2,7 +2,7 @@
 #include <iostream>
 
 Bullet::Bullet(PxPhysics* gPhysics, PxScene* gScene, Vector3& pos, Vector3& tam, Vector3& linearVelocity, Vector3& angularVelocity, Vector4& color) :
-	DynamicRigidSolid(Vector3(0,0,0),pos,Vector3(0,0,0),5.f,color,tam.y,2.0f,tam,linearVelocity,angularVelocity,gScene,gPhysics,DynamicRigidSolid::SPHERE)
+	DynamicRigidSolid(Vector3(0,0,0),pos,Vector3(0,0,0),5.f,color,tam.y,2.0f,tam,linearVelocity,angularVelocity,gScene,gPhysics,DynamicRigidSolid::BOX)
 {
 	//_forceGenerators.push_back(new BuoyancyForceGenerator(0.1f, 0.2f, 1000.0f, 2.5f));
 }

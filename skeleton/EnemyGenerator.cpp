@@ -1,11 +1,11 @@
 #include "EnemyGenerator.h"
 #include <iostream>
+#include <string>
 
 EnemyGenerator::EnemyGenerator(Vector3 pos, Vector3 posGoal, PxPhysics* gPhysics, PxScene* gScene) :
 	Particle(Vector3(0, 0, 0), pos, Vector3(0, 0, 0), 0.0f, Vector4(0.0f,1.0,1.0f,1.0f),5,1000.f),
-	_timer(0.0), _spawnEnemy(1.0), _posGoal(posGoal), _gPhysics(gPhysics), _gScene(gScene)
+	_timer(0.0), _spawnEnemy(1.0), _pos(pos), _posGoal(posGoal), _gPhysics(gPhysics), _gScene(gScene), _punt(0)
 {
-
 }
 
 //HACER MOMENTOS DE INERCIA PARA LOS ENEMIGOS, ENEMIGOS DE DISTINTO PESO Y TAMAÑO
@@ -19,33 +19,45 @@ EnemyGenerator::~EnemyGenerator()
 	_enemies.clear();
 }
 
-void EnemyGenerator::spawnEnemy()
-{
-	Enemy* newEnemy = new Enemy(_gPhysics, _gScene, _pos, Vector3(1.0f, 1.0f, 1.0f), Vector3(0.0f, 0.0f, _posGoal.z - _pos.z), Vector3(0.0f, 0.0f, 0.0f), Vector4(0.0f,1.0f,0.0f,1.0f));
-	for (ForceGenerator* fg : _forceGenerators) {
-		if (fg->getType() == ForceGenerator::GRAVITY) {
-			newEnemy->addForceGenerator(fg);
-		}
-	}
-	_enemies.push_back(newEnemy);
-	std::cout << "Enemigo generado\n";
-}
-
 void EnemyGenerator::addForceGenerator(ForceGenerator* newForceGenerator) {
 	_forceGenerators.push_back(newForceGenerator);
 }
 
 void EnemyGenerator::updateEnemyGenerator(double t)
 {
+	generateEnemy(t);
+	updateEnemies(t);
+}
+
+void EnemyGenerator::generateEnemy(double t)
+{
 	_timer += t;
 	if (_timer >= _spawnEnemy) {
-		spawnEnemy();
 		_timer = 0;
+		Enemy* newEnemy = new Enemy(_gPhysics, _gScene, _pos, Vector3(2.0f, 2.0f, 2.0f), Vector3(0.0f, 0.0f, 10.0f), Vector3(0.0f, 0.0f, 0.0f), Vector4(0.0f, 1.0f, 0.0f, 1.0f));
+		for (ForceGenerator* fg : _forceGenerators) {
+			if (fg->getType() == ForceGenerator::GRAVITY || fg->getType() == ForceGenerator::WIND) {
+				newEnemy->addForceGenerator(fg);
+			}
+		}
+		_enemies.push_back(newEnemy);
+		std::cout << "Enemigo generado\n";
 	}
+}
 
-	//for (Enemy* enemy : _enemies) {
-	//	enemy->update(t);
-	//}
+void EnemyGenerator::updateEnemies(double t)
+{
+	for (auto it = _enemies.begin(); it != _enemies.end(); ) {
 
-	//Particle::update(t);
+		(*it)->updateEnemy(t);
+
+		if ((*it)->getTimeOfLife() <= 0 || (*it)->getActor()->getGlobalPose().p.y <= 0) {
+			delete (*it);
+			it = _enemies.erase(it);
+			PUNTUACION = "PUNTUACION: " + std::to_string(++_punt);
+		}
+		else {
+			++it;
+		}
+	}
 }

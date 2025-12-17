@@ -42,6 +42,7 @@ public:
     Vector3 getDimensions() const { return _dimensions; }
 
     RenderItem* getRenderItem() const { return _renderItem; }
+    PxRigidDynamic* getActor() const { return _actor; }
 
 private:
     PxTransform _pos;

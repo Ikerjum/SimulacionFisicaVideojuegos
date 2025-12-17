@@ -287,9 +287,10 @@ void startRender(const PxVec3& cameraEye, const PxVec3& cameraDir, PxReal clipNe
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// Display text
-	glColor4f(1.0f, 0.2f, 0.2f, 1.0f);
-	drawText(display_text, 0, 0);
-
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+	drawText(display_text, 0, 0, 10.f);
+	drawText(PUNTUACION, 0, glutGet(GLUT_WINDOW_HEIGHT) - 30, 10.f);
+	
 	// Setup camera
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -382,24 +383,38 @@ void finishRender()
 	glutSwapBuffers();
 }
 
-void drawText(const std::string& text, int x, int y)
+void drawText(const std::string& text, int x, int y, float scale)
 {
+	int winW = glutGet(GLUT_WINDOW_WIDTH);
+	int winH = glutGet(GLUT_WINDOW_HEIGHT);
+
+
 	glMatrixMode(GL_PROJECTION);
 	double matrix[16];
 	glGetDoublev(GL_PROJECTION_MATRIX, matrix);
 	glLoadIdentity();
-	glOrtho(0, 512, 0, 512, -5, 5);
+	glOrtho(0, winW, 0, winH, -5, 5);
+
 	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
 	glPushMatrix();
+	glLoadIdentity();
+
+	// Guardar estados que interfieren
+	GLboolean lightingWasEnabled = glIsEnabled(GL_LIGHTING);
+	if (lightingWasEnabled) glDisable(GL_LIGHTING);
+
 	//glLoadIdentity();
 	glRasterPos2i(x, y);
+	// Escalar bitmaps con glPixelZoom (1.0 = normal)
+	glPixelZoom(scale, scale);
 
 	int length = text.length();
 
 	for (int i = 0; i < length; i++) {
 		glutBitmapCharacter(GLUT_BITMAP_9_BY_15, (int)text[i]);
 	}
+	glPixelZoom(1.0f, 1.0f);
+	if (lightingWasEnabled) glEnable(GL_LIGHTING);
 	glPopMatrix();
 	glMatrixMode(GL_PROJECTION);
 	glLoadMatrixd(matrix);

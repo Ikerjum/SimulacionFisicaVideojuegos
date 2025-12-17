@@ -14,7 +14,7 @@ DynamicRigidSolid::DynamicRigidSolid(PxScene* gScene, PxPhysics* gPhysics)
 DynamicRigidSolid::DynamicRigidSolid(Vector3 vel, Vector3 pos, Vector3 acc, float mass, Vector4 color, PxReal tam, float timeOfLife, Vector3 dimensions, 
     Vector3 linearVelocity, Vector3 angularVelocity, PxScene* gScene, PxPhysics* gPhysics, Form form)
     : _mass(mass), _color(color), _tam(tam), _timeOfLife(timeOfLife), _dimensions(dimensions),
-    _linearVelocity(linearVelocity), _angularVelocity(angularVelocity), _gScene(gScene), _gPhysics(gPhysics)
+    _linearVelocity(linearVelocity), _angularVelocity(angularVelocity), _gScene(gScene), _gPhysics(gPhysics), _pos(pos)
 {
 
     if (form == DynamicRigidSolid::BOX) {

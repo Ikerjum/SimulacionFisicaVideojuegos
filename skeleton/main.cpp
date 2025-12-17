@@ -27,7 +27,8 @@
 #include "EnemyGenerator.h"
 
 std::string display_text = "This is a test";
-
+std::string PUNTUACION = "PUNTUACION: ";
+std::string VIDAS = "VIDAS: ";
 
 using namespace physx;
 
@@ -184,8 +185,10 @@ void initPhysics(bool interactive)
 	//WaterSystem = new ParticleSystem();
 	//WaterSystem->addParticleGenerator(WaterGenerator);
 
-	EnemySystem = new EnemyGenerator(Vector3(50.0f, 15.0f, -190.0f), Vector3(50.0f, 15.0f, 190.0f),gPhysics,gScene);
+	EnemySystem = new EnemyGenerator(Vector3(50.0f, 20.0f, -190.0f),Vector3(50.0f, 20.0f, 190.0f),gPhysics,gScene);
 	EnemySystem->addForceGenerator(GravityDownGenerator);
+
+	drawText(PUNTUACION, glutGet(GLUT_WINDOW_WIDTH), glutGet(GLUT_WINDOW_HEIGHT));
 }
 
 void PaintInScene(Projectile* projectile) {
