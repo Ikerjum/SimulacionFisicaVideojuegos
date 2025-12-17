@@ -262,6 +262,7 @@
     <ClCompile Include="DynamicRigidSolid.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="EnemyGenerator.cpp" />
+    <ClCompile Include="EnemyManager.cpp" />
     <ClCompile Include="ExplosionForceGenerator.cpp" />
     <ClCompile Include="ExplosionParticleGenerator.cpp" />
     <ClCompile Include="GravityForceGenerator.cpp" />

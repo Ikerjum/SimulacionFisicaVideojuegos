@@ -25,10 +25,12 @@
 #include "AnchoredSpringFG.h"
 #include "BuoyancyBounceGenerator.h"
 #include "EnemyGenerator.h"
+#include "EnemyManager.h"
 
-std::string display_text = "This is a test";
-std::string PUNTUACION = "PUNTUACION: ";
-std::string VIDAS = "VIDAS: ";
+std::string display_text = "CONTROLES: TECLAS 1,2,3,4,5,6 => DISPARAR PROYECTIL DEFENSIVO / ESPACIO => INVOCAR DEFENSA / FLECHAS => VIENTO";
+std::string Puntuation = "POINTS: ";
+std::string Lifes = "LIFES: ";
+std::string Record = "RECORD: ";
 
 using namespace physx;
 
@@ -76,7 +78,7 @@ AnchoredSpringFG* AnchoredSpringUpGenerator = nullptr;
 
 ParticleSystem* WaterSystem = nullptr;
 
-EnemyGenerator* EnemySystem = nullptr;
+EnemyManager* EnemySystem = nullptr;
 
 static constexpr PxReal TAM_PROJECTILE = 3;
 
@@ -185,10 +187,9 @@ void initPhysics(bool interactive)
 	//WaterSystem = new ParticleSystem();
 	//WaterSystem->addParticleGenerator(WaterGenerator);
 
-	EnemySystem = new EnemyGenerator(Vector3(50.0f, 20.0f, -190.0f),Vector3(50.0f, 20.0f, 190.0f),gPhysics,gScene);
-	EnemySystem->addForceGenerator(GravityDownGenerator);
+	EnemySystem = new EnemyManager(gPhysics,gScene,_forceGeneratorsGlobal);
 
-	drawText(PUNTUACION, glutGet(GLUT_WINDOW_WIDTH), glutGet(GLUT_WINDOW_HEIGHT));
+	drawText(Puntuation, glutGet(GLUT_WINDOW_WIDTH), glutGet(GLUT_WINDOW_HEIGHT));
 }
 
 void PaintInScene(Projectile* projectile) {
@@ -201,28 +202,20 @@ void SpecialKeysDown(int key, int x, int y) {
 	if (WindUpGenerator) {
 		switch (key) {
 		case GLUT_KEY_UP:
-			if (WindUpGenerator->isActive()) {
 				WindUpGenerator->setWindVel(
 					Vector3(WindUpVelocityActual.x, WindUpVelocityActual.y, WindUpVelocityActual.z - WindUpVelocityHorizontal));
-			}
 			break;
 		case GLUT_KEY_DOWN:
-			if (WindUpGenerator->isActive()) {
 				WindUpGenerator->setWindVel(
 					Vector3(WindUpVelocityActual.x, WindUpVelocityActual.y, WindUpVelocityActual.z + WindUpVelocityHorizontal));
-			}
 			break;
 		case GLUT_KEY_LEFT:
-			if (WindUpGenerator->isActive()) {
 				WindUpGenerator->setWindVel(
 					Vector3(WindUpVelocityActual.x - WindUpVelocityHorizontal, WindUpVelocityActual.y, WindUpVelocityActual.z));
-			}
 			break;
 		case GLUT_KEY_RIGHT:
-			if (WindUpGenerator->isActive()) {
 				WindUpGenerator->setWindVel(
 					Vector3(WindUpVelocityActual.x + WindUpVelocityHorizontal, WindUpVelocityActual.y, WindUpVelocityActual.z));
-			}
 			break;
 		default:
 			break;
@@ -292,7 +285,7 @@ void stepPhysics(bool interactive, double t)
 	//ExplosionGenerator->update(t);
 	PaintGenerator->update(t);
 	
-	EnemySystem->updateEnemyGenerator(t);
+	EnemySystem->updateEnemyManager(t);
 
 	glutSpecialFunc(SpecialKeysDown);
 	glutSpecialUpFunc(SpecialKeysUp);

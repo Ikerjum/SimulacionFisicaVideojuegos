@@ -14,7 +14,7 @@ void Enemy::updateEnemy(double t)
 	//integrate_Verlet(t);
 	//update(t); //Para controlar su tiempo de vida
 
-	std::cout << _actor->getGlobalPose().p.x << " " << _actor->getGlobalPose().p.y << " " << _actor->getGlobalPose().p.z << "\n";
+	//std::cout << _actor->getGlobalPose().p.x << " " << _actor->getGlobalPose().p.y << " " << _actor->getGlobalPose().p.z << "\n";
 }
 
 void Enemy::addForceGenerator(ForceGenerator* newForceGenerator) {

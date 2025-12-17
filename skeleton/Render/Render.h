@@ -48,7 +48,9 @@
 #include <string>
 
 extern std::string display_text;
-extern std::string PUNTUACION;
+extern std::string Puntuation;
+extern std::string Record;
+extern std::string Lifes;
 
 namespace Snippets
 {

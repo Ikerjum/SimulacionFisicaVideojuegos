@@ -16,12 +16,25 @@ private:
 	Vector3 _pos;
 	Vector3 _posGoal;
 
-	int _punt;
+	bool _winPoints;
+	bool _loseLife;
 public:
 	EnemyGenerator(Vector3 pos, Vector3 posGoal, PxPhysics* gPhysics, PxScene* gScene);
 	~EnemyGenerator();
 	void updateEnemyGenerator(double t);
+
 	void generateEnemy(double t);
 	void updateEnemies(double t);
+	void resetEnemies();
+
 	void addForceGenerator(ForceGenerator* newForceGenerator);
+
+	Vector3 getPos() const { return _pos; }
+	Vector3 getPosGoal() const { return _posGoal; }
+
+	bool getWinPoints() const { return _winPoints; }
+	void setWinPoints(bool set) { _winPoints = set; }
+
+	bool getLoseLife() const { return _loseLife; }
+	void setLoseLife(bool set) { _loseLife = set; }
 };

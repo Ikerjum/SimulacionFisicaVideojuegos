@@ -30,6 +30,7 @@
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="DynamicRigidSolid.cpp" />
     <ClCompile Include="EnemyGenerator.cpp" />
+    <ClCompile Include="EnemyManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core.hpp" />

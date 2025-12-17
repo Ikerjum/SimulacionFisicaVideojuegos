@@ -4,7 +4,7 @@
 
 EnemyGenerator::EnemyGenerator(Vector3 pos, Vector3 posGoal, PxPhysics* gPhysics, PxScene* gScene) :
 	Particle(Vector3(0, 0, 0), pos, Vector3(0, 0, 0), 0.0f, Vector4(0.0f,1.0,1.0f,1.0f),5,1000.f),
-	_timer(0.0), _spawnEnemy(1.0), _pos(pos), _posGoal(posGoal), _gPhysics(gPhysics), _gScene(gScene), _punt(0)
+	_timer(0.0), _spawnEnemy(1.0), _pos(pos), _posGoal(posGoal), _gPhysics(gPhysics), _gScene(gScene), _winPoints(false), _loseLife(false)
 {
 }
 
@@ -41,23 +41,40 @@ void EnemyGenerator::generateEnemy(double t)
 			}
 		}
 		_enemies.push_back(newEnemy);
-		std::cout << "Enemigo generado\n";
 	}
 }
 
 void EnemyGenerator::updateEnemies(double t)
 {
-	for (auto it = _enemies.begin(); it != _enemies.end(); ) {
+	if (!getWinPoints() && !getLoseLife()) {
+		for (auto it = _enemies.begin(); it != _enemies.end(); ) {
 
-		(*it)->updateEnemy(t);
+			(*it)->updateEnemy(t);
 
-		if ((*it)->getTimeOfLife() <= 0 || (*it)->getActor()->getGlobalPose().p.y <= 0) {
-			delete (*it);
-			it = _enemies.erase(it);
-			PUNTUACION = "PUNTUACION: " + std::to_string(++_punt);
-		}
-		else {
-			++it;
+			if ((*it)->getActor()->getGlobalPose().p.y <= 0) {
+				delete (*it);
+				it = _enemies.erase(it);
+				setWinPoints(true);
+				break;
+			}
+			else if ((*it)->getActor()->getGlobalPose().p.z >= _posGoal.z) {
+				delete (*it);
+				it = _enemies.erase(it);
+				setLoseLife(true);
+				break;
+			}
+			else {
+				++it;
+			}
 		}
 	}
+}
+
+void EnemyGenerator::resetEnemies()
+{
+	for (auto it = _enemies.begin(); it != _enemies.end(); ) {
+		delete (*it);
+		it = _enemies.erase(it);
+	}
+	_enemies.clear();
 }
