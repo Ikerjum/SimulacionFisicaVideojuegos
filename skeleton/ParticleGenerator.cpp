@@ -29,7 +29,7 @@ ParticleGenerator::~ParticleGenerator()
 	//FUERZAS GLOBALES,  LAS ADICIONALES SE BORRAN EN SUS CLASES HEREDADAS
 	_forceGenerators.clear();
 
-	if (_modelP) delete _modelP;
+	//if (_modelP) delete _modelP;
 }
 
 void ParticleGenerator::setModel(Particle* modelP)

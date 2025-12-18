@@ -2,6 +2,13 @@
 #include "Vector3D.h"
 #include "core.hpp"
 #include <list>
+#include <random>
+
+enum class EnemyType {
+	SMALL,
+	MEDIUM,
+	LARGE
+};
 
 class EnemyGenerator : public Particle {
 private:
@@ -18,6 +25,11 @@ private:
 
 	bool _winPoints;
 	bool _loseLife;
+
+	std::mt19937 _mt;
+	std::uniform_real_distribution<double> _u;
+	std::normal_distribution<double> _n;
+
 public:
 	EnemyGenerator(Vector3 pos, Vector3 posGoal, PxPhysics* gPhysics, PxScene* gScene);
 	~EnemyGenerator();

@@ -24,7 +24,7 @@ void Bullet::ApplyForcesDynamic(double t)
 	_actor->clearForce();
 	for (auto& fg : _forceGenerators) {
 		Vector3 f = fg->putForce(this); // fg debe usar datos reales si target tiene actor
-		_actor->addForce(PxVec3(f.x, f.y, f.z), PxForceMode::eFORCE);
+		_actor->addForce(PxVec3(f.x, f.y, f.z), PxForceMode::eACCELERATION);
 	}
 }
 

@@ -9,6 +9,8 @@ class Ground
 {
 private:
 	physx::PxTransform _shapeGroundTransform;
+	std::vector<physx::PxTransform*> _shapesSkyTransforms;
+	physx::PxTransform _shapeSkyTransform;
 
 	std::vector<physx::PxRigidStatic*> _actors;
 	std::vector<RenderItem*> _renderItems;
@@ -16,8 +18,10 @@ private:
 	physx::PxScene* _gScene;
 public:
 	Ground(physx::PxPhysics* gPhysics, physx::PxScene* gScene, Vector3 pos);
+	void SetClouds(physx::PxPhysics* gPhysics, physx::PxScene* gScene, Vector3 originalPos);
 	void CreateGround(Vector3& pos, Vector3& scale, Vector3& offset, Vector4& color);
 	void CreatePath(physx::PxPhysics* gPhysics, physx::PxScene* gScene, Vector3& pos, Vector3& scale, Vector3& offset, Vector4& color);
+	void CreateSky(Vector3& pos, Vector3& scale, Vector3& offset, Vector4& color);
 	~Ground();
 
 	Vector3 getPos() const { return _pos; }

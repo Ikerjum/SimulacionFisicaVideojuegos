@@ -1,7 +1,7 @@
-#include "PaintParticleGenerator.h"
+#include "DefenseParticleGenerator.h"
 #include "checkML.h"
 
-PaintParticleGenerator::PaintParticleGenerator(Vector3 pos, Particle* model, int ParticlesPerFrame, PxPhysics* gPhysics, PxScene* gScene) :
+DefenseParticleGenerator::DefenseParticleGenerator(Vector3 pos, Particle* model, int ParticlesPerFrame, PxPhysics* gPhysics, PxScene* gScene) :
 	ParticleGenerator(pos,model,ParticlesPerFrame), _explosionForceGenerator(nullptr)
 {
     std::random_device rd;
@@ -15,7 +15,7 @@ PaintParticleGenerator::PaintParticleGenerator(Vector3 pos, Particle* model, int
     _forceGenerators.push_back(_explosionForceGenerator);
 }
 
-PaintParticleGenerator::~PaintParticleGenerator()
+DefenseParticleGenerator::~DefenseParticleGenerator()
 {
     for (Defense* DF : _defenders) {
         delete DF;
@@ -27,7 +27,7 @@ PaintParticleGenerator::~PaintParticleGenerator()
     }
 }
 
-Particle* PaintParticleGenerator::generateP()
+Particle* DefenseParticleGenerator::generateP()
 {
     PxReal tamP = 0.3;
     Particle* newP = _modelP->clone(tamP);
@@ -49,7 +49,7 @@ Particle* PaintParticleGenerator::generateP()
     return newP;
 }
 
-Particle* PaintParticleGenerator::generateDefense()
+Particle* DefenseParticleGenerator::generateDefense()
 {
     PxReal tamP = 2.0;
     Particle* newP = _modelP->clone(tamP);
@@ -71,7 +71,7 @@ Particle* PaintParticleGenerator::generateDefense()
     return newP;
 }
 
-void PaintParticleGenerator::update(double t)
+void DefenseParticleGenerator::update(double t)
 {
     _explosionForceGenerator->update(t); //Gestiona la duracion de la explosion
 
@@ -127,7 +127,7 @@ void PaintParticleGenerator::update(double t)
 //    }
 //}
 
-void PaintParticleGenerator::triggerExplosion(Vector3 pos, Vector4 color, std::vector<ForceGenerator*> forceGeneratorsGlobal)
+void DefenseParticleGenerator::triggerExplosion(Vector3 pos, Vector4 color, std::vector<ForceGenerator*> forceGeneratorsGlobal)
 {
     if (_explosionForceGenerator && !_explosionForceGenerator->getIsActive()) {
         _modelP->setColor(color);
@@ -147,7 +147,7 @@ void PaintParticleGenerator::triggerExplosion(Vector3 pos, Vector4 color, std::v
     }
 }
 
-void PaintParticleGenerator::unpaint()
+void DefenseParticleGenerator::unpaint()
 {
     if (_defenders.empty()) return;
     for (Defense* defense : _defenders) {

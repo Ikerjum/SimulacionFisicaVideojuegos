@@ -24,7 +24,7 @@ DynamicRigidSolid::DynamicRigidSolid(Vector3 vel, Vector3 pos, Vector3 acc, floa
         _actor->setLinearVelocity(linearVelocity);
         _actor->setAngularVelocity(angularVelocity);
         //_actor->setMass(mass);
-        PxRigidBodyExt::updateMassAndInertia(*_actor, 0.15);
+        PxRigidBodyExt::updateMassAndInertia(*_actor, mass);
         gScene->addActor(*_actor);
     }
     else if (form == DynamicRigidSolid::SPHERE) {
@@ -33,7 +33,8 @@ DynamicRigidSolid::DynamicRigidSolid(Vector3 vel, Vector3 pos, Vector3 acc, floa
         _actor->attachShape(*_shape);
         _actor->setLinearVelocity(linearVelocity);
         _actor->setAngularVelocity(angularVelocity);
-        PxRigidBodyExt::updateMassAndInertia(*_actor, 0.15);
+        //_actor->setMass(mass);
+        PxRigidBodyExt::updateMassAndInertia(*_actor, mass);
         gScene->addActor(*_actor);
     }
 

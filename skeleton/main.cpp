@@ -18,13 +18,12 @@
 #include "WaterParticleGenerator.h"
 #include "WindForceGenerator.h"
 #include "ExplosionParticleGenerator.h"
-#include "PaintParticleGenerator.h"
+#include "DefenseParticleGenerator.h"
 #include "Ground.h"
 #include "ParticleSystem.h"
 #include "SpringForceGenerator.h"
 #include "AnchoredSpringFG.h"
 #include "BuoyancyBounceGenerator.h"
-#include "EnemyGenerator.h"
 #include "EnemyManager.h"
 
 std::string display_text = "CONTROLES: TECLAS 1,2,3,4,5,6 => DISPARAR PROYECTIL DEFENSIVO / ESPACIO => INVOCAR DEFENSA / FLECHAS => VIENTO";
@@ -54,18 +53,14 @@ std::vector<Projectile*> proyectiles(1,nullptr);
 
 Axes* _axes = nullptr;
 Ground* _GroundDown = nullptr;
-Ground* _GroundUp = nullptr;
+Vector3 _GroundUpPosition;
 
 std::vector<ForceGenerator*> _forceGeneratorsGlobal;
 
-Particle* particleModelWater = nullptr;
-WaterParticleGenerator* WaterGenerator = nullptr;
-
-Particle* particleModelExplosion = nullptr;
-ExplosionParticleGenerator* ExplosionGenerator = nullptr;
-
-
-PaintParticleGenerator* PaintGenerator = nullptr;
+ParticleSystem* WaterSystem = nullptr;
+ParticleSystem* ExplosionSystem = nullptr;
+DefenseParticleGenerator* DefenseGenerator = nullptr;
+EnemyManager* EnemySystem = nullptr;
 
 GravityForceGenerator* GravityDownGenerator = nullptr;
 WindForceGenerator* WindUpGenerator = nullptr;
@@ -75,10 +70,6 @@ PxReal WindUpVelocityHorizontal;
 
 SpringForceGenerator* SpringUpGenerator = nullptr;
 AnchoredSpringFG* AnchoredSpringUpGenerator = nullptr;
-
-ParticleSystem* WaterSystem = nullptr;
-
-EnemyManager* EnemySystem = nullptr;
 
 static constexpr PxReal TAM_PROJECTILE = 3;
 
@@ -141,60 +132,71 @@ void initPhysics(bool interactive)
 	//_GroundDown = new Ground(PxVec3(0.0f,0.0f,0.0f)); //Creamos suelo abajjo
 	//_GroundUp = new Ground(PxVec3(0.0f,60.0f,0.0f)); //Creamos suelo arriba
 	_GroundDown = new Ground(gPhysics, gScene, PxVec3(0.0f, 0.0f, 0.0f));
-	_GroundUp = new Ground(gPhysics, gScene, PxVec3(0.0f, 60.0f, 0.0f));
+	_GroundUpPosition = PxVec3(0.0f, 100.0f, 0.0f);
+	//_GroundUp = new Ground(gPhysics, gScene, PxVec3(0.0f, 60.0f, 0.0f));
 	//CreateParticles();
 
 	//MODELO DE LA PARTICULA DE AGUA DE LLUVIA
 	Vector3 velModelWater = Vector3(0.0f, 0.0f, 0.0f);
+	Vector3 generatorPosWater = Vector3(0.0f, _GroundUpPosition.y, 0.0f);
 	Vector3 accModelWater = Vector3(0.0f, 0.0f, 0.0f); //La aceleracion se gestiona el generador de fuerzas
+	float massModelWater = 20.0f;
 	Vector4 colorModelWater = Vector4(0.0f, 0.3f, 1.0f, 1.0f);
 	PxReal tamModelWater = 0.3f;
 	float timeOfLifeModelWater = 5.0f;
-	float massModelWater = 20.0f;
-	Vector3 generatorPosWater = Vector3(0.0f, _GroundUp->getPos().y, 0.0f);
-	particleModelWater = new Particle(velModelWater, generatorPosWater, accModelWater, massModelWater, colorModelWater, tamModelWater, timeOfLifeModelWater);
+	
+	//particleModelWater = new Particle(velModelWater, generatorPosWater, accModelWater, massModelWater, colorModelWater, tamModelWater, timeOfLifeModelWater);
+	WaterSystem = new ParticleSystem();
+	WaterSystem->createModelParticle(velModelWater, generatorPosWater, accModelWater, massModelWater, colorModelWater, tamModelWater, timeOfLifeModelWater);
 
 	//MODELO DE LA PARTICULA DE PINTURA
 	Vector3 velModelExplosion = Vector3(0.0f, 0.0f, 0.0f);
+	Vector3 generatorPosExplosion = Vector3(0.0f, 0.0f, 0.0f);
 	Vector3 accModelExplosion = Vector3(0.0f, 0.0f, 0.0f);
+	float massModelExplosion = 100.0f;
 	Vector4 colorModelExplosion = Vector4(1.0f, 0.3f, 0.0f, 1.0f);
 	PxReal tamModelExplosion = 0.6f;
 	float timeOfLifeModelExplosion = 100.0f;
-	float massModelExplosion = 100.0f;
-	Vector3 generatorPosExplosion = Vector3(0.0f, 0.0f, 0.0f);
-	particleModelExplosion = new Particle(velModelExplosion, generatorPosExplosion, accModelExplosion, massModelExplosion, colorModelExplosion, tamModelExplosion, timeOfLifeModelExplosion);
+	
+	//particleModelExplosion = new Particle(velModelExplosion, generatorPosExplosion, accModelExplosion, massModelExplosion, colorModelExplosion, tamModelExplosion, timeOfLifeModelExplosion);
+	ExplosionSystem = new ParticleSystem();
+	ExplosionSystem->createModelParticle(velModelExplosion, generatorPosExplosion, accModelExplosion, massModelExplosion, colorModelExplosion, tamModelExplosion, timeOfLifeModelExplosion);
 
-
-	//GENERADORES
+	//GENERADORES DE FUERZAS GLOBALES
+	//GRAVEDAD
+	GravityDownGenerator = new GravityForceGenerator(Vector3(0.0f, -9.8f, 0.0f));
+	_forceGeneratorsGlobal.push_back(GravityDownGenerator);
+	//VIENTO
 	WindUpVelocityOriginal = Vector3(0.0f, 4000.0f, 0.0f);
 	WindUpVelocityActual = Vector3(0.0f, 0.0f, 0.0f);
 	WindUpVelocityHorizontal = 2000.0f;
 	WindUpGenerator = new WindForceGenerator(WindUpVelocityActual,true);
 	_forceGeneratorsGlobal.push_back(WindUpGenerator);
 
-	GravityDownGenerator = new GravityForceGenerator(Vector3(0.0f, -9.8f, 0.0f));
-	_forceGeneratorsGlobal.push_back(GravityDownGenerator);
-
-	WaterGenerator = new WaterParticleGenerator(generatorPosWater,particleModelWater,1);
-	WaterGenerator->addForceGenerator(GravityDownGenerator);
-	WaterGenerator->addForceGenerator(WindUpGenerator);
-
-	PaintGenerator = new PaintParticleGenerator(generatorPosExplosion, particleModelExplosion, 6,gPhysics,gScene);
+	//SISTEMAS DE PARTICLAS
+	WaterParticleGenerator* WaterGenerator1 = new WaterParticleGenerator(Vector3(0.0f, _GroundUpPosition.y, 0.0f),WaterSystem->getParticleModel(),1);
+	WaterParticleGenerator* WaterGenerator2 = new WaterParticleGenerator(Vector3(120.0f, _GroundUpPosition.y, 120.0f),WaterSystem->getParticleModel(),1);
+	WaterParticleGenerator* WaterGenerator3 = new WaterParticleGenerator(Vector3(120.0f, _GroundUpPosition.y, -120.0f),WaterSystem->getParticleModel(),1);
+	WaterParticleGenerator* WaterGenerator4 = new WaterParticleGenerator(Vector3(-120.0f, _GroundUpPosition.y, 120.0f),WaterSystem->getParticleModel(),1);
+	WaterParticleGenerator* WaterGenerator5 = new WaterParticleGenerator(Vector3(-120.0f, _GroundUpPosition.y, -120.0f),WaterSystem->getParticleModel(),1);
+	WaterSystem->addParticleGenerator(WaterGenerator1, _forceGeneratorsGlobal);
+	WaterSystem->addParticleGenerator(WaterGenerator2, _forceGeneratorsGlobal);
+	WaterSystem->addParticleGenerator(WaterGenerator3, _forceGeneratorsGlobal);
+	WaterSystem->addParticleGenerator(WaterGenerator4, _forceGeneratorsGlobal);
+	WaterSystem->addParticleGenerator(WaterGenerator5, _forceGeneratorsGlobal);
 	
 	//SpringUpGenerator = new SpringForceGenerator();
 	//AnchoredSpringUpGenerator = new AnchoredSpringFG(500.0, 0.5, _GroundDown->getPos());
 
-	//WaterSystem = new ParticleSystem();
-	//WaterSystem->addParticleGenerator(WaterGenerator);
-
+	DefenseGenerator = new DefenseParticleGenerator(generatorPosExplosion, ExplosionSystem->getParticleModel(),6,gPhysics,gScene);
 	EnemySystem = new EnemyManager(gPhysics,gScene,_forceGeneratorsGlobal);
 
 	drawText(Puntuation, glutGet(GLUT_WINDOW_WIDTH), glutGet(GLUT_WINDOW_HEIGHT));
 }
 
 void PaintInScene(Projectile* projectile) {
-	if (PaintGenerator && projectile) {
-		PaintGenerator->triggerExplosion(projectile->getPos().p - Vector3(0.0f, 0.5f, 0.0f), projectile->getProjectileColor(), _forceGeneratorsGlobal);
+	if (DefenseGenerator && projectile) {
+		DefenseGenerator->triggerExplosion(projectile->getPos().p - Vector3(0.0f, 0.5f, 0.0f), projectile->getProjectileColor(), _forceGeneratorsGlobal);
 	}
 }
 
@@ -269,7 +271,7 @@ void stepPhysics(bool interactive, double t)
 			proyectiles[i]->update(t);
 
 			if (//proyectiles[i]->getTimeOfLife() <= 0 || 
-				proyectiles[i]->getPos().p.y + TAM_PROJECTILE >= _GroundUp->getPos().y || 
+				proyectiles[i]->getPos().p.y + TAM_PROJECTILE >= _GroundUpPosition.y || 
 				proyectiles[i]->getPos().p.y - TAM_PROJECTILE <= _GroundDown->getPos().y) {
 
 				PaintInScene(proyectiles[i]);
@@ -281,9 +283,11 @@ void stepPhysics(bool interactive, double t)
 
 	}
 
-	WaterGenerator->update(t);
+	//WaterGenerator->update(t);
+	WaterSystem->update(t);
 	//ExplosionGenerator->update(t);
-	PaintGenerator->update(t);
+	ExplosionSystem->update(t);
+	DefenseGenerator->update(t);
 	
 	EnemySystem->updateEnemyManager(t);
 
@@ -326,27 +330,19 @@ void cleanupPhysics(bool interactive)
 		delete _GroundDown;
 		_GroundDown = nullptr;
 	}
-	if (_GroundUp) {
-		delete _GroundUp;
-		_GroundUp = nullptr;
-	}
 
 	if (WaterSystem) {
 		delete WaterSystem;
 		WaterSystem = nullptr;
 	}
-	if (WaterGenerator) {
-		delete WaterGenerator;
-		WaterGenerator = nullptr;
+	if (ExplosionSystem) {
+		delete ExplosionSystem;
+		ExplosionSystem = nullptr;
 	}
 
-	if (ExplosionGenerator) {
-		delete ExplosionGenerator;
-		ExplosionGenerator = nullptr;
-	}
-	if (PaintGenerator) {
-		delete PaintGenerator;
-		PaintGenerator = nullptr;
+	if (DefenseGenerator) {
+		delete DefenseGenerator;
+		DefenseGenerator = nullptr;
 	}
 
 	if (SpringUpGenerator) {
@@ -428,12 +424,12 @@ void ShootProjectile(Projectile::ProjectileType type, Projectile::IntegratorType
 
 void PaintInScene()
 {
-	if (PaintGenerator) {
+	if (DefenseGenerator) {
 		int i = 0;
 		bool encontrado = false;
 		while (i < proyectiles.size() && !encontrado) {
 			if (proyectiles[i] != nullptr) {
-				PaintGenerator->triggerExplosion(proyectiles[i]->getPos().p, proyectiles[i]->getProjectileColor(),_forceGeneratorsGlobal);
+				DefenseGenerator->triggerExplosion(proyectiles[i]->getPos().p, proyectiles[i]->getProjectileColor(),_forceGeneratorsGlobal);
 				delete proyectiles[i];
 				proyectiles[i] = nullptr;
 				encontrado = true;
@@ -447,24 +443,26 @@ void ManageWindForce()
 {
 	if (!WindUpGenerator) return;
 
-	//bool newState = !WindUpGenerator->isActive();
-	//WindUpGenerator->setActive(newState);
 	if (WindUpGenerator->getWindVel() == Vector3(0.0f, 0.0f, 0.0f)) {
 		WindUpVelocityActual = WindUpVelocityOriginal;
 		WindUpGenerator->setWindVel(WindUpVelocityActual);
-		WaterGenerator->setPos(Vector3(WaterGenerator->getPos().p.x, _GroundDown->getPos().y, WaterGenerator->getPos().p.z));
+		for (ParticleGenerator* PG : WaterSystem->getParticleGenerators()) {
+			PG->setPos(Vector3(PG->getPos().p.x, _GroundDown->getPos().y, PG->getPos().p.z));
+		}
 	}
 	else {
 		WindUpVelocityActual = Vector3(0.0f, 0.0f, 0.0f);
 		WindUpGenerator->setWindVel(WindUpVelocityActual);
-		WaterGenerator->setPos(Vector3(WaterGenerator->getPos().p.x, _GroundUp->getPos().y, WaterGenerator->getPos().p.z));
+		for (ParticleGenerator* PG : WaterSystem->getParticleGenerators()) {
+			PG->setPos(Vector3(PG->getPos().p.x, _GroundUpPosition.y, PG->getPos().p.z));
+		}
 	}
 }
 
 void UnPaintAllInScene()
 {
-	if (PaintGenerator) {
-		PaintGenerator->unpaint(); //Borramos toda la pintura generada en la escena
+	if (DefenseGenerator) {
+		DefenseGenerator->unpaint(); //Borramos toda la pintura generada en la escena
 	}
 }
 
@@ -488,27 +486,27 @@ void keyPress(unsigned char key, const PxTransform& camera)
 	{
 		case '1': //DISPARAMOS PROYECTIL BLANCO
 			ShootProjectile(Projectile::PAINT_WHITE, Projectile::IntegratorType::VERLET, posCam, dirCam, TAM_PROJECTILE);
-			PaintGenerator->setColor(Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+			DefenseGenerator->setColor(Vector4(1.0f, 1.0f, 1.0f, 1.0f));
 			break;
 		case '2': //DISPARAMOS PROYECTIL NEGRO
 			ShootProjectile(Projectile::PAINT_BLACK, Projectile::IntegratorType::VERLET, posCam, dirCam, TAM_PROJECTILE);
-			PaintGenerator->setColor(Vector4(0.0f, 0.0f, 0.0f, 1.0f));
+			DefenseGenerator->setColor(Vector4(0.0f, 0.0f, 0.0f, 1.0f));
 			break;
 		case '3': //DISPARAMOS PROYECTIL ROJO
 			ShootProjectile(Projectile::PAINT_RED, Projectile::IntegratorType::VERLET, posCam, dirCam, TAM_PROJECTILE);
-			PaintGenerator->setColor(Vector4(1.0f, 0.0f, 0.0f, 1.0f));
+			DefenseGenerator->setColor(Vector4(1.0f, 0.0f, 0.0f, 1.0f));
 			break;
 		case '4': //DISPARAMOS PROYECTIL AZUL
 			ShootProjectile(Projectile::PAINT_BLUE, Projectile::IntegratorType::VERLET, posCam, dirCam, TAM_PROJECTILE);
-			PaintGenerator->setColor(Vector4(0.0f, 0.0f, 1.0f, 1.0f));
+			DefenseGenerator->setColor(Vector4(0.0f, 0.0f, 1.0f, 1.0f));
 			break;
 		case '5': //DISPARAMOS PROYECTIL VERDE
 			ShootProjectile(Projectile::PAINT_GREEN, Projectile::IntegratorType::VERLET, posCam, dirCam, TAM_PROJECTILE);
-			PaintGenerator->setColor(Vector4(0.0f, 1.0f, 0.0f, 1.0f));
+			DefenseGenerator->setColor(Vector4(0.0f, 1.0f, 0.0f, 1.0f));
 			break; 
 		case '6': //DISPARAMOS PROYECTIL AMARILLO
 			ShootProjectile(Projectile::PAINT_YELLOW, Projectile::IntegratorType::VERLET, posCam, dirCam, TAM_PROJECTILE);
-			PaintGenerator->setColor(Vector4(1.0f, 1.0f, 0.0f, 1.0f));
+			DefenseGenerator->setColor(Vector4(1.0f, 1.0f, 0.0f, 1.0f));
 			break;
 		case ' ': //PINTAMOS SI HAY UN PROYECTIL DISPARADO Y SI NO ESTA SIENDO PINTADO OTRO MIENTRAS TANTO
 			PaintInScene();
@@ -545,23 +543,6 @@ void keyPress(unsigned char key, const PxTransform& camera)
 	//	//}
 	//	ShootProjectile(Projectile::CANNON_BULLET, Projectile::IntegratorType::VERLET, posCam, dirCam);
 	//	break;
-	////TANK_BULLET
-	//case 'U':
-	//	ShootProjectile(Projectile::TANK_BULLET, Projectile::IntegratorType::VERLET, posCam, dirCam);
-	//	break;
-	////PISTOL
-	//case 'I':
-	//	ShootProjectile(Projectile::PISTOL, Projectile::IntegratorType::VERLET, posCam, dirCam);
-	//	break;
-	////LASER_PISTOL
-	//case 'O':
-	//	ShootProjectile(Projectile::LASER_PISTOL, Projectile::IntegratorType::VERLET, posCam, dirCam);
-	//	break;
-	////EXPLOSIVE_MINE
-	//case 'P':
-	//	ShootProjectile(Projectile::EXPLOSIVE_MINE, Projectile::IntegratorType::VERLET, posCam, dirCam);
-	//	break;
-	//-----------------------------------------------------------------------------------------------------
 
 }
 

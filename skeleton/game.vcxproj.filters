@@ -18,7 +18,7 @@
     <ClCompile Include="WindForceGenerator.cpp" />
     <ClCompile Include="ExplosionForceGenerator.cpp" />
     <ClCompile Include="ExplosionParticleGenerator.cpp" />
-    <ClCompile Include="PaintParticleGenerator.cpp" />
+    <ClCompile Include="DefenseParticleGenerator.cpp" />
     <ClCompile Include="Ground.cpp" />
     <ClCompile Include="Axes.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
@@ -52,7 +52,7 @@
     <ClInclude Include="WindForceGenerator.h" />
     <ClInclude Include="ExplosionForceGenerator.h" />
     <ClInclude Include="ExplosionParticleGenerator.h" />
-    <ClInclude Include="PaintParticleGenerator.h" />
+    <ClInclude Include="DefenseParticleGenerator.h" />
     <ClInclude Include="Ground.h" />
     <ClInclude Include="Axes.h" />
     <ClInclude Include="ParticleSystem.h" />

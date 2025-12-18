@@ -7,7 +7,7 @@
 #include <random>
 #include <iostream>
 
-class PaintParticleGenerator :
+class DefenseParticleGenerator :
     public ParticleGenerator
 {
 private:
@@ -18,8 +18,8 @@ private:
     PxPhysics* _gPhysics;
     PxScene* _gScene;
 public:
-    PaintParticleGenerator(Vector3 pos, Particle* model, int ParticlesPerFrame, PxPhysics* _gPhysics, PxScene* _gScene);
-    ~PaintParticleGenerator();
+    DefenseParticleGenerator(Vector3 pos, Particle* model, int ParticlesPerFrame, PxPhysics* _gPhysics, PxScene* _gScene);
+    ~DefenseParticleGenerator();
     Particle* generateP() override;
     Particle* generateDefense();
     void update(double t) override;
