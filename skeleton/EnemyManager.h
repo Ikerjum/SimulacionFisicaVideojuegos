@@ -7,6 +7,7 @@
 
 class EnemyGenerator;
 
+//CLASE QUE CONTROLA LAS VIDAS, ENEMIGOS Y PUNTUACION DE LA PARTIDA
 class EnemyManager {
 private:
 	int _punt;

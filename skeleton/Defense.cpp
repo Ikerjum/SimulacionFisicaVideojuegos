@@ -7,6 +7,7 @@
 
 using namespace physx;
 
+//PARTICULA NORMAL CON RENDERITEMS QUE GENERA SOLIDOS RIGIDOS DINAMICOS, BALAS
 Defense::Defense(Vector3 initialPos, Vector3 initialDir, Vector4 color, PxReal tam, PxPhysics* gPhysics, PxScene* gScene) :
 	Particle(initialDir, initialPos, Vector3(0.0f, -9.8f, 0.0f), 20.0f, color, tam, 200.0f), _countToShoot(0.0), _momentOfShoot(0.5), _gPhysics(gPhysics), _gScene(gScene)
 {
@@ -83,13 +84,6 @@ Defense::~Defense() {
 		bullet = nullptr;
 	}
 	_bullets.clear();
-
-	//for (std::list<Bullet*>::iterator it = _bullets.begin(); it != _bullets.end(); ++it) {
-	//	delete (*it);
-	//	*it = nullptr;
-	//	_bullets.erase(it);
-	//}
-	//_bullets.clear();
 }
 
 void Defense::updatePartOfDefense()

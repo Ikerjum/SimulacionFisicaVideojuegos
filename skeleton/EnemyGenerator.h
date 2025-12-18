@@ -30,6 +30,8 @@ private:
 	std::uniform_real_distribution<double> _u;
 	std::normal_distribution<double> _n;
 
+	PxTransform _goalTransform;
+	RenderItem* _goal;
 public:
 	EnemyGenerator(Vector3 pos, Vector3 posGoal, PxPhysics* gPhysics, PxScene* gScene);
 	~EnemyGenerator();

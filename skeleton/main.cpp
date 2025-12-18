@@ -26,7 +26,10 @@
 #include "BuoyancyBounceGenerator.h"
 #include "EnemyManager.h"
 
-std::string display_text = "CONTROLES: TECLAS 1,2,3,4,5,6 => DISPARAR PROYECTIL DEFENSIVO / ESPACIO => INVOCAR DEFENSA / FLECHAS => VIENTO";
+//TUTORIAL DE CONTROLES
+std::string display_text = "CONTROLES: TECLAS 1,2,3,4,5,6 => DISPARAR PROYECTIL DEFENSIVO / ESPACIO => INVOCAR DEFENSA / FLECHAS => VIENTO / B => QUITAR DEFENSAS / V => VIENTO VERTICAL";
+
+//LA UI SE GESTIONA EN ENEMYMANAGER
 std::string Puntuation = "POINTS: ";
 std::string Lifes = "LIFES: ";
 std::string Record = "RECORD: ";
@@ -35,43 +38,44 @@ using namespace physx;
 
 PxDefaultAllocator		gAllocator;
 PxDefaultErrorCallback	gErrorCallback;
-
 PxFoundation*			gFoundation = NULL;
 PxPhysics*				gPhysics	= NULL;
-
-
 PxMaterial*				gMaterial	= NULL;
-
 PxPvd*                  gPvd        = NULL;
-
 PxDefaultCpuDispatcher*	gDispatcher = NULL;
 PxScene*				gScene      = NULL;
 ContactReportCallback gContactReportCallback;
 
+//VECTOR DE PARTICULAS Y PROYECTILES
 std::vector<Particle*> particulas(10,nullptr);
-std::vector<Projectile*> proyectiles(1,nullptr);
+std::vector<Projectile*> proyectiles(1,nullptr); //SOLO LANZAMOS UN PROYECTIL A LA VEZ
 
-Axes* _axes = nullptr;
+//CREACION DEL SUELO / SOLIDOS RIGIDOS ESTATICOS
+//Axes* _axes = nullptr;
 Ground* _GroundDown = nullptr;
 Vector3 _GroundUpPosition;
 
+//GENERADORES DE FUERZAS GLOBALES, GRAVEDAD Y VIENTO (viento no aplicable a los enemigos)
 std::vector<ForceGenerator*> _forceGeneratorsGlobal;
 
+//SISTEMAS DE PARTICULAS Y SOLIDOS RIGIDOS DINAMICOS
 ParticleSystem* WaterSystem = nullptr;
 ParticleSystem* ExplosionSystem = nullptr;
 DefenseParticleGenerator* DefenseGenerator = nullptr;
 EnemyManager* EnemySystem = nullptr;
 
+//FUERZAS GENERALES A APLICAR
 GravityForceGenerator* GravityDownGenerator = nullptr;
 WindForceGenerator* WindUpGenerator = nullptr;
 Vector3 WindUpVelocityOriginal;
 Vector3 WindUpVelocityActual;
 PxReal WindUpVelocityHorizontal;
 
-SpringForceGenerator* SpringUpGenerator = nullptr;
-AnchoredSpringFG* AnchoredSpringUpGenerator = nullptr;
+//EXTRA
+//SpringForceGenerator* SpringUpGenerator = nullptr;
+//AnchoredSpringFG* AnchoredSpringUpGenerator = nullptr;
 
-static constexpr PxReal TAM_PROJECTILE = 3;
+static constexpr PxReal TAM_PROJECTILE = 3; //Tamaño del proyectil
 
 void CreateParticle()
 {
@@ -121,77 +125,82 @@ void initPhysics(bool interactive)
 
 	// For Solid Rigids +++++++++++++++++++++++++++++++++++++
 	PxSceneDesc sceneDesc(gPhysics->getTolerancesScale());
-	sceneDesc.gravity = PxVec3(0.0f, 0.0f, 0.0f); //Añadimos a mano la gravedad tambien para los objetos rigidos
+	sceneDesc.gravity = PxVec3(0.0f, 0.0f, 0.0f); //IMPORTANTE: Añadimos a mano la gravedad con GravityDownGenerator, por control total de las fuerzas aplicadas en el simulador 
 	gDispatcher = PxDefaultCpuDispatcherCreate(2);
 	sceneDesc.cpuDispatcher = gDispatcher;
 	sceneDesc.filterShader = contactReportFilterShader;
 	sceneDesc.simulationEventCallback = &gContactReportCallback;
 	gScene = gPhysics->createScene(sceneDesc);
 
+
+	#pragma region SUELO
+		//GENERADOR DE SOLIDOS ESTATICOS, LOS PATHS
+		_GroundDown = new Ground(gPhysics, gScene, PxVec3(0.0f, 0.0f, 0.0f));
+		_GroundUpPosition = PxVec3(0.0f, 100.0f, 0.0f);
+	#pragma endregion
+	
+	#pragma region GENERADORES_DE_FUERZAS
+		//GENERADORES DE FUERZAS GLOBALES
+		//GRAVEDAD
+		GravityDownGenerator = new GravityForceGenerator(Vector3(0.0f, -9.8f, 0.0f));
+		_forceGeneratorsGlobal.push_back(GravityDownGenerator);
+		//VIENTO
+		WindUpVelocityOriginal = Vector3(0.0f, 4000.0f, 0.0f);
+		WindUpVelocityActual = Vector3(0.0f, 0.0f, 0.0f);
+		WindUpVelocityHorizontal = 2000.0f;
+		WindUpGenerator = new WindForceGenerator(WindUpVelocityActual, true);
+		_forceGeneratorsGlobal.push_back(WindUpGenerator);
+	#pragma endregion
+	
+	#pragma region SISTEMAS_DE_PARTICULAS
+		WaterSystem = new ParticleSystem(); //LLUVIA, PARA LOS 5 GENERADORES DE LLUVIA
+		//MODELO DE LA PARTICULA DE AGUA DE LLUVIA
+		WaterSystem->createModelParticle(
+			Vector3(0.0f, 0.0f, 0.0f),					//velModelWater
+			Vector3(0.0f, _GroundUpPosition.y, 0.0f),	//generatorPosWater
+			Vector3(0.0f, 0.0f, 0.0f),					//accModelWater
+			20.0f,										//massModelWater
+			Vector4(0.0f, 0.3f, 1.0f, 1.0f),			//colorWaterModel
+			0.3f,										//tamModelWater
+			5.0f);										//timeOfLifeModelWater
+	
+		ExplosionSystem = new ParticleSystem(); //EXPLOSIONES, PARA DEFENSE_GENERATOR
+		//MODELO DE LA PARTICULA DE PINTURA
+		ExplosionSystem->createModelParticle(
+			Vector3(0.0f, 0.0f, 0.0f), //velModelExplosion
+			Vector3(0.0f, 0.0f, 0.0f), //generatorPosExplosion
+			Vector3(0.0f, 0.0f, 0.0f), //accModelExplosion
+			100.0f, //massModelExplosion
+			Vector4(1.0f, 0.3f, 0.0f, 1.0f), //colorModelExplosion
+			0.6f, //tamModelExplosion
+			100.0f); //timeOfLifeModelExplosion
+	
+		//APLICANDO LOS 5 GENERADORES DE LLUVIA AL SISTEMA
+		WaterParticleGenerator* WaterGenerator1 = new WaterParticleGenerator(Vector3(0.0f, _GroundUpPosition.y, 0.0f), WaterSystem->getParticleModel(), 1);
+		WaterParticleGenerator* WaterGenerator2 = new WaterParticleGenerator(Vector3(120.0f, _GroundUpPosition.y, 120.0f), WaterSystem->getParticleModel(), 1);
+		WaterParticleGenerator* WaterGenerator3 = new WaterParticleGenerator(Vector3(120.0f, _GroundUpPosition.y, -120.0f), WaterSystem->getParticleModel(), 1);
+		WaterParticleGenerator* WaterGenerator4 = new WaterParticleGenerator(Vector3(-120.0f, _GroundUpPosition.y, 120.0f), WaterSystem->getParticleModel(), 1);
+		WaterParticleGenerator* WaterGenerator5 = new WaterParticleGenerator(Vector3(-120.0f, _GroundUpPosition.y, -120.0f), WaterSystem->getParticleModel(), 1);
+		WaterSystem->addParticleGenerator(WaterGenerator1, _forceGeneratorsGlobal);
+		WaterSystem->addParticleGenerator(WaterGenerator2, _forceGeneratorsGlobal);
+		WaterSystem->addParticleGenerator(WaterGenerator3, _forceGeneratorsGlobal);
+		WaterSystem->addParticleGenerator(WaterGenerator4, _forceGeneratorsGlobal);
+		WaterSystem->addParticleGenerator(WaterGenerator5, _forceGeneratorsGlobal);
+	#pragma endregion
+	
+	#pragma region MECANISMOS ENEMIGOS/DEFENSAS
+		//MECANISMO DE DEFENSA //GENERADOR DE PARTICULAS CON FLOTACION
+		DefenseGenerator = new DefenseParticleGenerator(Vector3(0.0f,0.0f,0.0f), ExplosionSystem->getParticleModel(), 6, gPhysics, gScene);
+		//MECANISMO DE ENEMIGOS //GENERADOR DE SOLIDOS RIGIDOS
+		EnemySystem = new EnemyManager(gPhysics,gScene,_forceGeneratorsGlobal);
+	#pragma endregion
+
+	#pragma region EXTRAS
 	//_axes = new Axes(); //Creamos ejes para posicionarnos en el espacio
-	//_GroundDown = new Ground(PxVec3(0.0f,0.0f,0.0f)); //Creamos suelo abajjo
-	//_GroundUp = new Ground(PxVec3(0.0f,60.0f,0.0f)); //Creamos suelo arriba
-	_GroundDown = new Ground(gPhysics, gScene, PxVec3(0.0f, 0.0f, 0.0f));
-	_GroundUpPosition = PxVec3(0.0f, 100.0f, 0.0f);
-	//_GroundUp = new Ground(gPhysics, gScene, PxVec3(0.0f, 60.0f, 0.0f));
 	//CreateParticles();
-
-	//MODELO DE LA PARTICULA DE AGUA DE LLUVIA
-	Vector3 velModelWater = Vector3(0.0f, 0.0f, 0.0f);
-	Vector3 generatorPosWater = Vector3(0.0f, _GroundUpPosition.y, 0.0f);
-	Vector3 accModelWater = Vector3(0.0f, 0.0f, 0.0f); //La aceleracion se gestiona el generador de fuerzas
-	float massModelWater = 20.0f;
-	Vector4 colorModelWater = Vector4(0.0f, 0.3f, 1.0f, 1.0f);
-	PxReal tamModelWater = 0.3f;
-	float timeOfLifeModelWater = 5.0f;
-	
-	//particleModelWater = new Particle(velModelWater, generatorPosWater, accModelWater, massModelWater, colorModelWater, tamModelWater, timeOfLifeModelWater);
-	WaterSystem = new ParticleSystem();
-	WaterSystem->createModelParticle(velModelWater, generatorPosWater, accModelWater, massModelWater, colorModelWater, tamModelWater, timeOfLifeModelWater);
-
-	//MODELO DE LA PARTICULA DE PINTURA
-	Vector3 velModelExplosion = Vector3(0.0f, 0.0f, 0.0f);
-	Vector3 generatorPosExplosion = Vector3(0.0f, 0.0f, 0.0f);
-	Vector3 accModelExplosion = Vector3(0.0f, 0.0f, 0.0f);
-	float massModelExplosion = 100.0f;
-	Vector4 colorModelExplosion = Vector4(1.0f, 0.3f, 0.0f, 1.0f);
-	PxReal tamModelExplosion = 0.6f;
-	float timeOfLifeModelExplosion = 100.0f;
-	
-	//particleModelExplosion = new Particle(velModelExplosion, generatorPosExplosion, accModelExplosion, massModelExplosion, colorModelExplosion, tamModelExplosion, timeOfLifeModelExplosion);
-	ExplosionSystem = new ParticleSystem();
-	ExplosionSystem->createModelParticle(velModelExplosion, generatorPosExplosion, accModelExplosion, massModelExplosion, colorModelExplosion, tamModelExplosion, timeOfLifeModelExplosion);
-
-	//GENERADORES DE FUERZAS GLOBALES
-	//GRAVEDAD
-	GravityDownGenerator = new GravityForceGenerator(Vector3(0.0f, -9.8f, 0.0f));
-	_forceGeneratorsGlobal.push_back(GravityDownGenerator);
-	//VIENTO
-	WindUpVelocityOriginal = Vector3(0.0f, 4000.0f, 0.0f);
-	WindUpVelocityActual = Vector3(0.0f, 0.0f, 0.0f);
-	WindUpVelocityHorizontal = 2000.0f;
-	WindUpGenerator = new WindForceGenerator(WindUpVelocityActual,true);
-	_forceGeneratorsGlobal.push_back(WindUpGenerator);
-
-	//SISTEMAS DE PARTICLAS
-	WaterParticleGenerator* WaterGenerator1 = new WaterParticleGenerator(Vector3(0.0f, _GroundUpPosition.y, 0.0f),WaterSystem->getParticleModel(),1);
-	WaterParticleGenerator* WaterGenerator2 = new WaterParticleGenerator(Vector3(120.0f, _GroundUpPosition.y, 120.0f),WaterSystem->getParticleModel(),1);
-	WaterParticleGenerator* WaterGenerator3 = new WaterParticleGenerator(Vector3(120.0f, _GroundUpPosition.y, -120.0f),WaterSystem->getParticleModel(),1);
-	WaterParticleGenerator* WaterGenerator4 = new WaterParticleGenerator(Vector3(-120.0f, _GroundUpPosition.y, 120.0f),WaterSystem->getParticleModel(),1);
-	WaterParticleGenerator* WaterGenerator5 = new WaterParticleGenerator(Vector3(-120.0f, _GroundUpPosition.y, -120.0f),WaterSystem->getParticleModel(),1);
-	WaterSystem->addParticleGenerator(WaterGenerator1, _forceGeneratorsGlobal);
-	WaterSystem->addParticleGenerator(WaterGenerator2, _forceGeneratorsGlobal);
-	WaterSystem->addParticleGenerator(WaterGenerator3, _forceGeneratorsGlobal);
-	WaterSystem->addParticleGenerator(WaterGenerator4, _forceGeneratorsGlobal);
-	WaterSystem->addParticleGenerator(WaterGenerator5, _forceGeneratorsGlobal);
-	
 	//SpringUpGenerator = new SpringForceGenerator();
 	//AnchoredSpringUpGenerator = new AnchoredSpringFG(500.0, 0.5, _GroundDown->getPos());
-
-	DefenseGenerator = new DefenseParticleGenerator(generatorPosExplosion, ExplosionSystem->getParticleModel(),6,gPhysics,gScene);
-	EnemySystem = new EnemyManager(gPhysics,gScene,_forceGeneratorsGlobal);
-
-	drawText(Puntuation, glutGet(GLUT_WINDOW_WIDTH), glutGet(GLUT_WINDOW_HEIGHT));
+	#pragma endregion
 }
 
 void PaintInScene(Projectile* projectile) {
@@ -255,18 +264,9 @@ void stepPhysics(bool interactive, double t)
 
 	gScene->simulate(t);
 	gScene->fetchResults(true);
-
-	//particulas[0]->integrate_EulerExplicit(t);
-	//particulas[1]->integrate_EulerSemiImplicit(t);
 	
-	//for (int i = 0; i < particulas.size(); ++i) {
-	//	if (particulas[i] != nullptr) {
-	//		particulas[i]->integrate_EulerSemiImplicit(t);
-	//	}
-	//}
-	
+	//PROYECTILES
 	for (int i = 0; i < proyectiles.size(); ++i) {
-
 		if (proyectiles[i] != nullptr) {
 			proyectiles[i]->update(t);
 
@@ -280,21 +280,28 @@ void stepPhysics(bool interactive, double t)
 
 			}
 		}
-
 	}
 
-	//WaterGenerator->update(t);
-	WaterSystem->update(t);
-	//ExplosionGenerator->update(t);
-	ExplosionSystem->update(t);
-	DefenseGenerator->update(t);
-	
-	EnemySystem->updateEnemyManager(t);
+	WaterSystem->update(t); //Actualizamos todos los generadores de lluvia
+	ExplosionSystem->update(t); //Actualizamos los generadores de explosiones, no necesario ya que solo necesitamos la particula modelo para el generador de defensas
+	DefenseGenerator->update(t); //Actualizamos todas las defensas, PARTICULAS CON FLOTACION
+	EnemySystem->updateEnemyManager(t); //Actualizamos todos los generadores de enemigos, SOLIDOS RIGIDOS
 
+	//FUNCIONES CALLBACK PARA TECLAS, FLECHAS DIRECCIONALES
 	glutSpecialFunc(SpecialKeysDown);
 	glutSpecialUpFunc(SpecialKeysUp);
 
+	//TIMESTEP
 	std::this_thread::sleep_for(std::chrono::microseconds(10));
+
+	//PARTICULAS
+	//particulas[0]->integrate_EulerExplicit(t);
+	//particulas[1]->integrate_EulerSemiImplicit(t);
+	//for (int i = 0; i < particulas.size(); ++i) {
+	//	if (particulas[i] != nullptr) {
+	//		particulas[i]->integrate_EulerSemiImplicit(t);
+	//	}
+	//}
 }
 
 // Function to clean data
@@ -309,28 +316,20 @@ void cleanupPhysics(bool interactive)
 			particulas[i] = nullptr;
 		}
 	}
-
 	for (int i = 0; i < proyectiles.size(); ++i) {
 		if (proyectiles[i] != nullptr) {
 			delete proyectiles[i]; //Llamara a la destructora de particula
 			proyectiles[i] = nullptr;
 		}
 	}
-
 	for (ForceGenerator* FG : _forceGeneratorsGlobal) {
 		delete FG;
 		FG = nullptr;
-	}
-
-	if (_axes) {
-		delete _axes;
-		_axes = nullptr;
 	}
 	if (_GroundDown) {
 		delete _GroundDown;
 		_GroundDown = nullptr;
 	}
-
 	if (WaterSystem) {
 		delete WaterSystem;
 		WaterSystem = nullptr;
@@ -339,27 +338,28 @@ void cleanupPhysics(bool interactive)
 		delete ExplosionSystem;
 		ExplosionSystem = nullptr;
 	}
-
 	if (DefenseGenerator) {
 		delete DefenseGenerator;
 		DefenseGenerator = nullptr;
 	}
-
-	if (SpringUpGenerator) {
-		delete SpringUpGenerator;
-		SpringUpGenerator = nullptr;
-	}
-	if (AnchoredSpringUpGenerator) {
-		delete AnchoredSpringUpGenerator;
-		AnchoredSpringUpGenerator = nullptr;
-	}
-
 	if (EnemySystem) {
 		delete EnemySystem;
 		EnemySystem = nullptr;
 	}
 
-
+	//if (_axes) {
+	//	delete _axes;
+	//	_axes = nullptr;
+	//}
+	//if (SpringUpGenerator) {
+	//	delete SpringUpGenerator;
+	//	SpringUpGenerator = nullptr;
+	//}
+	//if (AnchoredSpringUpGenerator) {
+	//	delete AnchoredSpringUpGenerator;
+	//	AnchoredSpringUpGenerator = nullptr;
+	//}
+	
 	// Rigid Body ++++++++++++++++++++++++++++++++++++++++++
 	gScene->release();
 	gDispatcher->release();
@@ -371,6 +371,7 @@ void cleanupPhysics(bool interactive)
 	gFoundation->release();
 }
 
+//BUSQUEDA DEL SIGUIENTE PROYECTIL A LANZAR, AÑADIENDOLO AL VECTOR DE PROYECTILES Y APLICANDO SUS FUERZAS
 void ShootProjectile(Projectile::ProjectileType type, Projectile::IntegratorType integrator, const Vector3& posCam, const Vector3& dirCam, PxReal tam)
 {
 	int indexToReuse = -1;
@@ -422,6 +423,7 @@ void ShootProjectile(Projectile::ProjectileType type, Projectile::IntegratorType
 	}
 }
 
+//FUERZA DE EXPLOSION AL GENERAR UNA DEFENSA
 void PaintInScene()
 {
 	if (DefenseGenerator) {
@@ -429,7 +431,7 @@ void PaintInScene()
 		bool encontrado = false;
 		while (i < proyectiles.size() && !encontrado) {
 			if (proyectiles[i] != nullptr) {
-				DefenseGenerator->triggerExplosion(proyectiles[i]->getPos().p, proyectiles[i]->getProjectileColor(),_forceGeneratorsGlobal);
+				DefenseGenerator->triggerExplosion(proyectiles[i]->getPos().p, proyectiles[i]->getProjectileColor(),_forceGeneratorsGlobal); //APLICAMOS UNA EXPLOSION EN EL SITIO DEL GENERADOR
 				delete proyectiles[i];
 				proyectiles[i] = nullptr;
 				encontrado = true;
@@ -443,14 +445,14 @@ void ManageWindForce()
 {
 	if (!WindUpGenerator) return;
 
-	if (WindUpGenerator->getWindVel() == Vector3(0.0f, 0.0f, 0.0f)) {
+	if (WindUpGenerator->getWindVel() == Vector3(0.0f, 0.0f, 0.0f)) { //SI NO HAY FUERZA DEL VIENTO APLICADA
 		WindUpVelocityActual = WindUpVelocityOriginal;
 		WindUpGenerator->setWindVel(WindUpVelocityActual);
 		for (ParticleGenerator* PG : WaterSystem->getParticleGenerators()) {
 			PG->setPos(Vector3(PG->getPos().p.x, _GroundDown->getPos().y, PG->getPos().p.z));
 		}
 	}
-	else {
+	else { //SI HAY FUERZA DEL VIENTO APLICADA LA DEVOLVEMOS A LA NORMALIDAD
 		WindUpVelocityActual = Vector3(0.0f, 0.0f, 0.0f);
 		WindUpGenerator->setWindVel(WindUpVelocityActual);
 		for (ParticleGenerator* PG : WaterSystem->getParticleGenerators()) {
@@ -459,10 +461,11 @@ void ManageWindForce()
 	}
 }
 
-void UnPaintAllInScene()
+//BORRAMOS TODAS LAS DEFENSAS GENERADAS EN ESCENA
+void ClearAllDefensesInScene()
 {
 	if (DefenseGenerator) {
-		DefenseGenerator->unpaint(); //Borramos toda la pintura generada en la escena
+		DefenseGenerator->unpaint();
 	}
 }
 
@@ -474,13 +477,6 @@ void keyPress(unsigned char key, const PxTransform& camera)
 	Camera* cam = GetCamera();
 	Vector3 posCam = cam->getEye();
 	Vector3 dirCam = cam->getDir();
-
-	//Vector3 velParticle = Vector3(dirCam.x * 70.0f, dirCam.y * 70.0f, dirCam.z * 70.0f);
-	//Vector3 accParticle = Vector3(0.0f, -9.8f, 0.0f);
-	//Vector4 color = Vector4(1.0f, 1.0f, 0.0f, 1.0f);
-	//float massParticle = 1.0f;
-	//float timeOfLifeParticle = 10.0f;
-	//bool rePosBullet = true;
 
 	switch(toupper(key))
 	{
@@ -511,10 +507,10 @@ void keyPress(unsigned char key, const PxTransform& camera)
 		case ' ': //PINTAMOS SI HAY UN PROYECTIL DISPARADO Y SI NO ESTA SIENDO PINTADO OTRO MIENTRAS TANTO
 			PaintInScene();
 			break;
-		case 'B': //BORRAMOS TODO LO PINTADO
-			UnPaintAllInScene();
+		case 'B': //BORRAMOS TODAS LAS DEFENSAS GENERADAS EN ESCENA
+			ClearAllDefensesInScene();
 			break;
-		case 'V': //ACTIVAMOS Y DESACTIVAMOS LA FUERZA DEL VIENTO
+		case 'V': //ACTIVAMOS Y DESACTIVAMOS LA FUERZA DEL VIENTO VERTICAL
 			ManageWindForce();
 			break;
 		default:
@@ -543,6 +539,12 @@ void keyPress(unsigned char key, const PxTransform& camera)
 	//	//}
 	//	ShootProjectile(Projectile::CANNON_BULLET, Projectile::IntegratorType::VERLET, posCam, dirCam);
 	//	break;
+	//Vector3 velParticle = Vector3(dirCam.x * 70.0f, dirCam.y * 70.0f, dirCam.z * 70.0f);
+	//Vector3 accParticle = Vector3(0.0f, -9.8f, 0.0f);
+	//Vector4 color = Vector4(1.0f, 1.0f, 0.0f, 1.0f);
+	//float massParticle = 1.0f;
+	//float timeOfLifeParticle = 10.0f;
+	//bool rePosBullet = true;
 
 }
 

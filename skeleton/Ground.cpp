@@ -9,11 +9,12 @@ using namespace physx;
 Ground::Ground(PxPhysics* gPhysics, PxScene* gScene, Vector3 pos) : _pos(pos), _gScene(gScene)
 {
     //CREATE SEA
-    //CreatePath(gPhysics, gScene, pos, Vector3(100.0f, 2.0f, 100.0f), Vector3(0.0f,0.0f,0.0f), Vector4(0.1f, 0.1f, 0.8f, 1.0f));
     CreateGround(pos, Vector3(200.0f, 2.0f, 200.0f), Vector3(0.0f, 0.0f, 0.0f), Vector4(0.1f, 0.1f, 0.8f, 1.0f));
-    //CREATE PATHS
+    
+    //CREATE PATHS - GENERADOR DE SOLIDOS RIGIDOS ESTATICOS
     CreatePath(gPhysics, gScene ,pos, Vector3(10.0f, 3.0f ,200.0f), Vector3(50.0f, 10.0f, 0.0f), Vector4(0.1f, 0.2f, 0.2f, 1.0f));
     CreatePath(gPhysics, gScene, pos, Vector3(10.0f, 3.0f ,200.0f), Vector3(-50.0f, 10.0f, 0.0f), Vector4(0.1f, 0.2f, 0.2f, 1.0f));
+    
     //CREATE CLOUDS
     SetClouds(gPhysics, gScene, Vector3(0.0f, 0.0f, 0.0f));
     SetClouds(gPhysics, gScene, Vector3(120.0f, 0.0f, 120.0f));
@@ -24,13 +25,13 @@ Ground::Ground(PxPhysics* gPhysics, PxScene* gScene, Vector3 pos) : _pos(pos), _
 
 void Ground::SetClouds(physx::PxPhysics* gPhysics, physx::PxScene* gScene, Vector3 originalPos)
 {
-    //CREATE CLOUDS MINI1
+    //CREATE CLOUDS MINI
     CreateSky(originalPos, Vector3(35.0f, 15.0f, 35.0f), Vector3(70.0f, 100.0f, 70.0f), Vector4(1.0f, 1.0f, 1.0f, 1.0f));
     CreateSky(originalPos, Vector3(35.0f, 15.0f, 35.0f), Vector3(-70.0f, 100.0f, -70.0f), Vector4(1.0f, 1.0f, 1.0f, 1.0f));
     CreateSky(originalPos, Vector3(35.0f, 15.0f, 35.0f), Vector3(70.0f, 100.0f, -70.0f), Vector4(1.0f, 1.0f, 1.0f, 1.0f));
     CreateSky(originalPos, Vector3(35.0f, 15.0f, 35.0f), Vector3(-70.0f, 100.0f, 70.0f), Vector4(1.0f, 1.0f, 1.0f, 1.0f));
     CreateSky(originalPos, Vector3(35.0f, 15.0f, 35.0f), Vector3(-20.0f, 120.0f, 20.0f), Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-    //CREATE CLOUDS BIG1
+    //CREATE CLOUDS BIG
     CreateSky(originalPos, Vector3(35.0f, 25.0f, 35.0f), Vector3(35.0f, 110.0f, 35.0f), Vector4(1.0f, 1.0f, 1.0f, 1.0f));
     CreateSky(originalPos, Vector3(35.0f, 25.0f, 35.0f), Vector3(-35.0f, 110.0f, -35.0f), Vector4(1.0f, 1.0f, 1.0f, 1.0f));
     CreateSky(originalPos, Vector3(35.0f, 25.0f, 35.0f), Vector3(45.0f, 110.0f, 65.0f), Vector4(1.0f, 1.0f, 1.0f, 1.0f));
