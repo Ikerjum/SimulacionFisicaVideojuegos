@@ -1,6 +1,7 @@
 #include "DefenseParticleGenerator.h"
 #include "checkML.h"
 
+//GENERADOR DE DEFENSAS CON GENERADOR DE PARTICULAS DE EXPLOSION
 DefenseParticleGenerator::DefenseParticleGenerator(Vector3 pos, Particle* model, int ParticlesPerFrame, PxPhysics* gPhysics, PxScene* gScene) :
 	ParticleGenerator(pos,model,ParticlesPerFrame), _explosionForceGenerator(nullptr)
 {
@@ -53,21 +54,6 @@ Particle* DefenseParticleGenerator::generateDefense()
 {
     PxReal tamP = 2.0;
     Particle* newP = _modelP->clone(tamP);
-
-    ////VARIACION DE POSICION
-    //Vector3 basePos = getPos().p; //Ponemos la posicion base en el proyectil, es decir en la zona donde reposicionamos el generador de particulas
-    //float RANGO_POS_X = 1.5f;
-    //float RANGO_POS_Y = 1.5f;
-    //float RANGO_POS_Z = 1.5f;
-
-    //Vector3 newPos = basePos + Vector3(
-    //    _n(_mt) * RANGO_POS_X,
-    //    _n(_mt) * RANGO_POS_Y,
-    //    _n(_mt) * RANGO_POS_Z
-    //);
-
-    //newP->setPos(newPos);
-
     return newP;
 }
 
@@ -147,7 +133,7 @@ void DefenseParticleGenerator::triggerExplosion(Vector3 pos, Vector4 color, std:
     }
 }
 
-void DefenseParticleGenerator::unpaint()
+void DefenseParticleGenerator::clearDefenses()
 {
     if (_defenders.empty()) return;
     for (Defense* defense : _defenders) {

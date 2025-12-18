@@ -1,5 +1,7 @@
 #include "SpringForceGenerator.h"
 #include "checkML.h"
+
+//FUERZA DE MUELLE
 SpringForceGenerator::SpringForceGenerator(double k, double resting_length, Particle* other)
 {
 	setActive(true);

@@ -18,7 +18,5 @@ public:
     ~WaterParticleGenerator();
     Particle* generateP() override;
     void update(double t) override;
-    
-    //void ApplyForces(Particle* newParticle, double t);
 };
 

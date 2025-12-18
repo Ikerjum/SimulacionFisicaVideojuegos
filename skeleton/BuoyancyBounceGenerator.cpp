@@ -1,5 +1,8 @@
 #include "BuoyancyBounceGenerator.h"
 #include "checkML.h"
+#include <algorithm>
+
+//FUERZA DE FLOTACION
 BuoyancyForceGenerator::BuoyancyForceGenerator(float h, float V, float d, float waterHeight)
 {
 	setActive(true);
@@ -27,20 +30,9 @@ Vector3 BuoyancyForceGenerator::putForce(Particle* particle)
 	else {
 		immersed = (h0 - h) / _height + 0.5;
 	}
-
 	float buoyancy = _liquid_density * _volume * immersed * _gravity;
-	
-	force.y = buoyancy;
-
-	//// Resistencia (drag)
-	//float resistanceForce = -particle->getVel().y * 2.5f;
-	//float targetHeight = h0 + (_height * 0.25f);  // altura de equilibrio
-	//float displacement = h - targetHeight;
-	//float k = 10.5f;   // rigidez del muelle
-	//float c = 1.0f;    // amortiguacion
-	//float springForce = -k * displacement;
-	//float springDamping = -c * particle->getVel().y;
-	//force.y = buoyancy + resistanceForce + springForce + springDamping;
+	float drag = -particle->getVel().y * 3.0f; //Resistencia para ir bajando la velociad
+	force.y = buoyancy + drag;
 
 	return force;
 }
@@ -61,19 +53,9 @@ Vector3 BuoyancyForceGenerator::putForce(DynamicRigidSolid* particle)
 	else {
 		immersed = (h0 - h) / _height + 0.5;
 	}
-
 	float buoyancy = _liquid_density * _volume * immersed * _gravity;
-	force.y = buoyancy;
-
-	//// Resistencia (drag)
-	//float resistanceForce = -particle->getLinearVelocity().y * 2.5f;
-	//float targetHeight = h0 + (_height * 0.25f);  // altura de equilibrio
-	//float displacement = h - targetHeight;
-	//float k = 10.5f;   // rigidez del muelle
-	//float c = 1.0f;    // amortiguacion
-	//float springForce = -k * displacement;
-	//float springDamping = -c * particle->getLinearVelocity().y;
-	//force.y = buoyancy + resistanceForce + springForce + springDamping;
+	float drag = -particle->getLinearVelocity().y * 3.0f; //Resistencia para ir bajando la velociad
+	force.y = buoyancy + drag;
 
 	return force;
 }

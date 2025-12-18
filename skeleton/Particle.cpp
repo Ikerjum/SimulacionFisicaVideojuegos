@@ -4,6 +4,7 @@
 #include <iostream>
 using namespace physx;
 
+//CLASE PARTICULA
 Particle::Particle()
     : _vel(0, 0, 0), _pos(Vector3(0, 0, 0)), _oldPos(_pos.p - _vel),
     _acc(0, 0, 0), _mass(1.0f), _color(0, 0, 0, 0), _tam(1), _timeOfLife(5.0f),

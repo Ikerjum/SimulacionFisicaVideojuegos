@@ -2,6 +2,7 @@
 #include "checkML.h"
 #include <iostream>
 
+//ENEMIGO COMO SOLIDO RIGIDO DINAMICO AL CUAL SE LE APLICAN FUERZAS A SU RESPECTIVO ACTOR
 Enemy::Enemy(PxPhysics* gPhysics, PxScene* gScene, Vector3& pos, Vector3& tam, Vector3& linearVelocity, Vector3& angularVelocity, Vector4& color, float mass) :
 	DynamicRigidSolid(Vector3(0, 0, 0), pos, Vector3(0, 0, 0), mass, color, tam.y, 2.0f, tam, linearVelocity, angularVelocity, gScene, gPhysics, DynamicRigidSolid::SPHERE)
 {

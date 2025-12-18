@@ -1,11 +1,12 @@
 #include "WaterParticleGenerator.h"
 #include "checkML.h"
+//GENERADOR DE LLUVIA
 WaterParticleGenerator::WaterParticleGenerator(Vector3 pos, Particle* model, int ParticlesPerFrame) : ParticleGenerator(pos,model,ParticlesPerFrame)
 {
     std::random_device rd;
     _mt.seed(rd());
 
-    //GENERADORES DE FUERZAS, LO HACEMOS SOLO UNA VEZ EN LA CONSTRUCTORA
+    //Ejemplos de generadores de fuerzas para aplicar a la lluvia
     //_forceGenerators.push_back(new GravityForceGenerator(Vector3(0, -9.8, 0))); //Aplicamos la gravedad al generador de fuerzas
     //_forceGenerators.push_back(new WindForceGenerator(Vector3(100.0, 0, 0.0),0.5f,0.02f));
     
@@ -23,20 +24,10 @@ WaterParticleGenerator::~WaterParticleGenerator()
     //    _forceGenerators[i] = nullptr;
     //}
     _forceGenerators.clear();
-
-    //if (_bounceGenerator) {
-    //    delete _bounceGenerator;
-    //    _bounceGenerator = nullptr;
-    //}
 }
 
 Particle* WaterParticleGenerator::generateP()
 {
-
-    //SE PUEDEN REDEFINIR LAS CONSTANTES PARA ESTE GENERADOR DE PARTICULAS
-    //_u = std::uniform_real_distribution<double>(-1.0, 1.0);
-    //_n = std::normal_distribution<double>(-1.0, 1.0);
-
     Particle* newP = _modelP->clone();
 
     //VARIACION DE POSICION
@@ -116,18 +107,3 @@ void WaterParticleGenerator::update(double t)
         }
     }
 }
-
-//void WaterParticleGenerator::ApplyForces(Particle* newParticle, double t)
-//{
-//    newParticle->setAcc(Vector3(0, 0, 0));
-//    float massParticle = newParticle->getMass();
-//    for (int i = 0; i < _forceGenerators.size(); ++i) {
-//        Vector3 newForce = _forceGenerators[i]->putForce(newParticle);
-//        if (massParticle != 0.0f) newParticle->setAcc(newParticle->getAcc() + newForce / massParticle);
-//    }
-//}
-
-//void WaterParticleGenerator::addWindForce(WindForceGenerator* externalForceGenerator) {
-//    _windForceGenerator = new WindForceGenerator(externalForceGenerator->getWindVel(), externalForceGenerator->isActive());
-//    _forceGenerators.push_back(_windForceGenerator);
-//}

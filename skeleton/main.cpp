@@ -465,7 +465,7 @@ void ManageWindForce()
 void ClearAllDefensesInScene()
 {
 	if (DefenseGenerator) {
-		DefenseGenerator->unpaint();
+		DefenseGenerator->clearDefenses();
 	}
 }
 

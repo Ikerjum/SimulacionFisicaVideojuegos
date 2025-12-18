@@ -1,6 +1,7 @@
 #include "Bullet.h"
 #include <iostream>
 
+//BULLET COMO SOLIDO RIGIDO DINAMICO AL CUAL SE LE APLICAN FUERZAS A SU RESPECTIVO ACTOR
 Bullet::Bullet(PxPhysics* gPhysics, PxScene* gScene, Vector3& pos, Vector3& tam, Vector3& linearVelocity, Vector3& angularVelocity, Vector4& color) :
 	DynamicRigidSolid(Vector3(0,0,0),pos,Vector3(0,0,0),5.f,color,tam.y,2.0f,tam,linearVelocity,angularVelocity,gScene,gPhysics,DynamicRigidSolid::BOX)
 {

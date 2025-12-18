@@ -24,10 +24,7 @@ public:
     Particle* generateDefense();
     void update(double t) override;
     void triggerExplosion(Vector3 pos, Vector4 color, std::vector<ForceGenerator*> forceGenerators);
-    void unpaint();
-
-    //void ApplyForces(Particle* newParticle, double t);
-
+    void clearDefenses();
     void setColor(Vector4 newColor) { _paintColor = newColor; }
     Vector4 getColor() const { return _paintColor; }
 };

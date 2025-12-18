@@ -4,6 +4,7 @@
 #include <iostream>
 using namespace physx;
 
+//CLASE SOLIDO RIGIDO DINAMICO, GESTION PARA CUADNO LA FORMA ES CUBICA (BULLET) O ESFERICA (ENEMY)
 DynamicRigidSolid::DynamicRigidSolid(PxScene* gScene, PxPhysics* gPhysics)
     : _mass(1.0f), _color(0, 0, 0, 0), _tam(1), _timeOfLife(5.0f),_dimensions(Vector3(1.0f,1.0f,1.0f)),
     _linearVelocity(Vector3(0.0f,0.0f,0.0f)), _angularVelocity(Vector3(0.0f,0.0f,0.0f)),  _gScene(gScene), _gPhysics(gPhysics),
@@ -23,7 +24,6 @@ DynamicRigidSolid::DynamicRigidSolid(Vector3 vel, Vector3 pos, Vector3 acc, floa
         _actor->attachShape(*_shape);
         _actor->setLinearVelocity(linearVelocity);
         _actor->setAngularVelocity(angularVelocity);
-        //_actor->setMass(mass);
         PxRigidBodyExt::updateMassAndInertia(*_actor, mass);
         gScene->addActor(*_actor);
     }
@@ -33,24 +33,9 @@ DynamicRigidSolid::DynamicRigidSolid(Vector3 vel, Vector3 pos, Vector3 acc, floa
         _actor->attachShape(*_shape);
         _actor->setLinearVelocity(linearVelocity);
         _actor->setAngularVelocity(angularVelocity);
-        //_actor->setMass(mass);
         PxRigidBodyExt::updateMassAndInertia(*_actor, mass);
         gScene->addActor(*_actor);
     }
-
-    //PxSphereGeometry sphereGeom(tam);
-    //PxShape* shapeHead = CreateShape(sphereGeom);
-    //_offsetHead = Vector3(0.0f, 15.0f, 0.0f);
-    //_headTransform = PxTransform(initialPos + _offsetHead);
-    //_head = new RenderItem(shapeHead, &_headTransform, color);
-
-    //PxBoxGeometry boxGeom(scale);
-    //PxShape* shape = CreateShape(boxGeom);
-    //physx::PxRigidStatic* actor = gPhysics->createRigidStatic(PxTransform(pos + offset));
-    //actor->attachShape(*shape);
-    //gScene->addActor(*actor);
-    //RenderItem* item = new RenderItem(shape, actor, color);
-    ////RegisterRenderItem(item);
 
     _renderItem = new RenderItem(_shape, _actor, color);
 }

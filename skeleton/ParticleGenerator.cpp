@@ -1,6 +1,7 @@
 #include "ParticleGenerator.h"
 #include "checkML.h"
 
+//GENERADOR DE PARTICULAS QUE APLICA TODAS LAS FUERZAS A LA PARTICULA DESIGNADA DE UN GENERADOR DE PARTICULAS
 ParticleGenerator::ParticleGenerator(Vector3 pos, Particle* modelP, int ParticlesPerFrame) :
 	_pos(PxTransform(pos)), _modelP(modelP), _particlesPerFrame(ParticlesPerFrame),
 	_generatorParticlesV(), _generatorParticlesL(),

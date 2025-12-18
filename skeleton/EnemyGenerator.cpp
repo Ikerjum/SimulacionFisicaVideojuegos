@@ -4,6 +4,7 @@
 #include <string>
 #include <algorithm>
 
+//GENERADOR DE ENEMIGOS, PARTICULA GENERADORA QUE TIENE UN RENDERITEM DE META QUE ES UN CUBO ALARGADO, GESTIONA LA GENERACION ALEATORIA DE ENEMIGOS CON DISTINTO TAMAÑO,MASA Y COLOR EN FUNCION DE ESOS PARAMETROS
 EnemyGenerator::EnemyGenerator(Vector3 pos, Vector3 posGoal, PxPhysics* gPhysics, PxScene* gScene) :
 	Particle(Vector3(0, 0, 0), pos, Vector3(0, 0, 0), 0.0f, Vector4(0.0f,1.0,1.0f,1.0f),5,1000.f),
 	_timer(0.0), _spawnEnemy(2.0), _pos(pos), _posGoal(posGoal), _gPhysics(gPhysics), _gScene(gScene), _winPoints(false), _loseLife(false),
